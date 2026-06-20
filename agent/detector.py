@@ -21,26 +21,52 @@ def detect_stack(repo_info):
     if "Gemfile" in files:
         detected.append("Ruby app")
 
+        gemfile_path = repo_path / "Gemfile"
+
+        if gemfile_path.exists():
+            gemfile_text = gemfile_path.read_text(errors="ignore").lower()
+
+            if "rails" in gemfile_text:
+                detected.append("Rails app")
+
     if "manage.py" in files:
         detected.append("Django app")
 
-    if "Dockerfile" not in files:
+    if not repo_info["dockerfiles"]:
         missing.append("Dockerfile")
-        recommendations.append("Add a Dockerfile so the app can run consistently in containers.")
+        recommendations.append(
+            "Add a Dockerfile so the app can run consistently in containers."
+        )
 
-    if "docker-compose.yml" not in files and "docker-compose.yaml" not in files:
+    if not repo_info["compose_files"]:
         missing.append("docker-compose.yml")
-        recommendations.append("Add Docker Compose for local multi-service setup.")
+        recommendations.append(
+            "Add Docker Compose for local multi-service setup."
+        )
 
-    if ".env.example" not in files:
-        missing.append(".env.example")
-        recommendations.append("Add an environment variable template for local setup.")
+    uses_rails_credentials = (
+        "config/credentials.yml.enc" in repo_info["config_files"]
+        or "config/credentials.yml" in repo_info["config_files"]
+    )
 
-    github_actions_path = repo_path / ".github" / "workflows"
+    if not repo_info["config_files"]:
+        missing.append("Environment configuration")
+        recommendations.append(
+            "Add a .env, .env.example, or framework-specific credentials file."
+        )
+    elif (
+        ".env.example" not in repo_info["config_files"]
+        and not uses_rails_credentials
+    ):
+        recommendations.append(
+            "Add a .env.example file to document required environment variables."
+        )
 
-    if not github_actions_path.exists():
+    if not repo_info["workflow_files"]:
         missing.append("GitHub Actions workflow")
-        recommendations.append("Add CI so tests/builds run automatically on push.")
+        recommendations.append(
+            "Add CI so tests/builds run automatically on push."
+        )
 
     if not detected:
         detected.append("Unknown stack")

@@ -33,18 +33,51 @@ def analyze(path: Annotated[str, typer.Argument(help="Path to the repo")] = ".",
     for item in analysis["detected"]:
         console.print(f"✓ {item}")
 
+    if repo_info["dockerfiles"]:
+        console.print("\n[bold green]Docker variants found[/bold green]")
+        for file in repo_info["dockerfiles"]:
+            console.print(f"✓ {file}")
+
+    if repo_info["compose_files"]:
+        console.print("\n[bold green]Compose variants found[/bold green]")
+        for file in repo_info["compose_files"]:
+            console.print(f"✓ {file}")
+
+    if repo_info["config_files"]:
+        console.print("\n[bold green]Config files found[/bold green]")
+        for file in repo_info["config_files"]:
+            console.print(f"✓ {file}")
+
+    if repo_info["workflow_files"]:
+        console.print("\n[bold green]GitHub Actions found[/bold green]")
+        for file in repo_info["workflow_files"]:
+            console.print(f"✓ {file}")
+    
     console.print("\n[bold yellow]Missing[/bold yellow]")
-    for item in analysis["missing"]:
-        console.print(f"✗ {item}")
+    if analysis["missing"]:
+        for item in analysis["missing"]:
+            console.print(f"✗ {item}")
+    else:
+        console.print("None")
 
     console.print("\n[bold blue]Recommendations[/bold blue]")
-    for item in analysis["recommendations"]:
-        console.print(f"• {item}")
+    if analysis["recommendations"]:
+        for item in analysis["recommendations"]:
+            console.print(f"• {item}")
+    else:
+        console.print("None")
 
 @app.command()
 def dockerize(path: Annotated[str, typer.Argument(help="Path to the repo")] = ".",):
     """Generate Docker files for the repo."""
-    created = generate_docker_files(path)
+    repo_info = scan_repo(path)
+    analysis = detect_stack(repo_info)
+    if "Unknown stack" in analysis["detected"]:
+        console.print("[bold red]Could not detect a supported app in this folder.[/bold red]")
+        console.print("Try running the command inside the actual app directory.")
+        raise typer.Exit(code=1)
+
+    created = generate_docker_files(path, analysis)
 
     console.print()
     console.print(Panel.fit("Dockerize Complete", style="bold cyan"))
