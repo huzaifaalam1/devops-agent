@@ -1,0 +1,13 @@
+[project]
+name = "devops-agent"
+version = "0.1.0"
+description = "A local DevOps assistant for repo setup and Docker/AWS guidance"
+requires-python = ">=3.10"
+dependencies = [
+    "typer[all]",
+    "rich"
+]
+
+[project.scripts]
+devops-agent = "agent.main:app"
+

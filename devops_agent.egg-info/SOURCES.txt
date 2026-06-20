@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+agent/__init__.py
+agent/detector.py
+agent/main.py
+agent/scanner.py
+devops_agent.egg-info/PKG-INFO
+devops_agent.egg-info/SOURCES.txt
+devops_agent.egg-info/dependency_links.txt
+devops_agent.egg-info/entry_points.txt
+devops_agent.egg-info/requires.txt
+devops_agent.egg-info/top_level.txt
