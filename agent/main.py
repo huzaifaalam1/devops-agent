@@ -113,7 +113,37 @@ def dockerize(
         console.print("Try running the command inside the actual app directory.")
         raise typer.Exit(code=1)
 
-    created = generate_docker_files(path, analysis)
+    if repo_info["dockerfiles"] or repo_info["compose_files"]:
+        console.print()
+        console.print(
+            Panel.fit("Docker setup already exists", style="bold cyan")
+        )
+
+        if repo_info["dockerfiles"]:
+            console.print("[bold green]Docker variants found:[/bold green]")
+            for file in repo_info["dockerfiles"]:
+                console.print(f"✓ {file}")
+
+        if repo_info["compose_files"]:
+            console.print("\n[bold green]Compose variants found:[/bold green]")
+            for file in repo_info["compose_files"]:
+                console.print(f"✓ {file}")
+
+        docker_commands = [
+            cmd
+            for cmd in analysis["startup_commands"]
+            if "docker compose" in cmd
+        ]
+
+        if docker_commands:
+            console.print("\n[bold green]Possible run commands:[/bold green]")
+            for cmd in docker_commands:
+                console.print(f"✓ {cmd}")
+
+        raise typer.Exit(code=0)
+
+    result = generate_docker_files(path, analysis)
+    created = result["created"]
 
     console.print()
     console.print(Panel.fit("Dockerize Complete", style="bold cyan"))
@@ -127,6 +157,8 @@ def dockerize(
             "[bold yellow]No files created. Docker files already exist.[/bold yellow]"
         )
 
+    console.print("\n[bold green]Run with:[/bold green]")
+    console.print(result["run_command"])
 
 if __name__ == "__main__":
     app()

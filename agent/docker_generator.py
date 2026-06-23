@@ -1,17 +1,6 @@
 from pathlib import Path
 
 
-PYTHON_DOCKERFILE = """FROM python:3.12-slim
-
-WORKDIR /app
-
-COPY . .
-
-RUN pip install -e .
-
-CMD ["python", "--version"]
-"""
-
 NODE_DOCKERFILE = """FROM node:22
 
 WORKDIR /app
@@ -24,14 +13,31 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
 """
 
-RUBY_DOCKERFILE = """FROM ruby:3.2
+NEXT_DOCKERFILE = NODE_DOCKERFILE
+
+PYTHON_DOCKERFILE = """FROM python:3.12-slim
 
 WORKDIR /app
 
-RUN apt-get update -qq && apt-get install -y build-essential libpq-dev nodejs
+COPY requirements.txt ./
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY . .
+
+EXPOSE 8000
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+"""
+
+RAILS_DOCKERFILE = """FROM ruby:3.2
+
+WORKDIR /app
+
+RUN apt-get update -qq && apt-get install -y build-essential nodejs default-mysql-client postgresql-client
 
 COPY Gemfile Gemfile.lock ./
 
@@ -44,55 +50,150 @@ EXPOSE 3000
 CMD ["rails", "server", "-b", "0.0.0.0"]
 """
 
-PYTHON_COMPOSE = """services:
-  app:
-    build: .
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env
-"""
+DOCKERIGNORE = """.git
+.env
+.env.local
+.env.development
+.env.production
 
-NODE_COMPOSE = """services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-"""
+node_modules
+.next
+dist
+build
+coverage
 
-RUBY_COMPOSE = """services:
-  app:
-    build: .
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-"""
-
-DOCKERIGNORE = """.venv
 __pycache__
 *.pyc
-node_modules
-.git
-.env
-log
+.venv
+venv
+
 tmp
+log
+
+vendor/bundle
+*.egg-info
 """
 
 
-def choose_stack(detected: list[str]) -> str:
+def choose_dockerfile(analysis: dict):
+    detected = analysis["detected"]
+
+    if "Next.js app" in detected:
+        return NEXT_DOCKERFILE
+
     if "Node.js app" in detected:
-        return "node"
+        return NODE_DOCKERFILE
 
-    if "Ruby app" in detected or "Rails app" in detected:
-        return "ruby"
+    if "Rails app" in detected or "Ruby app" in detected:
+        return RAILS_DOCKERFILE
 
-    if "Python app" in detected or "Django app" in detected:
-        return "python"
+    if "Django app" in detected or "Python app" in detected:
+        return PYTHON_DOCKERFILE
 
-    return "unknown"
+    return None
+
+
+def get_app_port(analysis: dict):
+    detected = analysis["detected"]
+
+    if "Django app" in detected or "Python app" in detected:
+        return "8000"
+
+    return "3000"
+
+
+def generate_compose(analysis: dict):
+    services = analysis["services"]
+    app_port = get_app_port(analysis)
+
+    compose = f"""services:
+  app:
+    build: .
+    ports:
+      - "{app_port}:{app_port}"
+    env_file:
+      - .env
+"""
+
+    if "PostgreSQL" in services:
+        compose += """
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: app_development
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+"""
+
+    if "MySQL/MariaDB" in services:
+        compose += """
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+      MARIADB_DATABASE: app_development
+      MARIADB_USER: app
+      MARIADB_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+"""
+
+    if "MongoDB" in services:
+        compose += """
+  mongo:
+    image: mongo:8
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+"""
+
+    if "Redis" in services or "Sidekiq" in services:
+        compose += """
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+"""
+
+    if "Sidekiq" in services:
+        compose += """
+  sidekiq:
+    build: .
+    command: bundle exec sidekiq
+    env_file:
+      - .env
+    depends_on:
+      - redis
+"""
+
+    volumes = []
+
+    if "PostgreSQL" in services:
+        volumes.append("postgres_data")
+
+    if "MySQL/MariaDB" in services:
+        volumes.append("mariadb_data")
+
+    if "MongoDB" in services:
+        volumes.append("mongo_data")
+
+    if volumes:
+        compose += "\nvolumes:\n"
+        for volume in volumes:
+            compose += f"  {volume}:\n"
+
+    return compose
+
+
+def get_run_command():
+    return "docker compose up --build"
 
 
 def generate_docker_files(path: str, analysis: dict):
@@ -103,23 +204,11 @@ def generate_docker_files(path: str, analysis: dict):
     compose_path = repo_path / "docker-compose.yml"
 
     created = []
-    detected = analysis.get("detected", [])
-    stack = choose_stack(detected)
 
-    if stack == "node":
-        dockerfile_content = NODE_DOCKERFILE
-        compose_content = NODE_COMPOSE
-    elif stack == "ruby":
-        dockerfile_content = RUBY_DOCKERFILE
-        compose_content = RUBY_COMPOSE
-    elif stack == "python":
-        dockerfile_content = PYTHON_DOCKERFILE
-        compose_content = PYTHON_COMPOSE
-    else:
-        return created
+    dockerfile = choose_dockerfile(analysis)
 
-    if not dockerfile_path.exists():
-        dockerfile_path.write_text(dockerfile_content)
+    if dockerfile and not dockerfile_path.exists():
+        dockerfile_path.write_text(dockerfile)
         created.append("Dockerfile")
 
     if not dockerignore_path.exists():
@@ -127,7 +216,10 @@ def generate_docker_files(path: str, analysis: dict):
         created.append(".dockerignore")
 
     if not compose_path.exists():
-        compose_path.write_text(compose_content)
+        compose_path.write_text(generate_compose(analysis))
         created.append("docker-compose.yml")
 
-    return created
+    return {
+        "created": created,
+        "run_command": get_run_command(),
+    }
