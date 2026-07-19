@@ -1,16 +1,65 @@
 from typing import Annotated
 
 import typer
+import platform
 from rich.console import Console
 from rich.panel import Panel
+from pathlib import Path
 
 from agent.scanner import scan_repo
 from agent.detector import detect_stack
 from agent.docker_generator import generate_docker_files
+from agent.validator import (
+    bring_down_compose_project,
+    extract_conflicting_port,
+    find_compose_project_using_port,
+    validate_docker,
+)
 
 app = typer.Typer()
 console = Console()
 
+def choose_compose_file(compose_files: list[str]) -> str:
+    filenames = {
+        Path(compose_file).name: compose_file
+        for compose_file in compose_files
+    }
+
+    system = platform.system()
+
+    if system == "Darwin":
+        preferred_files = [
+            "local_mac.yml",
+            "local_mac.yaml",
+            "docker-compose.mac.yml",
+            "docker-compose.mac.yaml",
+            "compose.mac.yml",
+            "compose.mac.yaml",
+        ]
+    elif system == "Linux":
+        preferred_files = [
+            "local_linux.yml",
+            "local_linux.yaml",
+        ]
+    else:
+        preferred_files = []
+
+    preferred_files.extend(
+        [
+            "local.yml",
+            "local.yaml",
+            "docker-compose.yml",
+            "docker-compose.yaml",
+            "compose.yml",
+            "compose.yaml",
+        ]
+    )
+
+    for preferred_file in preferred_files:
+        if preferred_file in filenames:
+            return filenames[preferred_file]
+
+    return compose_files[0]
 
 @app.callback()
 def main():
@@ -159,6 +208,176 @@ def dockerize(
 
     console.print("\n[bold green]Run with:[/bold green]")
     console.print(result["run_command"])
+
+@app.command()
+def validate(
+    path: Annotated[str, typer.Argument(help="Path to the repo")] = ".",
+    build: Annotated[
+        bool,
+        typer.Option(help="Build Docker images too"),
+    ] = False,
+    run: Annotated[
+        bool,
+        typer.Option(help="Start containers and verify they remain running"),
+    ] = False,
+    keep_running: Annotated[
+        bool,
+        typer.Option(
+            "--keep-running",
+            help="Leave containers running after runtime validation",
+        ),
+    ] = False,
+):
+    """Validate the Docker setup for the repo."""
+    repo_info = scan_repo(path)
+
+    if not repo_info["compose_files"]:
+        console.print(
+            "[bold red]No Docker Compose file was found.[/bold red]"
+        )
+        raise typer.Exit(code=1)
+
+    compose_file = choose_compose_file(repo_info["compose_files"])
+
+    result = validate_docker(
+        path,
+        compose_file=compose_file,
+        build=build,
+        run=run,
+        keep_running=keep_running,
+    )
+
+    console.print()
+    console.print(Panel.fit("Docker Validation", style="bold cyan"))
+    console.print(f"[bold]Path:[/bold] {repo_info['path']}")
+    console.print(f"[bold]Compose file:[/bold] {compose_file}")
+
+    for command_result in result["results"]:
+        console.print(
+            f"[bold]Command:[/bold] {command_result['command']}"
+        )
+
+    if result["success"]:
+        if result["phase"] == "runtime":
+            console.print(
+                "\n[bold green]✓ All Docker services started successfully[/bold green]"
+            )
+
+            console.print("\n[bold green]Running services:[/bold green]")
+            for service in result["running_services"]:
+                console.print(f"✓ {service}")
+
+        elif result["phase"] == "build":
+            console.print(
+                "\n[bold green]✓ Docker images built successfully[/bold green]"
+            )
+
+        else:
+            console.print(
+                "\n[bold green]✓ Docker Compose configuration is valid[/bold green]"
+            )
+
+        return
+
+    console.print(
+        f"\n[bold red]✗ Docker validation failed during "
+        f"{result['phase']}[/bold red]"
+    )
+
+    last_result = result["results"][-1]
+    if result["phase"] == "startup":
+        error_output = (
+            last_result["stderr"]
+            or last_result["stdout"]
+            or ""
+        )
+
+        conflicting_port = extract_conflicting_port(error_output)
+
+        if conflicting_port is not None:
+            conflict = find_compose_project_using_port(
+                conflicting_port,
+                Path(path).resolve(),
+            )
+
+            if conflict:
+                console.print(
+                    f"\n[bold yellow]Port {conflicting_port} is being used by "
+                    f"{conflict['container_name']}.[/bold yellow]"
+                )
+
+                console.print(
+                    f"Compose project: "
+                    f"[bold]{conflict['project_name']}[/bold]"
+                )
+
+                should_stop = typer.confirm(
+                    f"Bring down {conflict['project_name']} and retry?",
+                    default=False,
+                )
+
+                if should_stop:
+                    down_result = bring_down_compose_project(conflict)
+
+                    if not down_result["success"]:
+                        console.print(
+                            "\n[bold red]✗ Failed to bring down the "
+                            "conflicting Compose project[/bold red]"
+                        )
+                        console.print(
+                            down_result["stderr"]
+                            or down_result["stdout"]
+                        )
+                        raise typer.Exit(code=1)
+
+                    console.print(
+                        f"\n[bold green]✓ Brought down "
+                        f"{conflict['project_name']}[/bold green]"
+                    )
+
+                    console.print(
+                        "\n[bold cyan]Retrying Docker validation...[/bold cyan]"
+                    )
+
+                    result = validate_docker(
+                        path,
+                        compose_file=compose_file,
+                        build=build,
+                        run=run,
+                        keep_running=keep_running,
+                    )
+
+                    if result["success"]:
+                        console.print(
+                            "\n[bold green]✓ All Docker services "
+                            "started successfully[/bold green]"
+                        )
+
+                        if result["running_services"]:
+                            console.print(
+                                "\n[bold green]Running services:[/bold green]"
+                            )
+
+                            for service in result["running_services"]:
+                                console.print(f"✓ {service}")
+
+                        return
+
+                    last_result = result["results"][-1]
+
+    if last_result["stderr"]:
+        console.print("\n[bold red]Error:[/bold red]")
+        console.print(last_result["stderr"])
+
+    if last_result["stdout"]:
+        console.print("\n[bold]Output:[/bold]")
+        console.print(last_result["stdout"])
+
+    if result["logs"]:
+        console.print("\n[bold yellow]Container logs:[/bold yellow]")
+        console.print(result["logs"])
+
+    raise typer.Exit(code=1)
 
 if __name__ == "__main__":
     app()
