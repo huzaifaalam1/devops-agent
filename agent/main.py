@@ -258,7 +258,7 @@ def validate(
         )
 
     if result["success"]:
-        if result["phase"] == "runtime":
+        if result["phase"] in {"runtime", "application"}:
             console.print(
                 "\n[bold green]✓ All Docker services started successfully[/bold green]"
             )
@@ -266,6 +266,27 @@ def validate(
             console.print("\n[bold green]Running services:[/bold green]")
             for service in result["running_services"]:
                 console.print(f"✓ {service}")
+
+            application_check = result.get("application_check")
+
+            if application_check:
+                console.print(
+                    "\n[bold cyan]Application URL discovery:[/bold cyan]"
+                )
+
+                for candidate in application_check.get("candidates", []):
+                    console.print(f"• {candidate}")
+
+                console.print(
+                    "\n[bold green]✓ Application responded successfully[/bold green]"
+                )
+                console.print(
+                    f"[bold]URL:[/bold] {application_check['url']}"
+                )
+                console.print(
+                    f"[bold]HTTP status:[/bold] "
+                    f"{application_check['status_code']}"
+                )
 
         elif result["phase"] == "build":
             console.print(
@@ -279,12 +300,36 @@ def validate(
 
         return
 
+    if result["phase"] == "docker_engine":
+        console.print(
+            "\n[bold red]✗ Docker engine/storage error[/bold red]"
+        )
+
+        application_check = result.get("application_check") or {}
+        error = application_check.get("error")
+
+        if error:
+            console.print(f"\n{error}")
+
+        console.print(
+            "\n[bold yellow]"
+            "Try restarting Docker Desktop and retrying validation."
+            "[/bold yellow]"
+        )
+
+        if result["logs"]:
+            console.print("\n[bold]Docker output:[/bold]")
+            console.print(result["logs"])
+
+        raise typer.Exit(code=1)
+
     console.print(
         f"\n[bold red]✗ Docker validation failed during "
         f"{result['phase']}[/bold red]"
     )
 
     last_result = result["results"][-1]
+
     if result["phase"] == "startup":
         error_output = (
             last_result["stderr"]
@@ -361,9 +406,74 @@ def validate(
                             for service in result["running_services"]:
                                 console.print(f"✓ {service}")
 
+                        application_check = result.get("application_check")
+
+                        if application_check:
+                            console.print(
+                                "\n[bold cyan]Application URL discovery:"
+                                "[/bold cyan]"
+                            )
+
+                            for candidate in application_check.get(
+                                "candidates",
+                                [],
+                            ):
+                                console.print(f"• {candidate}")
+
+                            console.print(
+                                "\n[bold green]✓ Application responded "
+                                "successfully[/bold green]"
+                            )
+                            console.print(
+                                f"[bold]URL:[/bold] "
+                                f"{application_check['url']}"
+                            )
+                            console.print(
+                                f"[bold]HTTP status:[/bold] "
+                                f"{application_check['status_code']}"
+                            )
+
                         return
 
                     last_result = result["results"][-1]
+
+    application_check = result.get("application_check")
+
+    if application_check:
+        console.print(
+            "\n[bold red]Application health check failed[/bold red]"
+        )
+
+        candidates = application_check.get("candidates", [])
+
+        if candidates:
+            console.print(
+                "\n[bold cyan]Application URL discovery:[/bold cyan]"
+            )
+
+            for candidate in candidates:
+                console.print(f"• {candidate}")
+
+        error = application_check.get("error")
+
+        if error:
+            console.print(
+                f"\n[bold]Reason:[/bold] {error}"
+            )
+
+        checked_url = application_check.get("url")
+
+        if checked_url:
+            console.print(
+                f"[bold]URL:[/bold] {checked_url}"
+            )
+
+        status_code = application_check.get("status_code")
+
+        if status_code is not None:
+            console.print(
+                f"[bold]HTTP status:[/bold] {status_code}"
+            )
 
     if last_result["stderr"]:
         console.print("\n[bold red]Error:[/bold red]")

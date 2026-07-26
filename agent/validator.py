@@ -1,10 +1,53 @@
+import re
 import subprocess
 import time
-import re
 from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
-def run_command(command: list[str], repo_path: Path):
+IGNORED_DIRECTORIES = {
+    ".git",
+    ".idea",
+    ".vscode",
+    "node_modules",
+    "vendor",
+    "tmp",
+    "log",
+    "coverage",
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".venv",
+    "venv",
+}
+
+SEARCHABLE_SUFFIXES = {
+    ".yml",
+    ".yaml",
+    ".env",
+    ".conf",
+    ".rb",
+    ".json",
+    ".toml",
+    ".ini",
+    ".js",
+    ".jsx",
+    ".ts",
+    ".tsx",
+    ".py",
+}
+
+SEARCHABLE_FILENAMES = {
+    "Dockerfile",
+    "Caddyfile",
+    "Procfile",
+    ".env",
+    ".env.example",
+}
+
+
+def run_command(command: list[str], repo_path: Path) -> dict:
     result = subprocess.run(
         command,
         cwd=repo_path,
@@ -20,6 +63,7 @@ def run_command(command: list[str], repo_path: Path):
         "returncode": result.returncode,
     }
 
+
 def extract_conflicting_port(output: str) -> int | None:
     match = re.search(
         r"Bind for (?:0\.0\.0\.0|\[::\]):(\d+) failed",
@@ -32,7 +76,10 @@ def extract_conflicting_port(output: str) -> int | None:
     return int(match.group(1))
 
 
-def find_compose_project_using_port(port: int, repo_path: Path):
+def find_compose_project_using_port(
+    port: int,
+    repo_path: Path,
+) -> dict | None:
     result = run_command(
         [
             "docker",
@@ -64,7 +111,6 @@ def find_compose_project_using_port(port: int, repo_path: Path):
     if not project_name or not working_dir or not config_files:
         return None
 
-    # Docker may store multiple compose files separated by commas.
     compose_files = [
         compose_file.strip()
         for compose_file in config_files.split(",")
@@ -80,7 +126,7 @@ def find_compose_project_using_port(port: int, repo_path: Path):
     }
 
 
-def bring_down_compose_project(conflict: dict):
+def bring_down_compose_project(conflict: dict) -> dict:
     working_dir = Path(conflict["working_dir"])
 
     command = ["docker", "compose"]
@@ -98,24 +144,348 @@ def bring_down_compose_project(conflict: dict):
 
     return run_command(command, working_dir)
 
+
+def should_ignore_path(path: Path, repo_path: Path) -> bool:
+    try:
+        relative_path = path.relative_to(repo_path)
+    except ValueError:
+        return True
+
+    return any(
+        part in IGNORED_DIRECTORIES
+        for part in relative_path.parts
+    )
+
+
+def discover_local_hostnames(repo_path: Path) -> list[str]:
+    """
+    Searches repository configuration files for local hostnames such as:
+
+        manage.me.localhost
+        app.localhost
+        localhost
+
+    More specific *.localhost hostnames are placed before plain localhost.
+    """
+    discovered_hostnames: list[str] = []
+
+    hostname_pattern = re.compile(
+        r"(?<![a-zA-Z0-9-])"
+        r"((?:[a-zA-Z0-9-]+\.)+localhost|localhost)"
+        r"(?![a-zA-Z0-9-])",
+        re.IGNORECASE,
+    )
+
+    for file_path in repo_path.rglob("*"):
+        if not file_path.is_file():
+            continue
+
+        if should_ignore_path(file_path, repo_path):
+            continue
+
+        if (
+            file_path.suffix.lower() not in SEARCHABLE_SUFFIXES
+            and file_path.name not in SEARCHABLE_FILENAMES
+        ):
+            continue
+
+        try:
+            content = file_path.read_text(
+                encoding="utf-8",
+                errors="ignore",
+            )
+        except OSError:
+            continue
+
+        for match in hostname_pattern.finditer(content):
+            hostname = match.group(1).lower().rstrip(".")
+
+            if hostname not in discovered_hostnames:
+                discovered_hostnames.append(hostname)
+
+    specific_hostnames = [
+        hostname
+        for hostname in discovered_hostnames
+        if hostname != "localhost"
+    ]
+
+    # localhost is always the final fallback.
+    return specific_hostnames + ["localhost"]
+
+
+def build_url_candidates(
+    repo_path: Path,
+    port: int = 3000,
+) -> list[str]:
+    hostnames = discover_local_hostnames(repo_path)
+
+    return [
+        f"http://{hostname}:{port}"
+        for hostname in hostnames
+    ]
+
+
+class NoRedirectHandler(HTTPRedirectHandler):
+    """Return redirect responses without automatically following them."""
+
+    def redirect_request(
+        self,
+        req,
+        fp,
+        code,
+        msg,
+        headers,
+        newurl,
+    ):
+        return None
+
+
+def check_application_url(
+    url: str,
+    timeout: float = 20.0,
+) -> dict:
+    """
+    Send a HEAD request without following redirects.
+
+    Only a 2xx response is considered healthy. Redirects are reachable but
+    unhealthy because they may point to the wrong hostname or redirect loop.
+
+    If the server does not support HEAD, retry with GET.
+    """
+    opener = build_opener(NoRedirectHandler())
+
+    def send_request(method: str):
+        request = Request(
+            url,
+            method=method,
+            headers={
+                "User-Agent": "devops-agent/1.0",
+            },
+        )
+        return opener.open(request, timeout=timeout)
+
+    try:
+        try:
+            response = send_request("HEAD")
+        except HTTPError as error:
+            if error.code != 405:
+                raise
+
+            response = send_request("GET")
+
+        with response:
+            status_code = response.status
+
+            return {
+                "url": url,
+                "reachable": True,
+                "healthy": 200 <= status_code < 300,
+                "status_code": status_code,
+                "redirect_url": response.headers.get("Location"),
+                "error": None,
+            }
+
+    except HTTPError as error:
+        status_code = error.code
+
+        return {
+            "url": url,
+            "reachable": True,
+            "healthy": 200 <= status_code < 300,
+            "status_code": status_code,
+            "redirect_url": error.headers.get("Location"),
+            "error": str(error),
+        }
+
+    except (URLError, TimeoutError, OSError) as error:
+        return {
+            "url": url,
+            "reachable": False,
+            "healthy": False,
+            "status_code": None,
+            "redirect_url": None,
+            "error": str(error),
+        }
+
+
+def discover_working_url(
+    repo_path: Path,
+    port: int = 3000,
+    attempts: int = 6,
+    delay: float = 3.0,
+    timeout: float = 20.0,
+) -> dict:
+    candidates = build_url_candidates(
+        repo_path=repo_path,
+        port=port,
+    )
+
+    localhost_candidate = f"http://localhost:{port}"
+    custom_candidates = [
+        candidate
+        for candidate in candidates
+        if candidate != localhost_candidate
+    ]
+
+    # If the repository declares custom *.localhost hosts, validate those.
+    # Plain localhost is only used when no custom host was discovered.
+    candidates_to_check = custom_candidates or [localhost_candidate]
+
+    checks: list[dict] = []
+
+    for attempt in range(1, attempts + 1):
+        for candidate in candidates_to_check:
+            check = check_application_url(
+                url=candidate,
+                timeout=timeout,
+            )
+
+            check["attempt"] = attempt
+            checks.append(check)
+
+            if check["healthy"]:
+                return {
+                    "success": True,
+                    "url": candidate,
+                    "status_code": check["status_code"],
+                    "redirect_url": check.get("redirect_url"),
+                    "candidates": candidates,
+                    "checked_candidates": candidates_to_check,
+                    "checks": checks,
+                    "error": None,
+                }
+
+        if attempt < attempts:
+            time.sleep(delay)
+
+    reachable_checks = [
+        check
+        for check in checks
+        if check["reachable"]
+    ]
+
+    if reachable_checks:
+        last_reachable = reachable_checks[-1]
+
+        redirect_detail = ""
+        if last_reachable.get("redirect_url"):
+            redirect_detail = (
+                f" Redirect location: {last_reachable['redirect_url']}."
+            )
+
+        return {
+            "success": False,
+            "url": last_reachable["url"],
+            "status_code": last_reachable["status_code"],
+            "redirect_url": last_reachable.get("redirect_url"),
+            "candidates": candidates,
+            "checked_candidates": candidates_to_check,
+            "checks": checks,
+            "error": (
+                "The application responded, but did not return a successful "
+                f"2xx status: {last_reachable['status_code']}."
+                f"{redirect_detail}"
+            ),
+        }
+
+    return {
+        "success": False,
+        "url": None,
+        "status_code": None,
+        "redirect_url": None,
+        "candidates": candidates,
+        "checked_candidates": candidates_to_check,
+        "checks": checks,
+        "error": "No discovered application URL responded.",
+    }
+
+
+def validation_response(
+    *,
+    success: bool,
+    phase: str,
+    results: list[dict],
+    logs: str = "",
+    expected_services: list[str] | None = None,
+    running_services: list[str] | None = None,
+    stopped_services: list[str] | None = None,
+    application_check: dict | None = None,
+) -> dict:
+    return {
+        "success": success,
+        "phase": phase,
+        "results": results,
+        "logs": logs,
+        "expected_services": expected_services or [],
+        "running_services": running_services or [],
+        "stopped_services": stopped_services or [],
+        "application_check": application_check,
+    }
+
+def detect_docker_engine_error(output: str) -> str | None:
+    output_lower = output.lower()
+
+    engine_error_patterns = {
+        "metadata.db": (
+            "Docker Desktop failed while writing container metadata."
+        ),
+        "input/output error": (
+            "Docker encountered an input/output error while accessing its internal storage."
+        ),
+        "containerd": (
+            "Docker's container runtime encountered an internal error."
+        ),
+        "snapshotter": (
+            "Docker's filesystem snapshotter encountered an internal storage error."
+        ),
+        "docker.sock": (
+            "The Docker daemon may not be running or accessible."
+        ),
+        "cannot connect to the docker daemon": (
+            "The Docker daemon is not running or cannot be reached."
+        ),
+    }
+
+    for pattern, message in engine_error_patterns.items():
+        if pattern in output_lower:
+            return message
+
+    return None
+
 def validate_docker(
     path: str,
     compose_file: str | None = None,
     build: bool = False,
     run: bool = False,
     keep_running: bool = False,
-):
+) -> dict:
     repo_path = Path(path).resolve()
+
+    if not repo_path.exists():
+        return validation_response(
+            success=False,
+            phase="repository",
+            results=[],
+            logs=f"Repository path does not exist: {repo_path}",
+        )
+
+    if not repo_path.is_dir():
+        return validation_response(
+            success=False,
+            phase="repository",
+            results=[],
+            logs=f"Repository path is not a directory: {repo_path}",
+        )
 
     compose_command = ["docker", "compose"]
 
     if compose_file:
         compose_command.extend(["-f", compose_file])
 
-    results = []
+    results: list[dict] = []
     containers_started = False
 
-    # Always validate the Compose configuration first.
+    # Phase 1: Validate the Compose configuration.
     config_result = run_command(
         compose_command + ["config"],
         repo_path,
@@ -123,15 +493,14 @@ def validate_docker(
     results.append(config_result)
 
     if not config_result["success"]:
-        return {
-            "success": False,
-            "phase": "config",
-            "results": results,
-            "logs": "",
-            "expected_services": [],
-            "running_services": [],
-        }
+        return validation_response(
+            success=False,
+            phase="config",
+            results=results,
+            logs=config_result["stderr"] or config_result["stdout"],
+        )
 
+    # Running requires images, so build when either --build or --run is used.
     if build or run:
         build_result = run_command(
             compose_command + ["build"],
@@ -140,26 +509,22 @@ def validate_docker(
         results.append(build_result)
 
         if not build_result["success"]:
-            return {
-                "success": False,
-                "phase": "build",
-                "results": results,
-                "logs": "",
-                "expected_services": [],
-                "running_services": [],
-            }
+            return validation_response(
+                success=False,
+                phase="build",
+                results=results,
+                logs=build_result["stderr"] or build_result["stdout"],
+            )
 
     if not run:
-        return {
-            "success": True,
-            "phase": "build" if build else "config",
-            "results": results,
-            "logs": "",
-            "expected_services": [],
-            "running_services": [],
-        }
+        return validation_response(
+            success=True,
+            phase="build" if build else "config",
+            results=results,
+        )
 
     try:
+        # Phase 2: Start the Compose application.
         up_result = run_command(
             compose_command + ["up", "-d"],
             repo_path,
@@ -167,24 +532,39 @@ def validate_docker(
         results.append(up_result)
 
         if not up_result["success"]:
-            return {
-                "success": False,
-                "phase": "startup",
-                "results": results,
-                "logs": "",
-                "expected_services": [],
-                "running_services": [],
-            }
+            output = up_result["stderr"] or up_result["stdout"]
+
+            engine_error = detect_docker_engine_error(output)
+
+            if engine_error:
+                return validation_response(
+                    success=False,
+                    phase="docker_engine",
+                    results=results,
+                    logs=output,
+                    application_check={
+                        "error": engine_error,
+                    },
+                )
+
+            return validation_response(
+                success=False,
+                phase="startup",
+                results=results,
+                logs=output,
+            )
 
         containers_started = True
 
-        # Give containers a moment to start or crash.
-        time.sleep(5)
+        # Give containers time to either start or crash.
+        time.sleep(10)
 
+        # Phase 3: Compare expected services against running services.
         expected_result = run_command(
             compose_command + ["config", "--services"],
             repo_path,
         )
+        results.append(expected_result)
 
         running_result = run_command(
             compose_command
@@ -196,6 +576,7 @@ def validate_docker(
             ],
             repo_path,
         )
+        results.append(running_result)
 
         status_result = run_command(
             compose_command + ["ps", "-a"],
@@ -204,9 +585,33 @@ def validate_docker(
         results.append(status_result)
 
         logs_result = run_command(
-            compose_command + ["logs", "--no-color", "--tail", "100"],
+            compose_command
+            + [
+                "logs",
+                "--no-color",
+                "--tail",
+                "100",
+            ],
             repo_path,
         )
+
+        logs = logs_result["stdout"] or logs_result["stderr"]
+
+        if not expected_result["success"]:
+            return validation_response(
+                success=False,
+                phase="runtime",
+                results=results,
+                logs=logs,
+            )
+
+        if not running_result["success"]:
+            return validation_response(
+                success=False,
+                phase="runtime",
+                results=results,
+                logs=logs,
+            )
 
         expected_services = [
             service.strip()
@@ -220,17 +625,49 @@ def validate_docker(
             if service.strip()
         ]
 
-        stopped_services = set(expected_services) - set(running_services)
-        success = not stopped_services
+        stopped_services = sorted(
+            set(expected_services) - set(running_services)
+        )
 
-        return {
-            "success": success,
-            "phase": "runtime",
-            "results": results,
-            "logs": logs_result["stdout"] or logs_result["stderr"],
-            "expected_services": expected_services,
-            "running_services": running_services,
-        }
+        if stopped_services:
+            return validation_response(
+                success=False,
+                phase="runtime",
+                results=results,
+                logs=logs,
+                expected_services=expected_services,
+                running_services=running_services,
+                stopped_services=stopped_services,
+            )
+
+        # Phase 4: Auto-discover the local hostname and test port 3000.
+        application_check = discover_working_url(
+            repo_path=repo_path,
+            port=3000,
+        )
+
+        if not application_check["success"]:
+            return validation_response(
+                success=False,
+                phase="application",
+                results=results,
+                logs=logs,
+                expected_services=expected_services,
+                running_services=running_services,
+                stopped_services=[],
+                application_check=application_check,
+            )
+
+        return validation_response(
+            success=True,
+            phase="application",
+            results=results,
+            logs=logs,
+            expected_services=expected_services,
+            running_services=running_services,
+            stopped_services=[],
+            application_check=application_check,
+        )
 
     finally:
         if containers_started and not keep_running:
