@@ -1,0 +1,117 @@
+{
+  "recorded_at": "2026-09-05T23:35:09.665351+00:00",
+  "agent_commit": "3430f695a0d206bb51ae8c46a9e2f90ae7e14bea",
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "docker": {
+    "command": [
+      "docker",
+      "version",
+      "--format",
+      "{{json .}}"
+    ],
+    "returncode": 0,
+    "stdout": "{\"Client\":{\"Version\":\"29.7.2\",\"ApiVersion\":\"1.55\",\"DefaultAPIVersion\":\"1.55\",\"GitCommit\":\"a7dcaa6\",\"GoVersion\":\"go1.26.5\",\"Os\":\"darwin\",\"Arch\":\"arm64\",\"BuildTime\":\"Wed Aug  5 18:27:50 2026\",\"Context\":\"desktop-linux\"},\"Server\":{\"Platform\":{\"Name\":\"Docker Desktop 4.89.0 (238018)\"},\"Version\":\"29.7.2\",\"ApiVersion\":\"1.55\",\"MinAPIVersion\":\"1.40\",\"Os\":\"linux\",\"Arch\":\"arm64\",\"Components\":[{\"Name\":\"Engine\",\"Version\":\"29.7.2\",\"Details\":{\"ApiVersion\":\"1.55\",\"Arch\":\"arm64\",\"BuildTime\":\"Wed Aug  5 18:28:35 2026\",\"Experimental\":\"false\",\"GitCommit\":\"6a43e3d\",\"GoVersion\":\"go1.26.5\",\"KernelVersion\":\"7.0.12-linuxkit\",\"MinAPIVersion\":\"1.40\",\"Module\":\"github.com/moby/moby/v2\",\"ModuleVersion\":\"v2.0.0+unknown\",\"Os\":\"linux\"}},{\"Name\":\"containerd\",\"Version\":\"v2.3.3\",\"Details\":{\"GitCommit\":\"aad11006b869517fcd3009450b6f82da282e1a9b\"}},{\"Name\":\"runc\",\"Version\":\"1.4.3\",\"Details\":{\"GitCommit\":\"v1.4.3-0-gbb14dabe\"}},{\"Name\":\"docker-init\",\"Version\":\"0.19.0\",\"Details\":{\"GitCommit\":\"de40ad0\"}}],\"GitCommit\":\"6a43e3d\",\"GoVersion\":\"go1.26.5\",\"KernelVersion\":\"7.0.12-linuxkit\",\"BuildTime\":\"2026-08-05T18:28:35.000000000+00:00\"}}\n",
+    "stderr": ""
+  },
+  "compose": {
+    "command": [
+      "docker",
+      "compose",
+      "version"
+    ],
+    "returncode": 0,
+    "stdout": "Docker Compose version v5.5.0\n",
+    "stderr": ""
+  },
+  "scope": "Controlled Docker fixture evidence, NOT full validate --run acceptance: ephemeral host port and a fixture-owned Compose file bypass production port-3000 assumptions.",
+  "observations": {
+    "minimal_generated": {
+      "dockerize": {
+        "command": [
+          "<repo>/.venv/bin/python",
+          "-m",
+          "agent.main",
+          "dockerize",
+          "<temporary-fixtures>/minimal"
+        ],
+        "returncode": 0,
+        "stdout": "\n\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 Dockerize Complete \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nCreated files:\n\u2713 Dockerfile\n\u2713 .dockerignore\n\u2713 docker-compose.yml\n\nRun with:\ndocker compose up --build\n",
+        "stderr": ""
+      },
+      "validate": {
+        "command": [
+          "<repo>/.venv/bin/python",
+          "-m",
+          "agent.main",
+          "validate",
+          "<temporary-fixtures>/minimal"
+        ],
+        "returncode": 1,
+        "stdout": "\n\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 Docker Validation \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nPath: \n<temp-root>/devops-baseline-3e42cd0\n920-wyqpxsyt/minimal\nCompose file: docker-compose.yml\nCommand: docker compose -f docker-compose.yml config\n\n\u2717 Docker validation failed during config\n{'repository': {'path': '<temporary-fixtures>/minimal', 'name': 'minimal', 'exists': True, 'is_directory': True}, 'git': {'is_git_repo': False, 'branch': None, 'dirty': False, 'tracked_changes': False, 'untracked_changes': False, 'changed_files': [], 'untracked_files': []}, 'files': {'ruby': [], 'python': [], 'node': ['package.json', 'package-lock.json'], 'environment': [], 'database': []}, 'stack': {'detected': ['Next.js app', 'Node.js app'], 'services': [], 'runtime': ['Docker-based development', 'Node.js runtime'], 'startup_commands': ['docker compose up', 'npm run dev']}, 'validation': {'success': False, 'phase': 'config', 'expected_services': [], 'running_services': [], 'stopped_services': [], 'application_check': None, 'logs': 'env file <temporary-fixtures>/minimal/.env not found: stat <temporary-fixtures>/minimal/.env: no such file or directory\\n'}}\n\nDiagnosis\nThe application failed, but no known failure pattern was recognized.\n\nSuggested actions:\n\u2022 Inspect the failed service logs.\n\nError:\nenv file \n<temp-root>/devops-baseline-3e42cd0\n920-wyqpxsyt/minimal/.env not found: stat \n<temp-root>/devops-baseline-3e42cd0\n920-wyqpxsyt/minimal/.env: no such file or directory\n\n\nContainer logs:\nenv file \n<temp-root>/devops-baseline-3e42cd0\n920-wyqpxsyt/minimal/.env not found: stat \n<temp-root>/devops-baseline-3e42cd0\n920-wyqpxsyt/minimal/.env: no such file or directory\n\n",
+        "stderr": ""
+      }
+    },
+    "existing_configuration": {
+      "validate": {
+        "command": [
+          "<repo>/.venv/bin/python",
+          "-m",
+          "agent.main",
+          "validate",
+          "<temporary-fixtures>/existing-compose"
+        ],
+        "returncode": 0,
+        "stdout": "\n\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 Docker Validation \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nPath: \n<temp-root>/devops-baseline-3e42cd0\n920-wyqpxsyt/existing-compose\nCompose file: compose.yaml\nCommand: docker compose -f compose.yaml config\n\n\u2713 Docker Compose configuration is valid\n",
+        "stderr": ""
+      }
+    }
+  },
+  "cleanup": [
+    {
+      "command": [
+        "docker",
+        "compose",
+        "-p",
+        "devops-baseline-3e42cd0920-healthy",
+        "-f",
+        "<temporary-fixtures>/healthy.json",
+        "down",
+        "--volumes",
+        "--remove-orphans"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "rm",
+        "devops-baseline-3e42cd0920:local"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Error response from daemon: No such image: devops-baseline-3e42cd0920:local\n"
+    }
+  ],
+  "errors": [
+    "RuntimeError: Fixture build failed; runtime checks were not run",
+    "Fixture image cleanup failed"
+  ],
+  "build": {
+    "command": [
+      "docker",
+      "compose",
+      "-p",
+      "devops-baseline-3e42cd0920-healthy",
+      "-f",
+      "<temporary-fixtures>/healthy.json",
+      "build"
+    ],
+    "returncode": 1,
+    "stdout": "",
+    "stderr": " Image devops-baseline-3e42cd0920:local Building \nfailed to update builder last activity time: open <user-home>/.docker/buildx/activity/.tmp-default3348058968: operation not permitted\n\n"
+  },
+  "evidence_note": "First attempt only: real Compose config checks; runtime build blocked by Buildx metadata permissions. Later disk-full attempt could not write results."
+}

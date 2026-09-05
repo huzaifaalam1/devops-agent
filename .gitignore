@@ -2,3 +2,8 @@ agent/__pycache__/
 *.pyc
 .env
 *.egg-info/
+.venv/
+work/
+**/node_modules/
+**/.next/
+**/__pycache__/

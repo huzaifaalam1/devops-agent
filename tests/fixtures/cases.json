@@ -1,0 +1,14 @@
+[
+  {"id":"minimal","scenario":"S1","target":"Generate matching setup; no .env prerequisite for an app with no variables."},
+  {"id":"existing-compose","scenario":"S2","target":"Preserve complete setup and verify the intended app."},
+  {"id":"missing-env","scenario":"S3","target":"Identify APP_GREETING as missing before generating or starting."},
+  {"id":"startup-failure","scenario":"S4","target":"Return failure with startup evidence."},
+  {"id":"port-conflict","scenario":"S5","target":"Report occupied port without stopping its owner."},
+  {"id":"unsupported","scenario":"S6","target":"Refuse to generate setup for Go."},
+  {"id":"database","scenario":"S6","target":"Detect PostgreSQL; refuse unsupported dependency-backed generation."},
+  {"id":"incompatible-runtime","scenario":"S6","target":"Refuse a declared Node 18-only project."},
+  {"id":"missing-lockfile","scenario":"S6","target":"Explain required package-lock.json is absent."},
+  {"id":"yarn","scenario":"S6","target":"Refuse unsupported package manager."},
+  {"id":"multi-component","scenario":"S7","target":"Request the intended app directory before generating."},
+  {"id":"partial-docker","scenario":"S8","target":"Report Dockerfile without Compose as an incomplete setup."}
+]

@@ -1,0 +1,12 @@
+{
+  "recorded_at": "2026-09-05T23:38:17.907906+00:00",
+  "agent_commit": "3430f695a0d206bb51ae8c46a9e2f90ae7e14bea",
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "scope": "Controlled Docker fixture evidence, NOT full validate --run acceptance: ephemeral host port and a fixture-owned Compose file bypass production port-3000 assumptions.",
+  "observations": {},
+  "cleanup": [],
+  "errors": [
+    "RuntimeError: Less than 4 GiB host space available; skipping Docker build/runtime checks"
+  ],
+  "host_free_bytes": 305369088
+}

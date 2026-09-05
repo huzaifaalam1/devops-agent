@@ -1,0 +1,94 @@
+{
+  "recorded_at": "2026-09-05T23:41:12.389634+00:00",
+  "agent_commit": "3430f695a0d206bb51ae8c46a9e2f90ae7e14bea",
+  "agent_tracked_diff": "",
+  "python": "3.12.14",
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "dependencies": {
+    "typer": "0.27.2",
+    "rich": "15.0.0",
+    "requests": "2.34.2"
+  },
+  "tests_run": 22,
+  "passed": [
+    "tests.test_baseline.FailureBaseline.test_known_error_patterns_produce_actionable_diagnoses",
+    "tests.test_baseline.FailureBaseline.test_s4_docker_unavailable_is_failure",
+    "tests.test_baseline.FailureBaseline.test_s4_startup_failure_is_not_success",
+    "tests.test_baseline.FailureBaseline.test_s5_conflict_declined_does_not_stop_another_project",
+    "tests.test_baseline.FixtureIntegrity.test_manifest_covers_all_release_scenarios",
+    "tests.test_baseline.FixtureIntegrity.test_materialized_lockfiles_match_declared_dependencies",
+    "tests.test_baseline.HttpBaseline.test_head_405_falls_back_to_get",
+    "tests.test_baseline.HttpBaseline.test_http_success",
+    "tests.test_baseline.HttpBaseline.test_redirect_is_not_claimed_as_ready",
+    "tests.test_baseline.HttpBaseline.test_s4_http_500_is_failure",
+    "tests.test_baseline.RepositoryBaseline.test_database_dependency_identified",
+    "tests.test_baseline.RepositoryBaseline.test_s1_analysis_identifies_next_without_mutating_repo",
+    "tests.test_baseline.RepositoryBaseline.test_s2_existing_setup_preserved",
+    "tests.test_baseline.RepositoryBaseline.test_s6_unknown_stack_refused"
+  ],
+  "known_gaps": [
+    {
+      "test": "tests.test_baseline.RepositoryBaseline.test_gap01_no_env_app_does_not_require_env_file",
+      "evidence": "Traceback (most recent call last):\n  File \"<repo>/tests/test_baseline.py\", line 81, in test_gap01_no_env_app_does_not_require_env_file\n    self.assertNotIn(\"env_file:\", (repo / \"docker-compose.yml\").read_text())\nAssertionError: 'env_file:' unexpectedly found in 'services:\\n  app:\\n    build: .\\n    ports:\\n      - \"3000:3000\"\\n    env_file:\\n      - .env\\n'\n"
+    },
+    {
+      "test": "tests.test_baseline.RepositoryBaseline.test_gap02_missing_env_blocked_before_generation",
+      "evidence": "Traceback (most recent call last):\n  File \"<repo>/tests/test_baseline.py\", line 89, in test_gap02_missing_env_blocked_before_generation\n    self.assertIn(\"APP_GREETING\", result.stdout + result.stderr)\nAssertionError: 'APP_GREETING' not found in '\\n\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\\n\u2502 Docker setup already exists \u2502\\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\\nDocker variants found:\\n\u2713 Dockerfile\\n\\nCompose variants found:\\n\u2713 compose.yaml\\n\\nPossible run commands:\\n\u2713 docker compose -f compose.yaml up\\n'\n"
+    },
+    {
+      "test": "tests.test_baseline.RepositoryBaseline.test_gap03_database_generation_outside_scope",
+      "evidence": "Traceback (most recent call last):\n  File \"<repo>/tests/test_baseline.py\", line 96, in test_gap03_database_generation_outside_scope\n    self.assert_refused_without_changes(\"database\")\n  File \"<repo>/tests/test_baseline.py\", line 49, in assert_refused_without_changes\n    self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)\nAssertionError: 0 == 0 : \n\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 Dockerize Complete \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nCreated files:\n\u2713 Dockerfile\n\u2713 .dockerignore\n\u2713 docker-compose.yml\n\nRun with:\ndocker compose up --build\n\n"
+    },
+    {
+      "test": "tests.test_baseline.RepositoryBaseline.test_gap04_incompatible_runtime_refused",
+      "evidence": "Traceback (most recent call last):\n  File \"<repo>/tests/test_baseline.py\", line 101, in test_gap04_incompatible_runtime_refused\n    self.assert_refused_without_changes(\"incompatible-runtime\")\n  File \"<repo>/tests/test_baseline.py\", line 49, in assert_refused_without_changes\n    self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)\nAssertionError: 0 == 0 : \n\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 Dockerize Complete \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nCreated files:\n\u2713 Dockerfile\n\u2713 .dockerignore\n\u2713 docker-compose.yml\n\nRun with:\ndocker compose up --build\n\n"
+    },
+    {
+      "test": "tests.test_baseline.RepositoryBaseline.test_gap05_missing_lockfile_refused",
+      "evidence": "Traceback (most recent call last):\n  File \"<repo>/tests/test_baseline.py\", line 106, in test_gap05_missing_lockfile_refused\n    self.assert_refused_without_changes(\"missing-lockfile\")\n  File \"<repo>/tests/test_baseline.py\", line 49, in assert_refused_without_changes\n    self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)\nAssertionError: 0 == 0 : \n\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 Dockerize Complete \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nCreated files:\n\u2713 Dockerfile\n\u2713 .dockerignore\n\u2713 docker-compose.yml\n\nRun with:\ndocker compose up --build\n\n"
+    },
+    {
+      "test": "tests.test_baseline.RepositoryBaseline.test_gap06_yarn_refused",
+      "evidence": "Traceback (most recent call last):\n  File \"<repo>/tests/test_baseline.py\", line 111, in test_gap06_yarn_refused\n    self.assert_refused_without_changes(\"yarn\")\n  File \"<repo>/tests/test_baseline.py\", line 49, in assert_refused_without_changes\n    self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)\nAssertionError: 0 == 0 : \n\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 Dockerize Complete \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nCreated files:\n\u2713 Dockerfile\n\u2713 .dockerignore\n\u2713 docker-compose.yml\n\nRun with:\ndocker compose up --build\n\n"
+    },
+    {
+      "test": "tests.test_baseline.RepositoryBaseline.test_gap07_multi_component_requires_selection",
+      "evidence": "Traceback (most recent call last):\n  File \"<repo>/tests/test_baseline.py\", line 116, in test_gap07_multi_component_requires_selection\n    self.assert_refused_without_changes(\"multi-component\")\n  File \"<repo>/tests/test_baseline.py\", line 49, in assert_refused_without_changes\n    self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)\nAssertionError: 0 == 0 : \n\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 Dockerize Complete \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nCreated files:\n\u2713 .dockerignore\n\u2713 docker-compose.yml\n\nRun with:\ndocker compose up --build\n\n"
+    },
+    {
+      "test": "tests.test_baseline.RepositoryBaseline.test_gap08_partial_setup_reported_as_incomplete",
+      "evidence": "Traceback (most recent call last):\n  File \"<repo>/tests/test_baseline.py\", line 121, in test_gap08_partial_setup_reported_as_incomplete\n    self.assert_refused_without_changes(\"partial-docker\")\n  File \"<repo>/tests/test_baseline.py\", line 49, in assert_refused_without_changes\n    self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)\nAssertionError: 0 == 0 : \n\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 Docker setup already exists \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\nDocker variants found:\n\u2713 Dockerfile\n\n"
+    }
+  ],
+  "unexpected_failures": [],
+  "unexpected_successes": [],
+  "skipped": [],
+  "baseline_matches": true,
+  "release_ready": false,
+  "coverage_limit": "CLI analysis/generation, local HTTP, and simulated Docker errors. Not an end-to-end Docker acceptance run.",
+  "fixture_and_test_sha256": {
+    "tests/README.md": "ae36625cd89d0b8c048fc5526376413b13ef965a98388595d29457e1540dfd40",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/docker_baseline.py": "a133def007fa296f657b8d3864ce431c3ab4234178479b65ec495f3091fb1596",
+    "tests/fixture_support.py": "75cbb0d4107a810b09551e6abf4a401f635612677fa5edbf2586f014c52ac3f1",
+    "tests/fixtures/cases.json": "ff8b0edf9628b0a1c875408aedd800c1547eedba448f279e8b28b3638aaa1d09",
+    "tests/fixtures/database/.env.example": "4a363dabc032ca58f2902d3603e2f45fb5ae06beea7c7e15e5ad3e6eec9e6cb6",
+    "tests/fixtures/database/app/page.js": "532e1158a8d4ef7ff85f28541a849d9ab8804d1bcee2e9d34161dd6bc484dcac",
+    "tests/fixtures/database/package-lock.json": "9223d60e03f4ed009e7f4e55b47714a29fabb81f61407db7155e9174ad7ceb92",
+    "tests/fixtures/database/package.json": "6ebea05d48a01c67b846d3ed42ffeddfa004d0e6061f89b1cd35fb4e20246de7",
+    "tests/fixtures/existing-compose/.dockerignore": "aa91cc997dd0f8433e5787a1bb9d7a36f68614bc550986714b5cbc71f30c70ec",
+    "tests/fixtures/existing-compose/Dockerfile": "1ee8c50700f87d53276a61f259358e46f42ce4b16e7ae729fa60945cee4cb8eb",
+    "tests/fixtures/existing-compose/compose.yaml": "5289eb1e1f0b976fd4f37bec2c6dcaeae2212c396b1495ac89c105c7741e8313",
+    "tests/fixtures/missing-env/.env.example": "8377048f3af6019879d8c15d702f55bfb2e20b0246febd40985e1d2e3cd51e05",
+    "tests/fixtures/missing-env/next.config.mjs": "537dfa116abf296eb29570400c5c6695c5809200400e2bff5e48ffcafa5b7b67",
+    "tests/fixtures/next-app/app/layout.js": "fefe40fd3c232a9edbff485e54702024f0a79c0b8b42fa1b1d12eb13399cb7b8",
+    "tests/fixtures/next-app/app/page.js": "c0daed8dacfdfc7874920b3da515edb1c0ba65beec422adcfa91ae287bafcc34",
+    "tests/fixtures/next-app/package-lock.json": "fe784bfe49ef256451b74d62c56080da6bb0099bc16945022405134ef86a28e5",
+    "tests/fixtures/next-app/package.json": "1b9acb207357184cf02c7bf7e9bbf210ee2509a8c059de39bd6b69a7f2754188",
+    "tests/fixtures/startup-failure/next.config.mjs": "31f9d798929436328d68c73eac7b7bebdb334b8814a408e8441b15edaf76d1dc",
+    "tests/fixtures/unsupported/go.mod": "5aecfc43c4de2b25889311f8093a0d2ab67ac903d7eaa5487e151602f8ec614c",
+    "tests/fixtures/unsupported/main.go": "205edd0bdfaf69b31bc22da41b825211e78e9e0554d6788de44bbf3bbf60dbe0",
+    "tests/run_baseline.py": "b68bdcc6c74070c812d9029c9ef03b272609acc78a064d9e472c5b1cdb2a6bac",
+    "tests/test_baseline.py": "ea2a1e2ac5a46afcef8382cb7b33238c8cc5677dc75438ed56622f17280b1631"
+  }
+}
