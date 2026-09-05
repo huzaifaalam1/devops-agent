@@ -15,6 +15,8 @@ from agent.validator import (
     find_compose_project_using_port,
     validate_docker,
 )
+from agent.diagnostics import diagnose_failure
+from agent.context import collect_diagnostic_context
 
 app = typer.Typer()
 console = Console()
@@ -230,6 +232,7 @@ def validate(
 ):
     """Validate the Docker setup for the repo."""
     repo_info = scan_repo(path)
+    analysis = detect_stack(repo_info)
 
     if not repo_info["compose_files"]:
         console.print(
@@ -237,7 +240,9 @@ def validate(
         )
         raise typer.Exit(code=1)
 
-    compose_file = choose_compose_file(repo_info["compose_files"])
+    compose_file = choose_compose_file(
+        repo_info["compose_files"]
+    )
 
     result = validate_docker(
         path,
@@ -248,41 +253,85 @@ def validate(
     )
 
     console.print()
-    console.print(Panel.fit("Docker Validation", style="bold cyan"))
-    console.print(f"[bold]Path:[/bold] {repo_info['path']}")
-    console.print(f"[bold]Compose file:[/bold] {compose_file}")
+    console.print(
+        Panel.fit(
+            "Docker Validation",
+            style="bold cyan",
+        )
+    )
+
+    console.print(
+        f"[bold]Path:[/bold] {repo_info['path']}"
+    )
+
+    console.print(
+        f"[bold]Compose file:[/bold] {compose_file}"
+    )
 
     for command_result in result["results"]:
         console.print(
-            f"[bold]Command:[/bold] {command_result['command']}"
+            f"[bold]Command:[/bold] "
+            f"{command_result['command']}"
         )
 
+    # ---------------------------------------------------------
+    # Successful validation
+    # ---------------------------------------------------------
+
     if result["success"]:
-        if result["phase"] in {"runtime", "application"}:
+
+        if result["phase"] in {
+            "runtime",
+            "application",
+        }:
             console.print(
-                "\n[bold green]✓ All Docker services started successfully[/bold green]"
+                "\n[bold green]"
+                "✓ All Docker services started successfully"
+                "[/bold green]"
             )
 
-            console.print("\n[bold green]Running services:[/bold green]")
-            for service in result["running_services"]:
-                console.print(f"✓ {service}")
+            if result["running_services"]:
+                console.print(
+                    "\n[bold green]"
+                    "Running services:"
+                    "[/bold green]"
+                )
 
-            application_check = result.get("application_check")
+                for service in result["running_services"]:
+                    console.print(
+                        f"✓ {service}"
+                    )
+
+            application_check = result.get(
+                "application_check"
+            )
 
             if application_check:
                 console.print(
-                    "\n[bold cyan]Application URL discovery:[/bold cyan]"
+                    "\n[bold cyan]"
+                    "Application URL discovery:"
+                    "[/bold cyan]"
                 )
 
-                for candidate in application_check.get("candidates", []):
-                    console.print(f"• {candidate}")
+                for candidate in application_check.get(
+                    "candidates",
+                    [],
+                ):
+                    console.print(
+                        f"• {candidate}"
+                    )
 
                 console.print(
-                    "\n[bold green]✓ Application responded successfully[/bold green]"
+                    "\n[bold green]"
+                    "✓ Application responded successfully"
+                    "[/bold green]"
                 )
+
                 console.print(
-                    f"[bold]URL:[/bold] {application_check['url']}"
+                    f"[bold]URL:[/bold] "
+                    f"{application_check['url']}"
                 )
+
                 console.print(
                     f"[bold]HTTP status:[/bold] "
                     f"{application_check['status_code']}"
@@ -290,45 +339,79 @@ def validate(
 
         elif result["phase"] == "build":
             console.print(
-                "\n[bold green]✓ Docker images built successfully[/bold green]"
+                "\n[bold green]"
+                "✓ Docker images built successfully"
+                "[/bold green]"
             )
 
         else:
             console.print(
-                "\n[bold green]✓ Docker Compose configuration is valid[/bold green]"
+                "\n[bold green]"
+                "✓ Docker Compose configuration is valid"
+                "[/bold green]"
             )
 
         return
 
+    # ---------------------------------------------------------
+    # Docker engine / storage failure
+    # ---------------------------------------------------------
+
     if result["phase"] == "docker_engine":
         console.print(
-            "\n[bold red]✗ Docker engine/storage error[/bold red]"
+            "\n[bold red]"
+            "✗ Docker engine/storage error"
+            "[/bold red]"
         )
 
-        application_check = result.get("application_check") or {}
+        application_check = (
+            result.get("application_check")
+            or {}
+        )
+
         error = application_check.get("error")
 
         if error:
-            console.print(f"\n{error}")
+            console.print(
+                f"\n{error}",
+                markup=False,
+            )
 
         console.print(
             "\n[bold yellow]"
-            "Try restarting Docker Desktop and retrying validation."
+            "Try restarting Docker Desktop and "
+            "retrying validation."
             "[/bold yellow]"
         )
 
         if result["logs"]:
-            console.print("\n[bold]Docker output:[/bold]")
-            console.print(result["logs"])
+            console.print(
+                "\n[bold]Docker output:[/bold]"
+            )
+
+            console.print(
+                result["logs"],
+                markup=False,
+            )
 
         raise typer.Exit(code=1)
 
+    # ---------------------------------------------------------
+    # Generic validation failure
+    # ---------------------------------------------------------
+
     console.print(
-        f"\n[bold red]✗ Docker validation failed during "
-        f"{result['phase']}[/bold red]"
+        f"\n[bold red]"
+        f"✗ Docker validation failed during "
+        f"{result['phase']}"
+        f"[/bold red]"
     )
 
     last_result = result["results"][-1]
+
+    # ---------------------------------------------------------
+    # Startup failure / port conflict handling
+    # ---------------------------------------------------------
 
     if result["phase"] == "startup":
         error_output = (
@@ -337,7 +420,9 @@ def validate(
             or ""
         )
 
-        conflicting_port = extract_conflicting_port(error_output)
+        conflicting_port = extract_conflicting_port(
+            error_output
+        )
 
         if conflicting_port is not None:
             conflict = find_compose_project_using_port(
@@ -347,41 +432,65 @@ def validate(
 
             if conflict:
                 console.print(
-                    f"\n[bold yellow]Port {conflicting_port} is being used by "
-                    f"{conflict['container_name']}.[/bold yellow]"
+                    f"\n[bold yellow]"
+                    f"Port {conflicting_port} "
+                    f"is being used by "
+                    f"{conflict['container_name']}."
+                    f"[/bold yellow]"
                 )
 
                 console.print(
                     f"Compose project: "
-                    f"[bold]{conflict['project_name']}[/bold]"
+                    f"[bold]"
+                    f"{conflict['project_name']}"
+                    f"[/bold]"
                 )
 
                 should_stop = typer.confirm(
-                    f"Bring down {conflict['project_name']} and retry?",
+                    (
+                        f"Bring down "
+                        f"{conflict['project_name']} "
+                        f"and retry?"
+                    ),
                     default=False,
                 )
 
                 if should_stop:
-                    down_result = bring_down_compose_project(conflict)
+                    down_result = (
+                        bring_down_compose_project(
+                            conflict
+                        )
+                    )
 
                     if not down_result["success"]:
                         console.print(
-                            "\n[bold red]✗ Failed to bring down the "
-                            "conflicting Compose project[/bold red]"
+                            "\n[bold red]"
+                            "✗ Failed to bring down "
+                            "the conflicting Compose project"
+                            "[/bold red]"
                         )
+
                         console.print(
-                            down_result["stderr"]
-                            or down_result["stdout"]
+                            (
+                                down_result["stderr"]
+                                or down_result["stdout"]
+                            ),
+                            markup=False,
                         )
+
                         raise typer.Exit(code=1)
 
                     console.print(
-                        f"\n[bold green]✓ Brought down "
-                        f"{conflict['project_name']}[/bold green]"
+                        f"\n[bold green]"
+                        f"✓ Brought down "
+                        f"{conflict['project_name']}"
+                        f"[/bold green]"
                     )
 
                     console.print(
-                        "\n[bold cyan]Retrying Docker validation...[/bold cyan]"
+                        "\n[bold cyan]"
+                        "Retrying Docker validation..."
+                        "[/bold cyan]"
                     )
 
                     result = validate_docker(
@@ -394,40 +503,61 @@ def validate(
 
                     if result["success"]:
                         console.print(
-                            "\n[bold green]✓ All Docker services "
-                            "started successfully[/bold green]"
+                            "\n[bold green]"
+                            "✓ All Docker services "
+                            "started successfully"
+                            "[/bold green]"
                         )
 
                         if result["running_services"]:
                             console.print(
-                                "\n[bold green]Running services:[/bold green]"
+                                "\n[bold green]"
+                                "Running services:"
+                                "[/bold green]"
                             )
 
-                            for service in result["running_services"]:
-                                console.print(f"✓ {service}")
+                            for service in result[
+                                "running_services"
+                            ]:
+                                console.print(
+                                    f"✓ {service}"
+                                )
 
-                        application_check = result.get("application_check")
+                        application_check = (
+                            result.get(
+                                "application_check"
+                            )
+                        )
 
                         if application_check:
                             console.print(
-                                "\n[bold cyan]Application URL discovery:"
+                                "\n[bold cyan]"
+                                "Application URL discovery:"
                                 "[/bold cyan]"
                             )
 
-                            for candidate in application_check.get(
-                                "candidates",
-                                [],
+                            for candidate in (
+                                application_check.get(
+                                    "candidates",
+                                    [],
+                                )
                             ):
-                                console.print(f"• {candidate}")
+                                console.print(
+                                    f"• {candidate}"
+                                )
 
                             console.print(
-                                "\n[bold green]✓ Application responded "
-                                "successfully[/bold green]"
+                                "\n[bold green]"
+                                "✓ Application responded "
+                                "successfully"
+                                "[/bold green]"
                             )
+
                             console.print(
                                 f"[bold]URL:[/bold] "
                                 f"{application_check['url']}"
                             )
+
                             console.print(
                                 f"[bold]HTTP status:[/bold] "
                                 f"{application_check['status_code']}"
@@ -435,57 +565,200 @@ def validate(
 
                         return
 
-                    last_result = result["results"][-1]
+                    last_result = (
+                        result["results"][-1]
+                    )
 
-    application_check = result.get("application_check")
+    # ---------------------------------------------------------
+    # Application health failure
+    # ---------------------------------------------------------
+
+    application_check = result.get(
+        "application_check"
+    )
 
     if application_check:
         console.print(
-            "\n[bold red]Application health check failed[/bold red]"
+            "\n[bold red]"
+            "Application health check failed"
+            "[/bold red]"
         )
 
-        candidates = application_check.get("candidates", [])
+        candidates = application_check.get(
+            "candidates",
+            [],
+        )
 
         if candidates:
             console.print(
-                "\n[bold cyan]Application URL discovery:[/bold cyan]"
+                "\n[bold cyan]"
+                "Application URL discovery:"
+                "[/bold cyan]"
             )
 
             for candidate in candidates:
-                console.print(f"• {candidate}")
+                console.print(
+                    f"• {candidate}"
+                )
 
         error = application_check.get("error")
 
         if error:
             console.print(
-                f"\n[bold]Reason:[/bold] {error}"
+                f"\n[bold]Reason:[/bold] "
+                f"{error}"
             )
 
-        checked_url = application_check.get("url")
+        checked_url = application_check.get(
+            "url"
+        )
 
         if checked_url:
             console.print(
-                f"[bold]URL:[/bold] {checked_url}"
+                f"[bold]URL:[/bold] "
+                f"{checked_url}"
             )
 
-        status_code = application_check.get("status_code")
+        status_code = application_check.get(
+            "status_code"
+        )
 
         if status_code is not None:
             console.print(
-                f"[bold]HTTP status:[/bold] {status_code}"
+                f"[bold]HTTP status:[/bold] "
+                f"{status_code}"
             )
 
+    # ---------------------------------------------------------
+    # Diagnostic context
+    # ---------------------------------------------------------
+
+    diagnostic_context = (
+        collect_diagnostic_context(
+            path,
+            analysis=analysis,
+            validation_result=result,
+        )
+    )
+
+    # TEMPORARY:
+    # Keep this only while verifying the context payload.
+    print(diagnostic_context)
+
+    diagnosis = diagnose_failure(
+        result,
+        diagnostic_context,
+    )
+
+    # ---------------------------------------------------------
+    # Diagnosis output
+    # ---------------------------------------------------------
+
+    if diagnosis:
+        console.print(
+            "\n[bold yellow]"
+            "Diagnosis"
+            "[/bold yellow]"
+        )
+
+        console.print(
+            diagnosis["summary"],
+            markup=False,
+        )
+
+        evidence = diagnosis.get(
+            "evidence",
+            [],
+        )
+
+        if evidence:
+            console.print(
+                "\n[bold]Evidence:[/bold]"
+            )
+
+            for item in evidence:
+                console.print(
+                    f"• {item}",
+                    markup=False,
+                )
+
+        likely_causes = diagnosis.get(
+            "likely_causes",
+            [],
+        )
+
+        if likely_causes:
+            console.print(
+                "\n[bold]Likely causes:[/bold]"
+            )
+
+            for item in likely_causes:
+                console.print(
+                    f"• {item}",
+                    markup=False,
+                )
+
+        suggested_actions = diagnosis.get(
+            "suggested_actions",
+            [],
+        )
+
+        if suggested_actions:
+            console.print(
+                "\n[bold]"
+                "Suggested actions:"
+                "[/bold]"
+            )
+
+            for item in suggested_actions:
+                console.print(
+                    f"• {item}",
+                    markup=False,
+                )
+
+    # ---------------------------------------------------------
+    # Raw command output
+    # ---------------------------------------------------------
+
     if last_result["stderr"]:
-        console.print("\n[bold red]Error:[/bold red]")
-        console.print(last_result["stderr"])
+        console.print(
+            "\n[bold red]"
+            "Error:"
+            "[/bold red]"
+        )
+
+        console.print(
+            last_result["stderr"],
+            markup=False,
+        )
 
     if last_result["stdout"]:
-        console.print("\n[bold]Output:[/bold]")
-        console.print(last_result["stdout"])
+        console.print(
+            "\n[bold]"
+            "Output:"
+            "[/bold]"
+        )
+
+        console.print(
+            last_result["stdout"],
+            markup=False,
+        )
+
+    # ---------------------------------------------------------
+    # Container logs
+    # ---------------------------------------------------------
 
     if result["logs"]:
-        console.print("\n[bold yellow]Container logs:[/bold yellow]")
-        console.print(result["logs"])
+        console.print(
+            "\n[bold yellow]"
+            "Container logs:"
+            "[/bold yellow]"
+        )
+
+        console.print(
+            result["logs"],
+            markup=False,
+        )
 
     raise typer.Exit(code=1)
 
