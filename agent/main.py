@@ -1,5 +1,6 @@
 from typing import Annotated
 
+import json
 import typer
 import platform
 from rich.console import Console
@@ -20,6 +21,35 @@ from agent.context import collect_diagnostic_context
 
 app = typer.Typer()
 console = Console()
+
+def inspect_repo(path):
+    try:
+        repo_info = scan_repo(path)
+        return repo_info, detect_stack(repo_info)
+    except (OSError, ValueError):
+        raise typer.BadParameter("Cannot inspect this path. Select an existing readable application directory.", param_hint="path") from None
+
+
+def print_project(project):
+    console.print("\nRepository understanding", style="bold cyan")
+    console.print("Eligibility: " + project["eligibility"] + " (not runtime readiness)", markup=False)
+    for finding in project["findings"]:
+        evidence = finding["evidence"][0]
+        source = evidence["path"] + (" :: " + evidence["field"] if evidence.get("field") else "")
+        console.print(f"• {finding['name']}: {finding['value']} [{finding['certainty']}; {source}]", markup=False)
+    for blocker in project["blockers"]:
+        console.print(f"• {blocker['code']}: {blocker['message']} Source: {blocker['evidence'][0]['path']}", markup=False)
+        console.print("  Next: " + blocker["next_action"], markup=False)
+    for title in ("assumptions", "unknowns"):
+        for item in project[title]:
+            console.print(f"• {title}: {item}", markup=False)
+
+
+def require_eligible(analysis):
+    if analysis["project"]["eligibility"] != "eligible":
+        print_project(analysis["project"])
+        raise typer.Exit(code=1)
+
 
 def choose_compose_file(compose_files: list[str]) -> str:
     filenames = {
@@ -131,12 +161,18 @@ def print_analysis(repo_info, analysis, title="DevOps Agent Analysis"):
 @app.command()
 def analyze(
     path: Annotated[str, typer.Argument(help="Path to the repo")] = ".",
+    json_output: Annotated[bool, typer.Option("--json", help="Emit structured findings and eligibility")] = False,
 ):
-    """Analyze a repo and detect its stack."""
-    repo_info = scan_repo(path)
-    analysis = detect_stack(repo_info)
+    """Analyze a repo and detect its stack without executing project code."""
+    repo_info, analysis = inspect_repo(path)
 
+    if json_output:
+        typer.echo(json.dumps({"schema_version": 1, "repository": repo_info, "analysis": analysis,
+                               "components": [{"path": c["path"], "analysis": detect_stack(c)}
+                                              for c in repo_info.get("components", [])]}, indent=2))
+        return
     print_analysis(repo_info, analysis)
+    print_project(analysis["project"])
 
     for component in repo_info.get("components", []):
         component_analysis = detect_stack(component)
@@ -147,6 +183,7 @@ def analyze(
             component_analysis,
             title=f"{role} component: {component['name']}",
         )
+        print_project(component_analysis["project"])
 
 
 @app.command()
@@ -154,20 +191,14 @@ def dockerize(
     path: Annotated[str, typer.Argument(help="Path to the repo")] = ".",
 ):
     """Generate Docker files for the repo."""
-    repo_info = scan_repo(path)
-    analysis = detect_stack(repo_info)
+    repo_info, analysis = inspect_repo(path)
 
-    if "Unknown stack" in analysis["detected"]:
-        console.print(
-            "[bold red]Could not detect a supported app in this folder.[/bold red]"
-        )
-        console.print("Try running the command inside the actual app directory.")
-        raise typer.Exit(code=1)
+    require_eligible(analysis)
 
     if repo_info["dockerfiles"] or repo_info["compose_files"]:
         console.print()
         console.print(
-            Panel.fit("Docker setup already exists", style="bold cyan")
+            Panel.fit("Existing Docker setup preserved; compatibility unverified", style="bold cyan")
         )
 
         if repo_info["dockerfiles"]:
@@ -231,8 +262,10 @@ def validate(
     ] = False,
 ):
     """Validate the Docker setup for the repo."""
-    repo_info = scan_repo(path)
-    analysis = detect_stack(repo_info)
+    repo_info, analysis = inspect_repo(path)
+
+    if build or run:
+        require_eligible(analysis)
 
     if not repo_info["compose_files"]:
         console.print(

@@ -80,7 +80,6 @@ class RepositoryBaseline(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertNotIn("env_file:", (repo / "docker-compose.yml").read_text())
 
-    @unittest.expectedFailure
     def test_gap02_missing_env_blocked_before_generation(self):
         """G02 / S3: required variable names must be identified before startup."""
         repo = self.fixture("missing-env")
@@ -90,32 +89,26 @@ class RepositoryBaseline(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(contents(repo), before)
 
-    @unittest.expectedFailure
     def test_gap03_database_generation_outside_scope(self):
         """G03 / S6: database-backed generation is outside the first release."""
         self.assert_refused_without_changes("database")
 
-    @unittest.expectedFailure
     def test_gap04_incompatible_runtime_refused(self):
         """G04 / S6: Node 18-only metadata is incompatible with Node 22 setup."""
         self.assert_refused_without_changes("incompatible-runtime")
 
-    @unittest.expectedFailure
     def test_gap05_missing_lockfile_refused(self):
         """G05 / S6: the initial scope requires an npm lockfile."""
         self.assert_refused_without_changes("missing-lockfile")
 
-    @unittest.expectedFailure
     def test_gap06_yarn_refused(self):
         """G06 / S6: do not generate npm setup for a declared yarn project."""
         self.assert_refused_without_changes("yarn")
 
-    @unittest.expectedFailure
     def test_gap07_multi_component_requires_selection(self):
         """G07 / S7: ambiguous app roots must not receive an app-less Compose file."""
         self.assert_refused_without_changes("multi-component")
 
-    @unittest.expectedFailure
     def test_gap08_partial_setup_reported_as_incomplete(self):
         """G08 / S8: a Dockerfile alone must not be a successful setup outcome."""
         self.assert_refused_without_changes("partial-docker")

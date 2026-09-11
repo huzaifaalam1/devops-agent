@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from agent.understanding import dependencies, inspect_project, read_json
+
 
 def has_any(text: str, terms: list[str]) -> bool:
     return any(term in text for term in terms)
@@ -85,57 +87,21 @@ def detect_node(repo_path, files, detected, services, runtime, startup_commands)
     if not package_json_path.exists():
         return
 
-    text = package_json_path.read_text(errors="ignore").lower()
-
-    if '"next"' in text:
+    try:
+        package = read_json(repo_path, "package.json")
+        deps = dependencies(package)
+    except (OSError, ValueError):
+        return  # Structured inspection explains the metadata error below.
+    if "next" in deps:
         detected.append("Next.js app")
-
-    if "vue" in text:
+    if "vue" in deps:
         detected.append("Vue app")
-
-    if "supabase" in text:
-        services.append("Supabase/PostgreSQL")
-
-    if has_any(text, ["mongoose", "mongodb"]):
-        services.append("MongoDB")
-
-    if '"pg"' in text:
-        services.append("PostgreSQL")
-
-    if "mysql2" in text:
-        services.append("MySQL/MariaDB")
-
-    if "sqlite" in text:
-        services.append("SQLite")
-
-    if has_any(text, ["redis", "ioredis"]):
-        services.append("Redis")
-
-    if has_any(text, ["firebase", "firestore"]):
-        services.append("Firebase Firestore")
-
-    if has_any(text, ["aws-sdk", "@aws-sdk/client-s3"]):
-        services.append("AWS Services")
-
-    if has_any(text, ["@aws-sdk/client-s3", "multer-s3"]):
-        services.append("AWS S3")
-
-    if has_any(text, ["bull", "bullmq"]):
-        services.append("Background jobs")
-
-    if has_any(text, ["passport", "next-auth"]):
-        services.append("Authentication")
-
-    if "multer" in text:
-        services.append("File uploads")
-
-    if has_any(text, ["pdfkit", "jspdf", "pdf-parse"]):
-        services.append("PDF processing")
-
-    if '"dev"' in text:
-        startup_commands.append("npm run dev")
-    elif '"start"' in text:
-        startup_commands.append("npm start")
+    scripts = package.get("scripts", {})
+    if isinstance(scripts, dict):
+        if isinstance(scripts.get("dev"), str):
+            startup_commands.append("npm run dev")
+        elif isinstance(scripts.get("start"), str):
+            startup_commands.append("npm start")
 
 
 def detect_ruby(repo_path, files, detected, services, runtime, startup_commands):
@@ -294,7 +260,15 @@ def detect_stack(repo_info):
     if not detected:
         detected.append("Unknown stack")
 
+    project = inspect_project(repo_info)
+    services.extend(project["services"])
+    # Eligibility actions supersede generic generation recommendations.
+    missing = [item for item in missing if item != "Environment configuration"]
+    recommendations = list(dict.fromkeys(blocker["next_action"] for blocker in project["blockers"]))
+    if "Node.js app" not in detected:
+        project["assumptions"].append("Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation.")
     return {
+        "project": project,
         "detected": sorted(set(detected)),
         "services": sorted(set(services)),
         "runtime": sorted(set(runtime)),

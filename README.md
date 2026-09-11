@@ -24,6 +24,7 @@ After installing this package in a Python 3.10+ environment, the entry point is
 
 ```sh
 devops-agent analyze /path/to/app
+devops-agent analyze /path/to/app --json
 devops-agent dockerize /path/to/app
 devops-agent validate /path/to/app
 devops-agent validate /path/to/app --build
@@ -33,8 +34,10 @@ devops-agent validate /path/to/app --run --keep-running
 
 - `analyze` inspects files and reports detected stacks, services, and recommendations.
 - `dockerize` writes missing setup files when no Dockerfile or Compose file was
-  detected. It currently has no preview or support-policy enforcement.
+  detected, after evidence and eligibility checks pass. It has no preview yet.
 - `validate` checks Compose configuration; `--build` also builds images.
+  Building and starting services require eligibility; configuration-only checks
+  remain available for other stacks.
 - `--run` builds and starts services and attempts an HTTP readiness check.
   It normally brings the Compose project down afterward; `--keep-running`
   leaves it running. A successful check without `--keep-running` does not mean
@@ -59,7 +62,9 @@ python3.12 -m venv .venv
 .venv/bin/python -m tests.run_baseline --output work/baseline/offline.json
 ```
 
-The baseline currently has **14 passing checks and 8 known acceptance gaps**.
+The historical step-2 baseline has **14 passing checks and 8 known acceptance gaps**.
+After [step 3](docs/repository-understanding.md), the expanded suite has **45 passing
+checks and 1 known acceptance gap**; G02–G08 are now passing regression checks.
 An expected failure documents missing product behavior; it is not a release
 pass. Docker build/runtime evidence is separately opt-in and was blocked by
 host storage during this baseline. No end-to-end startup support is certified.

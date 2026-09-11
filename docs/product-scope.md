@@ -41,7 +41,13 @@ Initial environment boundaries:
 Database-backed apps are valuable expansion cases, but adding a database
 container alone does not establish application connectivity or readiness.
 
-## Capability matrix
+## Capability matrix (step-1 snapshot)
+
+This table describes the original implementation at `3430f69`.
+[Step 3](repository-understanding.md) now enforces eligibility before generation,
+builds, and runtime validation; non-Next.js generation is no longer available.
+The original observations below remain useful context, not current authorization
+to generate unsupported setups.
 
 "Experimental" means a code path exists, not that its correctness was measured.
 "Target" means required for the first reliable release. Existing capabilities

@@ -1,3 +1,5 @@
+import os
+import re
 from pathlib import Path
 
 
@@ -7,6 +9,7 @@ IMPORTANT_FILES = [
     "requirements.txt",
     "pyproject.toml",
     "manage.py",
+    "go.mod",
 ]
 
 CONFIG_FILES = [
@@ -34,6 +37,7 @@ IGNORED_DIRS = {
     "dist",
     "build",
     "coverage",
+    "work",
 }
 
 
@@ -55,7 +59,7 @@ def scan_single_repo(path: Path):
     found_files = []
 
     for file_name in IMPORTANT_FILES:
-        if (repo_path / file_name).exists():
+        if (repo_path / file_name).is_file():
             found_files.append(file_name)
 
     dockerfiles = []
@@ -75,10 +79,10 @@ def scan_single_repo(path: Path):
 
         filename = file.name.lower()
 
-        if "dockerfile" in filename:
+        if re.fullmatch(r"dockerfile(?:[._-].+)?", filename) and file.suffix.lower() not in {".md", ".txt", ".bak", ".backup", ".old"}:
             dockerfiles.append(file.name)
 
-        if "compose" in filename or file.name in ["local.yml", "local_mac.yml"]:
+        if re.fullmatch(r"(?:docker-compose|compose)(?:[._-][^.]+)?\.ya?ml", filename) or re.fullmatch(r"local(?:_(?:mac|linux))?\.ya?ml", filename):
             compose_files.append(file.name)
 
     for config_file in CONFIG_FILES:
@@ -91,8 +95,8 @@ def scan_single_repo(path: Path):
         "role": infer_component_role(repo_path.name),
         "is_component": False,
         "found_files": found_files,
-        "dockerfiles": dockerfiles,
-        "compose_files": compose_files,
+        "dockerfiles": sorted(dockerfiles),
+        "compose_files": sorted(compose_files),
         "config_files": config_files,
         "workflow_files": workflow_files,
     }
@@ -101,23 +105,19 @@ def scan_single_repo(path: Path):
 def find_components(root_path: Path, max_depth: int = 2):
     components = []
 
-    for child in root_path.rglob("*"):
-        if not child.is_dir():
+    def fail_scan(error):
+        raise error
+
+    for parent, directories, _ in os.walk(root_path, followlinks=False, onerror=fail_scan):
+        depth = len(Path(parent).relative_to(root_path).parts)
+        directories[:] = sorted(
+            name for name in directories
+            if not name.startswith(".") and name not in IGNORED_DIRS
+            and not (Path(parent) / name).is_symlink()
+        ) if depth < max_depth else []
+        if depth == 0:
             continue
-
-        relative_parts = child.relative_to(root_path).parts
-
-        if len(relative_parts) > max_depth:
-            continue
-
-        if any(part.startswith(".") for part in relative_parts):
-            continue
-
-        if any(part in IGNORED_DIRS for part in relative_parts):
-            continue
-
-        child_info = scan_single_repo(child)
-
+        child_info = scan_single_repo(Path(parent))
         if child_info["found_files"]:
             child_info["is_component"] = True
             components.append(child_info)
@@ -127,6 +127,8 @@ def find_components(root_path: Path, max_depth: int = 2):
 
 def scan_repo(path: str, max_depth: int = 2):
     root_path = Path(path).resolve()
+    if not root_path.is_dir():
+        raise ValueError("Select an existing application directory.")
     root_info = scan_single_repo(root_path)
 
     root_info["components"] = find_components(root_path, max_depth)

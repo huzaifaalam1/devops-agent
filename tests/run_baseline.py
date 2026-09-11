@@ -11,7 +11,6 @@ import unittest
 from datetime import datetime, timezone
 from pathlib import Path
 
-from tests import test_baseline
 
 
 class Results(unittest.TextTestResult):
@@ -35,7 +34,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    suite = unittest.defaultTestLoader.loadTestsFromModule(test_baseline)
+    suite = unittest.defaultTestLoader.discover("tests", pattern="test_*.py", top_level_dir=".")
     result = unittest.TextTestRunner(verbosity=2, resultclass=Results).run(suite)
     report = {
         "recorded_at": datetime.now(timezone.utc).isoformat(),
@@ -54,6 +53,10 @@ def main():
         "coverage_limit": "CLI analysis/generation, local HTTP, and simulated Docker errors. Not an end-to-end Docker acceptance run.",
     }
     root = Path(__file__).resolve().parents[1]
+    report["agent_source_sha256"] = {
+        str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sorted((root / "agent").glob("*.py"))
+    }
     report["fixture_and_test_sha256"] = {
         str(path.relative_to(root)): hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sorted((root / "tests").rglob("*"))
