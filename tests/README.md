@@ -32,13 +32,14 @@ existing packaging debt; inspect such diffs separately from product changes.
 ## Reading results
 
 The canonical runner is `tests.run_baseline`; it discovers all `tests/test_*.py` suites,
-including the step-3 evidence/eligibility regressions in `test_understanding.py`. It reports passes, expected
+including evidence/eligibility checks in `test_understanding.py` and proposal
+checks in `test_proposals.py`. It reports passes, expected
 acceptance gaps, unexpected failures, unexpected successes, and skips separately.
 
 - A passing check protects existing useful behavior.
 - An expected failure is an assertion against the desired product behavior,
-  linked to the historical G01–G08 inventory. After step 3, only G01 remains
-  expected to fail; G02–G08 are ordinary passing regression checks. It is **not** an assertion that a
+  linked to the historical G01–G08 inventory. After step 4, G01–G08 are all ordinary passing regression checks; no expected
+  failures remain. It is **not** an assertion that a
   bug should remain. When fixed, remove its `expectedFailure` marker.
 - An unexpected success exits nonzero so an improvement triggers review of the
   old gap classification.
@@ -91,6 +92,8 @@ To inspect a fixture manually:
 .venv/bin/python -m tests.fixture_support minimal work/fixtures/minimal
 .venv/bin/python -m agent.main analyze work/fixtures/minimal
 .venv/bin/python -m agent.main dockerize work/fixtures/minimal
+# Apply only after reviewing the preview:
+.venv/bin/python -m agent.main dockerize work/fixtures/minimal --apply
 ```
 
 Reruns must choose a fresh destination. Do not run `dockerize` inside

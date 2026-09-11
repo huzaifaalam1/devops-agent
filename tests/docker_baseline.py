@@ -32,7 +32,7 @@ def run(command, cwd, timeout=30, extra_env=None):
 
 
 def cli(command, repo):
-    return run([sys.executable, "-m", "agent.main", command, str(repo)], ROOT)
+    return run([sys.executable, "-m", "agent.main", command, str(repo), *(["--apply"] if command == "dockerize" else [])], ROOT)
 
 
 def main():

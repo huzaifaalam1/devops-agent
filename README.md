@@ -26,6 +26,7 @@ After installing this package in a Python 3.10+ environment, the entry point is
 devops-agent analyze /path/to/app
 devops-agent analyze /path/to/app --json
 devops-agent dockerize /path/to/app
+devops-agent dockerize /path/to/app --apply
 devops-agent validate /path/to/app
 devops-agent validate /path/to/app --build
 devops-agent validate /path/to/app --run
@@ -33,8 +34,9 @@ devops-agent validate /path/to/app --run --keep-running
 ```
 
 - `analyze` inspects files and reports detected stacks, services, and recommendations.
-- `dockerize` writes missing setup files when no Dockerfile or Compose file was
-  detected, after evidence and eligibility checks pass. It has no preview yet.
+- `dockerize` previews file changes and their reasons. `--apply` writes the
+  proposal; `--expect <proposal-id>` requires a previously reviewed version.
+  See [Docker proposals](docs/docker-proposals.md) for environment handling and limits.
 - `validate` checks Compose configuration; `--build` also builds images.
   Building and starting services require eligibility; configuration-only checks
   remain available for other stacks.
@@ -43,9 +45,8 @@ devops-agent validate /path/to/app --run --keep-running
   leaves it running. A successful check without `--keep-running` does not mean
   the application is still available after the command exits.
 
-Current limitations include a fixed port 3000 for application validation,
-generated Compose files requiring `.env`, and framework-specific startup
-assumptions. Review generated files before running them. The release criteria
+Current limitations include a fixed port 3000 for application validation
+and conservative Next.js startup requirements. Review generated files before running them. The release criteria
 in the scope document remain work to implement and verify.
 
 ## Reproduce the baseline
@@ -63,8 +64,8 @@ python3.12 -m venv .venv
 ```
 
 The historical step-2 baseline has **14 passing checks and 8 known acceptance gaps**.
-After [step 3](docs/repository-understanding.md), the expanded suite has **45 passing
-checks and 1 known acceptance gap**; G02–G08 are now passing regression checks.
+After [step 4](docs/docker-proposals.md), the expanded suite has **59 passing
+checks and zero expected failures**; G01–G08 are now passing regression checks.
 An expected failure documents missing product behavior; it is not a release
 pass. Docker build/runtime evidence is separately opt-in and was blocked by
 host storage during this baseline. No end-to-end startup support is certified.

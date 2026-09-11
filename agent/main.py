@@ -9,7 +9,7 @@ from pathlib import Path
 
 from agent.scanner import scan_repo
 from agent.detector import detect_stack
-from agent.docker_generator import generate_docker_files
+from agent.docker_generator import propose_docker_files, apply_docker_proposal
 from agent.validator import (
     bring_down_compose_project,
     extract_conflicting_port,
@@ -189,58 +189,51 @@ def analyze(
 @app.command()
 def dockerize(
     path: Annotated[str, typer.Argument(help="Path to the repo")] = ".",
+    apply: Annotated[bool, typer.Option("--apply", help="Apply the displayed development setup proposal")] = False,
+    json_output: Annotated[bool, typer.Option("--json", help="Emit the proposal as JSON")] = False,
+    expect: Annotated[str | None, typer.Option("--expect", help="Require the ID of a previously reviewed proposal")] = None,
 ):
-    """Generate Docker files for the repo."""
-    repo_info, analysis = inspect_repo(path)
-
-    require_eligible(analysis)
-
-    if repo_info["dockerfiles"] or repo_info["compose_files"]:
-        console.print()
-        console.print(
-            Panel.fit("Existing Docker setup preserved; compatibility unverified", style="bold cyan")
-        )
-
-        if repo_info["dockerfiles"]:
-            console.print("[bold green]Docker variants found:[/bold green]")
-            for file in repo_info["dockerfiles"]:
-                console.print(f"✓ {file}")
-
-        if repo_info["compose_files"]:
-            console.print("\n[bold green]Compose variants found:[/bold green]")
-            for file in repo_info["compose_files"]:
-                console.print(f"✓ {file}")
-
-        docker_commands = [
-            cmd
-            for cmd in analysis["startup_commands"]
-            if "docker compose" in cmd
-        ]
-
-        if docker_commands:
-            console.print("\n[bold green]Possible run commands:[/bold green]")
-            for cmd in docker_commands:
-                console.print(f"✓ {cmd}")
-
-        raise typer.Exit(code=0)
-
-    result = generate_docker_files(path, analysis)
-    created = result["created"]
-
-    console.print()
-    console.print(Panel.fit("Dockerize Complete", style="bold cyan"))
-
-    if created:
-        console.print("[bold green]Created files:[/bold green]")
-        for file in created:
-            console.print(f"✓ {file}")
-    else:
-        console.print(
-            "[bold yellow]No files created. Docker files already exist.[/bold yellow]"
-        )
-
-    console.print("\n[bold green]Run with:[/bold green]")
-    console.print(result["run_command"])
+    """Preview Docker development setup. Use --apply to write changes."""
+    try:
+        proposal = propose_docker_files(path)
+        if expect is not None and (not apply or proposal.get("id") != expect):
+            raise ValueError("Proposal ID does not match, or --apply is missing. Review a fresh proposal.")
+        if not json_output:
+            console.print(Panel.fit("Docker development setup proposal", style="bold cyan"))
+            console.print("Status: " + proposal["status"], markup=False)
+            for blocker in proposal["blockers"]:
+                console.print(blocker["code"] + ": " + blocker["message"], markup=False)
+                console.print("Next: " + blocker["next_action"], markup=False)
+            for change in proposal["changes"]:
+                console.print(change["path"] + ": " + change["reason"], markup=False)
+                console.print(change["diff"], markup=False, highlight=False)
+            for note in proposal["notes"]:
+                console.print(note, markup=False)
+            for filename in proposal["preserved"]:
+                console.print("Preserved: " + filename, markup=False)
+            if proposal.get("id"):
+                console.print("Proposal ID: " + proposal["id"], markup=False)
+        if proposal["status"] == "blocked":
+            if json_output:
+                typer.echo(json.dumps(proposal, indent=2))
+            raise typer.Exit(code=1)
+        if apply and proposal["status"] == "ready":
+            result = apply_docker_proposal(proposal)
+            proposal["applied"] = result
+            if not json_output:
+                console.print("Applied: " + ", ".join(result["created"] + result["updated"]), markup=False)
+                console.print("Run after review: " + result["run_command"], markup=False)
+        elif not json_output and proposal["status"] == "ready":
+            console.print("Preview only. Rerun with --apply --expect <proposal-id> to apply this proposal.")
+        if json_output:
+            typer.echo(json.dumps(proposal, indent=2))
+    except (OSError, ValueError) as error:
+        message = str(error) if isinstance(error, ValueError) else "Could not read or write the project files. Check path, permissions, and disk space."
+        if json_output:
+            typer.echo(json.dumps({"status": "error", "message": message}))
+        else:
+            console.print(message, markup=False)
+        raise typer.Exit(code=1) from None
 
 @app.command()
 def validate(

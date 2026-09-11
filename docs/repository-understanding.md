@@ -1,5 +1,8 @@
 # Step 3: evidence-backed repository understanding
 
+This describes the step-3 checkpoint. [Step 4](docker-proposals.md) adds preview
+and application controls and resolves the remaining generation gap noted below.
+
 The CLI now distinguishes a framework label from eligibility for the first
 Next.js/npm/Node 22 workflow. Inspection does not run npm, Docker, project
 scripts, or JavaScript configuration.

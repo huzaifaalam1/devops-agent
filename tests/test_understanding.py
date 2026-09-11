@@ -74,7 +74,7 @@ class UnderstandingTests(unittest.TestCase):
             with self.subTest(content=content):
                 (self.repo / "package.json").write_text(content)
                 before = contents(self.repo)
-                result = cli("dockerize", self.repo)
+                result = cli("dockerize", self.repo, "--apply")
                 self.assertEqual(result.returncode, 1)
                 self.assertIn("invalid_metadata", result.stdout)
                 self.assertNotIn("Traceback", result.stderr)
@@ -96,14 +96,14 @@ class UnderstandingTests(unittest.TestCase):
         lock["packages"][""]["dependencies"]["next"] = "0.0.0"
         lockpath.write_text(json.dumps(lock))
         self.assertIn("lockfile_mismatch", self.codes())
-        self.assertNotEqual(cli("dockerize", self.repo).returncode, 0)
+        self.assertNotEqual(cli("dockerize", self.repo, "--apply").returncode, 0)
 
     def test_startup_and_port_uncertainty_block_generation(self):
         for script in ("node server.js", "next dev --port 4000", "next dev && echo done", "next dev --hostname 127.0.0.1"):
             with self.subTest(script=script):
                 self.package(lambda p: p.update(scripts={"dev": script}))
                 before = contents(self.repo)
-                self.assertNotEqual(cli("dockerize", self.repo).returncode, 0)
+                self.assertNotEqual(cli("dockerize", self.repo, "--apply").returncode, 0)
                 self.assertEqual(contents(self.repo), before)
 
     def test_missing_engine_requires_clarification(self):
@@ -171,7 +171,7 @@ class UnderstandingTests(unittest.TestCase):
         outside.write_text('{"private": "not-to-be-read"}')
         (self.repo / "package.json").unlink()
         (self.repo / "package.json").symlink_to(outside)
-        result = cli("dockerize", self.repo)
+        result = cli("dockerize", self.repo, "--apply")
         self.assertEqual(result.returncode, 1)
         self.assertIn("outside", result.stdout)
         self.assertNotIn("not-to-be-read", result.stdout + result.stderr)

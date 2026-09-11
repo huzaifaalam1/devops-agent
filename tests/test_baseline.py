@@ -20,11 +20,11 @@ from tests.fixture_support import CASES, materialize
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def cli(command, repo):
+def cli(command, repo, *options):
     # Real CLI process, bounded externally because production commands lack timeouts.
     env = dict(os.environ, NO_COLOR="1", TERM="dumb", COLUMNS="160")
     return subprocess.run(
-        [sys.executable, "-m", "agent.main", command, str(repo)],
+        [sys.executable, "-m", "agent.main", command, str(repo), *options],
         cwd=ROOT, env=env, capture_output=True, text=True, timeout=20,
     )
 
@@ -45,7 +45,7 @@ class RepositoryBaseline(unittest.TestCase):
     def assert_refused_without_changes(self, case):
         repo = self.fixture(case)
         before = contents(repo)
-        result = cli("dockerize", repo)
+        result = cli("dockerize", repo, "--apply")
         self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(contents(repo), before)
 
@@ -61,7 +61,7 @@ class RepositoryBaseline(unittest.TestCase):
     def test_s2_existing_setup_preserved(self):
         repo = self.fixture("existing-compose")
         before = contents(repo)
-        result = cli("dockerize", repo)
+        result = cli("dockerize", repo, "--apply")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(contents(repo), before)
 
@@ -72,11 +72,10 @@ class RepositoryBaseline(unittest.TestCase):
         repo = self.fixture("database")
         self.assertIn("PostgreSQL", detect_stack(scan_repo(str(repo)))["services"])
 
-    @unittest.expectedFailure
     def test_gap01_no_env_app_does_not_require_env_file(self):
         """G01 / S1,S3: generated setup must not invent an environment prerequisite."""
         repo = self.fixture("minimal")
-        result = cli("dockerize", repo)
+        result = cli("dockerize", repo, "--apply")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertNotIn("env_file:", (repo / "docker-compose.yml").read_text())
 
@@ -84,7 +83,7 @@ class RepositoryBaseline(unittest.TestCase):
         """G02 / S3: required variable names must be identified before startup."""
         repo = self.fixture("missing-env")
         before = contents(repo)
-        result = cli("dockerize", repo)
+        result = cli("dockerize", repo, "--apply")
         self.assertIn("APP_GREETING", result.stdout + result.stderr)
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(contents(repo), before)

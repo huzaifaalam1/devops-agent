@@ -1,225 +1,167 @@
+"""Reviewable development setup proposals for the supported Next.js workflow."""
+
+import difflib
+import hashlib
+import json
+import os
 from pathlib import Path
 
+from agent.detector import detect_stack
+from agent.scanner import scan_repo
+from agent.understanding import read_text
 
-NODE_DOCKERFILE = """FROM node:22
-
+DOCKERFILE = '''# Local development only; not a production deployment image.
+FROM node:22
 WORKDIR /app
-
-COPY package*.json ./
-
-RUN npm install
-
+ENV NODE_ENV=development
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY package.json package-lock.json ./
+RUN npm ci --include=dev --no-audit --no-fund
 COPY . .
-
 EXPOSE 3000
-
 CMD ["npm", "run", "dev"]
-"""
+'''
 
-NEXT_DOCKERFILE = NODE_DOCKERFILE
-
-PYTHON_DOCKERFILE = """FROM python:3.12-slim
-
-WORKDIR /app
-
-COPY requirements.txt ./
-
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-EXPOSE 8000
-
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-"""
-
-RAILS_DOCKERFILE = """FROM ruby:3.2
-
-WORKDIR /app
-
-RUN apt-get update -qq && apt-get install -y build-essential nodejs default-mysql-client postgresql-client
-
-COPY Gemfile Gemfile.lock ./
-
-RUN bundle install
-
-COPY . .
-
-EXPOSE 3000
-
-CMD ["rails", "server", "-b", "0.0.0.0"]
-"""
-
-DOCKERIGNORE = """.git
-.env
-.env.local
-.env.development
-.env.production
-
+# Appended last so earlier negations cannot re-include environment files.
+IGNORE_RULES = '''# DevOps Agent: local development build exclusions
+.git
 node_modules
 .next
-dist
-build
-coverage
-
-__pycache__
-*.pyc
 .venv
-venv
-
-tmp
-log
-
-vendor/bundle
-*.egg-info
-"""
-
-
-def choose_dockerfile(analysis: dict):
-    detected = analysis["detected"]
-
-    if "Next.js app" in detected:
-        return NEXT_DOCKERFILE
-
-    if "Node.js app" in detected:
-        return NODE_DOCKERFILE
-
-    if "Rails app" in detected or "Ruby app" in detected:
-        return RAILS_DOCKERFILE
-
-    if "Django app" in detected or "Python app" in detected:
-        return PYTHON_DOCKERFILE
-
-    return None
+__pycache__
+.env
+.env.*
+**/.env
+**/.env.*
+*.pem
+*.key
+npm-debug.log*
+'''
+ENV_FILES = (".env", ".env.development", ".env.local", ".env.development.local")
 
 
-def get_app_port(analysis: dict):
-    detected = analysis["detected"]
-
-    if "Django app" in detected or "Python app" in detected:
-        return "8000"
-
-    return "3000"
+def digest(content):
+    return hashlib.sha256(content).hexdigest()
 
 
-def generate_compose(analysis: dict):
-    services = analysis["services"]
-    app_port = get_app_port(analysis)
-
-    compose = f"""services:
-  app:
-    build: .
-    ports:
-      - "{app_port}:{app_port}"
-    env_file:
-      - .env
-"""
-
-    if "PostgreSQL" in services:
-        compose += """
-  postgres:
-    image: postgres:17
-    environment:
-      POSTGRES_USER: app
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: app_development
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-"""
-
-    if "MySQL/MariaDB" in services:
-        compose += """
-  db:
-    image: mariadb:11
-    environment:
-      MARIADB_ROOT_PASSWORD: password
-      MARIADB_DATABASE: app_development
-      MARIADB_USER: app
-      MARIADB_PASSWORD: password
-    ports:
-      - "3306:3306"
-    volumes:
-      - mariadb_data:/var/lib/mysql
-"""
-
-    if "MongoDB" in services:
-        compose += """
-  mongo:
-    image: mongo:8
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-"""
-
-    if "Redis" in services or "Sidekiq" in services:
-        compose += """
-  redis:
-    image: redis:7
-    ports:
-      - "6379:6379"
-"""
-
-    if "Sidekiq" in services:
-        compose += """
-  sidekiq:
-    build: .
-    command: bundle exec sidekiq
-    env_file:
-      - .env
-    depends_on:
-      - redis
-"""
-
-    volumes = []
-
-    if "PostgreSQL" in services:
-        volumes.append("postgres_data")
-
-    if "MySQL/MariaDB" in services:
-        volumes.append("mariadb_data")
-
-    if "MongoDB" in services:
-        volumes.append("mongo_data")
-
-    if volumes:
-        compose += "\nvolumes:\n"
-        for volume in volumes:
-            compose += f"  {volume}:\n"
-
-    return compose
-
-
-def get_run_command():
-    return "docker compose up --build"
-
-
-def generate_docker_files(path: str, analysis: dict):
-    repo_path = Path(path).resolve()
-
-    dockerfile_path = repo_path / "Dockerfile"
-    dockerignore_path = repo_path / ".dockerignore"
-    compose_path = repo_path / "docker-compose.yml"
-
-    created = []
-
-    dockerfile = choose_dockerfile(analysis)
-
-    if dockerfile and not dockerfile_path.exists():
-        dockerfile_path.write_text(dockerfile)
-        created.append("Dockerfile")
-
-    if not dockerignore_path.exists():
-        dockerignore_path.write_text(DOCKERIGNORE)
-        created.append(".dockerignore")
-
-    if not compose_path.exists():
-        compose_path.write_text(generate_compose(analysis))
-        created.append("docker-compose.yml")
-
-    return {
-        "created": created,
-        "run_command": get_run_command(),
+def propose_docker_files(path):
+    """Read current evidence and return a proposal without writing any files."""
+    root = Path(path).resolve()
+    info = scan_repo(str(root))
+    analysis = detect_stack(info)
+    project = analysis["project"]
+    proposal = {
+        "schema_version": 1, "path": str(root), "purpose": "local development",
+        "status": "blocked", "blockers": list(project["blockers"]),
+        "changes": [], "preserved": [], "notes": [], "run_command": None,
     }
+    if project["eligibility"] != "eligible":
+        return proposal
+    if project["setup"] == "existing":
+        proposal.update(status="unchanged", preserved=info["dockerfiles"] + info["compose_files"],
+                        notes=["Existing setup is preserved. Configuration and runtime compatibility remain unverified."])
+        return proposal
+
+    if (root / ".npmrc").exists():
+        proposal["blockers"].append({"code": "npm_configuration", "message": "Custom .npmrc configuration needs review before generating an npm ci image.", "next_action": "Resolve custom registry/install requirements; .npmrc will not be copied automatically."})
+        return proposal
+    mounts = []
+    for filename in ENV_FILES:
+        if (root / filename).exists():
+            # Inspection verifies readability and containment. Never embed values.
+            read_text(root, filename)
+            mounts.append(filename)
+    compose = ('# Local development only.\nservices:\n  app:\n    build: .\n'
+               '    ports:\n      - "127.0.0.1:3000:3000"\n')
+    if mounts:
+        compose += "    volumes:\n"
+        for filename in mounts:
+            compose += (f"      - type: bind\n        source: ./{filename}\n"
+                        f"        target: /app/{filename}\n        read_only: true\n"
+                        "        bind:\n          create_host_path: false\n")
+    expected = {
+        "Dockerfile": (DOCKERFILE, "Use Node 22, install the reviewed npm lockfile with npm ci, and run the declared dev script."),
+        "docker-compose.yml": (compose, "Expose the single app on loopback port 3000; mount existing development dotenv files read-only for Next.js to load." if mounts else "Expose the single app on loopback port 3000. No environment file is required."),
+    }
+    ignore = root / ".dockerignore"
+    before_ignore = read_text(root, ".dockerignore") if ignore.exists() else ""
+    ignore_content = before_ignore
+    if not before_ignore.endswith(IGNORE_RULES):
+        ignore_content = before_ignore + ("\n" if before_ignore and not before_ignore.endswith("\n") else "") + IGNORE_RULES
+    expected[".dockerignore"] = (ignore_content, "Keep host dependencies and dotenv files out of the image; preserve existing rules and append exclusions last.")
+
+    for filename, (content, reason) in expected.items():
+        target = root / filename
+        if target.is_symlink() or (target.exists() and not target.is_file()):
+            proposal["blockers"].append({"code": "unsafe_target", "message": f"{filename} is a link or non-file.", "next_action": "Resolve the target before proposing changes."})
+            return proposal
+        before = read_text(root, filename) if target.exists() else None
+        if before == content:
+            proposal["preserved"].append(filename)
+            continue
+        proposal["changes"].append({
+            "path": filename, "operation": "create" if before is None else "update",
+            "before_sha256": None if before is None else digest(before.encode()),
+            "content": content, "reason": reason,
+            "diff": "".join(difflib.unified_diff((before or "").splitlines(True), content.splitlines(True),
+                                               fromfile="/dev/null" if before is None else "a/" + filename,
+                                               tofile="b/" + filename)),
+        })
+    proposal.update(status="ready", run_command="docker compose -f docker-compose.yml up --build",
+                    notes=["This creates development configuration only; application readiness has not been verified.",
+                           "Environment values are never included in this proposal or baked into the image."])
+    inputs = ("package.json", "package-lock.json", ".nvmrc", ".node-version",
+              "next.config.js", "next.config.mjs", "next.config.ts", ".env.example", *ENV_FILES)
+    combined = hashlib.sha256()
+    for filename in inputs:
+        file = root / filename
+        combined.update(filename.encode())
+        combined.update(b"present" if file.exists() else b"absent")
+        if file.exists():
+            combined.update(read_text(root, filename).encode())
+    proposal["inputs_sha256"] = combined.hexdigest()
+    # Fingerprint the complete proposal, including its destination. Recompute at apply time.
+    proposal["id"] = digest(json.dumps(proposal, sort_keys=True).encode())
+    return proposal
+
+
+def apply_docker_proposal(proposal):
+    """Apply precisely the reviewed proposal, refusing stale inputs and targets."""
+    if proposal.get("status") != "ready":
+        raise ValueError("Only a ready proposal can be applied.")
+    current = propose_docker_files(proposal["path"])
+    if current != proposal:
+        raise ValueError("Repository or proposal changed. Review a fresh proposal before applying.")
+    root = Path(proposal["path"])
+    written = []
+    try:
+        for change in proposal["changes"]:
+            target = root / change["path"]
+            previous = target.read_bytes() if change["operation"] == "update" else None
+            if target.is_symlink() or (previous is not None and digest(previous) != change["before_sha256"]):
+                raise ValueError("A target changed during apply. Review a fresh proposal.")
+            if previous is None:
+                with target.open("x", encoding="utf-8") as stream:
+                    # Track before writing, including partial write failures.
+                    written.append((target, previous, target.stat().st_ino))
+                    stream.write(change["content"])
+            else:
+                # Do not follow symlinks introduced after inspection.
+                fd = os.open(target, os.O_WRONLY | os.O_NOFOLLOW)
+                with os.fdopen(fd, "w", encoding="utf-8") as stream:
+                    if digest(target.read_bytes()) != change["before_sha256"]:
+                        raise ValueError("A target changed during apply.")
+                    written.append((target, previous, os.fstat(stream.fileno()).st_ino))
+                    stream.write(change["content"])
+                    stream.truncate()
+    except Exception:
+        for target, previous, inode in reversed(written):
+            if not target.is_symlink() and target.exists() and target.stat().st_ino == inode:
+                if previous is None:
+                    target.unlink()
+                else:
+                    target.write_bytes(previous)
+        raise
+    return {"created": [c["path"] for c in proposal["changes"] if c["operation"] == "create"],
+            "updated": [c["path"] for c in proposal["changes"] if c["operation"] == "update"],
+            "run_command": proposal["run_command"]}
