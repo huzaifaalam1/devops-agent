@@ -41,12 +41,17 @@ devops-agent validate /path/to/app --run --keep-running
   Building and starting services require eligibility; configuration-only checks
   remain available for other stacks.
 - `--run` builds and starts services and attempts an HTTP readiness check.
-  It normally brings the Compose project down afterward; `--keep-running`
-  leaves it running. A successful check without `--keep-running` does not mean
+  It uses a unique validation project and removes it afterward; `--keep-running`
+  preserves only a successful run and prints its scoped stop command. A successful check without `--keep-running` does not mean
   the application is still available after the command exits.
 
-Current limitations include a fixed port 3000 for application validation
-and conservative Next.js startup requirements. Review generated files before running them. The release criteria
+Runtime checks discover the published port from the validation containers.
+Use `--service`, `--container-port`, and `--health-path` when selection is needed;
+`--timeout` and `--readiness-timeout` bound execution. `--json` includes stage,
+container, HTTP, cleanup, and unverified evidence. See
+[runtime validation](docs/runtime-validation.md) for isolation requirements and limits.
+
+Current limitations include conservative Next.js startup requirements. Review generated files before running them. The release criteria
 in the scope document remain work to implement and verify.
 
 ## Reproduce the baseline
@@ -64,8 +69,9 @@ python3.12 -m venv .venv
 ```
 
 The historical step-2 baseline has **14 passing checks and 8 known acceptance gaps**.
-After [step 4](docs/docker-proposals.md), the expanded suite has **59 passing
+After [step 5](docs/runtime-validation.md), the expanded suite has **82 passing
 checks and zero expected failures**; G01–G08 are now passing regression checks.
 An expected failure documents missing product behavior; it is not a release
-pass. Docker build/runtime evidence is separately opt-in and was blocked by
-host storage during this baseline. No end-to-end startup support is certified.
+pass. Docker evidence is separately opt-in. The historical Next.js build was blocked
+by host storage. Step 5 passed a real validator smoke test using a cached Node
+image, without building Next.js. No end-to-end Next.js startup support is certified.

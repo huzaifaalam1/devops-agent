@@ -111,8 +111,8 @@ healthy, missing-variable, deliberate-failure, and port-conflict cases. It uses
 unique Compose project/image names, temporary directories, and ephemeral ports
 bound to loopback. It creates a port conflict only against its own fixture.
 
-It does not call production `validate --run`: that command assumes host port
-3000, which was already occupied. Successful controlled runtime checks would
+This historical runner does not call production `validate --run`: at the
+step-2 checkpoint that command assumed host port 3000, which was already occupied. Successful controlled runtime checks would
 therefore be component evidence, not end-to-end release acceptance. The HTTP
 check also looks for a fixture-specific page marker to avoid treating another
 server as the app.
@@ -124,5 +124,30 @@ failure can prevent cleanup, and is reported as an error. Restore engine health
 and inspect the recorded runner project names before retrying.
 
 The recorded runtime attempt hit host storage exhaustion. Final preflight reports
-less than 4 GiB free and skips execution. Runtime fixtures are present but have
-not been verified end to end; no green Docker runtime result is recorded.
+less than 4 GiB free and skips execution. Those Next.js runtime fixtures have not been verified end to end; the historical
+evidence remains unchanged.
+
+
+## Step-5 validator smoke checks
+
+`test_validation.py` exercises lifecycle failures, ownership, timeouts,
+cancellation, health checks, and cleanup through explicit Docker boundary fakes.
+The loopback HTTP tests cover redirects, redirect loops, authentication, and
+HEAD-to-GET fallback. The complete offline suite has 82 passing checks.
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m tests.docker_validation_smoke --output work/step5-docker.json
+```
+
+This opt-in runner calls the production validator against real Docker using an
+already-cached `node:22` image. It refuses to pull an absent image and performs
+no image builds or npm installation. It verifies HTTP readiness, a same-origin
+redirect, Docker healthchecks, an occupied port with its original owner still
+healthy, a process exiting with code 42, HTTP 401 rejection, and scoped cleanup.
+It intentionally keeps its healthy fixture running only until the conflict
+check finishes; a `finally` block removes it and verifies no project containers
+remain. Other fixture runs exercise the validator's own automatic cleanup.
+
+This passed with Docker 29.7.2 / Compose 5.5.0. It is runtime-validator evidence,
+not Next.js build acceptance or Compose v2 certification. Fresh evidence belongs
+in ignored `work/`; historical `docs/baseline/` snapshots are not rewritten.

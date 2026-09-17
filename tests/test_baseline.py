@@ -140,10 +140,10 @@ class HttpBaseline(unittest.TestCase):
                 pass
 
             def do_HEAD(self):
-                code = {"/ready": 200, "/broken": 500, "/redirect": 302, "/get-only": 405}[self.path]
+                code = {"/ready": 200, "/broken": 500, "/redirect": 302, "/get-only": 405, "/outside": 302, "/loop": 302, "/auth": 401}[self.path]
                 self.send_response(code)
                 if code == 302:
-                    self.send_header("Location", "/ready")
+                    self.send_header("Location", {"/outside": "http://127.0.0.1:1/", "/loop": "/loop"}.get(self.path, "/ready"))
                 self.end_headers()
 
             def do_GET(self):
@@ -178,6 +178,28 @@ class HttpBaseline(unittest.TestCase):
     def test_head_405_falls_back_to_get(self):
         self.assertTrue(check_application_url(self.url + "/get-only")["healthy"])
 
+    def test_same_origin_redirect_can_verify_readiness(self):
+        result = check_application_url(self.url + "/redirect", follow_redirects=True)
+        self.assertTrue(result["healthy"])
+        self.assertEqual(result["final_url"], self.url + "/ready")
+
+    def test_cross_origin_redirect_is_never_followed(self):
+        result = check_application_url(self.url + "/outside", follow_redirects=True)
+        self.assertFalse(result["healthy"])
+        self.assertIn("not followed", result["error"])
+        self.assertEqual(result["status_code"], 302)
+
+    def test_redirect_loop_is_bounded(self):
+        result = check_application_url(self.url + "/loop", follow_redirects=True)
+        self.assertFalse(result["healthy"])
+        self.assertIn("limit", result["error"])
+
+    def test_authentication_is_reachable_but_not_healthy(self):
+        result = check_application_url(self.url + "/auth", follow_redirects=True)
+        self.assertTrue(result["reachable"])
+        self.assertFalse(result["healthy"])
+        self.assertIn("Authentication", result["error"])
+
 
 class FailureBaseline(unittest.TestCase):
     """Synthetic command responses exercise error handling without touching workloads."""
@@ -191,11 +213,9 @@ class FailureBaseline(unittest.TestCase):
         self.assertEqual(validation["phase"], "docker_engine")
 
     def test_s4_startup_failure_is_not_success(self):
-        def command(args, cwd):
-            failed = "up" in args
-            return {"command": " ".join(args), "success": not failed,
-                    "returncode": 1 if failed else 0, "stdout": "",
-                    "stderr": "Intentional startup failure" if failed else ""}
+        from tests.test_validation import DockerFixture
+        command = DockerFixture()
+        command.fail_up = True
         with tempfile.TemporaryDirectory() as repo, patch("agent.validator.run_command", side_effect=command):
             validation = validate_docker(repo, run=True)
         self.assertFalse(validation["success"])
@@ -214,22 +234,21 @@ class FailureBaseline(unittest.TestCase):
                 self.assertTrue(result["suggested_actions"])
 
     def test_s5_conflict_declined_does_not_stop_another_project(self):
-        # Exercise the actual CLI confirmation path with fabricated Docker responses.
+        # Runtime validation no longer offers to stop unrelated projects.
         from typer.testing import CliRunner
         from agent.main import app
         failed = {"success": False, "phase": "startup", "logs": "port is already allocated",
-                  "results": [{"command": "docker compose up -d", "stdout": "",
-                               "stderr": "Bind for 0.0.0.0:3000 failed: port is already allocated"}]}
-        conflict = {"container_name": "unrelated-app", "project_name": "unrelated"}
+                  "error": "port is already allocated", "results": []}
         with tempfile.TemporaryDirectory() as directory:
             repo = materialize("port-conflict", Path(directory) / "app")
-            with patch("agent.main.validate_docker", return_value=failed), \
-                 patch("agent.main.find_compose_project_using_port", return_value=conflict), \
-                 patch("agent.main.bring_down_compose_project") as stop:
-                result = CliRunner().invoke(app, ["validate", str(repo), "--run"], input="n\n")
+            with patch("agent.main.validate_docker", return_value=failed) as validate, \
+                 patch("subprocess.Popen") as execute:
+                result = CliRunner().invoke(app, ["validate", str(repo), "--run"])
         self.assertEqual(result.exit_code, 1, result.output)
-        self.assertIn("Bring down", result.output)
-        stop.assert_not_called()
+        self.assertIn("port is already allocated", result.output)
+        self.assertNotIn("Bring down", result.output)
+        validate.assert_called_once()
+        execute.assert_not_called()
 
 
 if __name__ == "__main__":
