@@ -58,6 +58,11 @@ Failed validation includes an evidence-backed diagnosis, recommended action,
 expected impact, and verification instructions. Use `--verbose` for captured logs
 or `--json` for structured details. See [troubleshooting](docs/troubleshooting.md).
 
+Applied edits now have private recovery records; `history` lists actions and
+`recover PATH SESSION_ID` previews guarded recovery (`--apply` restores it).
+Reports are redacted, and runtime operations enforce project scope. See
+[execution safeguards](docs/execution-safety.md) for approvals, storage, and limits.
+
 ## Reproduce the baseline
 
 The [step-2 baseline](docs/baseline.md) records the checkpoint, environment,
@@ -73,9 +78,10 @@ python3.12 -m venv .venv
 ```
 
 The historical step-2 baseline has **14 passing checks and 8 known acceptance gaps**.
-After [step 6](docs/troubleshooting.md), the expanded suite has **96 passing
+After [step 7](docs/execution-safety.md), the expanded suite has **118 passing
 checks and zero expected failures**; G01–G08 are now passing regression checks.
 An expected failure documents missing product behavior; it is not a release
-pass. Docker evidence is separately opt-in. The historical Next.js build was blocked
-by host storage. Step 5 passed a real validator smoke test using a cached Node
-image, without building Next.js. No end-to-end Next.js startup support is certified.
+pass. Docker evidence is separately opt-in. The historical storage-blocked result
+is preserved. Step 7 now also passes the real generated Next.js development
+workflow: image build, startup, HTTP 200 with the fixture page marker, and cleanup.
+This verifies the pinned minimal fixture, not production builds or every Next.js app.

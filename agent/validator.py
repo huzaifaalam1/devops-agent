@@ -11,6 +11,7 @@ import tempfile
 import time
 import uuid
 from pathlib import Path
+from agent.safety import Journal, Redactor, authorize, project_lock
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlparse
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
@@ -120,15 +121,34 @@ def isolated_config(config, project, repo):
     # Compose inserts an explicit name even for its automatic default network.
     # The caller removes that single implicit default before this check.
     for name, service in services.items():
-        if any(service.get(key) for key in ("container_name", "network_mode", "pid", "ipc", "privileged", "devices", "external_links", "volumes_from", "post_start", "pre_stop", "develop")):
+        if any(service.get(key) for key in ("container_name", "network_mode", "pid", "ipc", "privileged", "devices", "external_links", "volumes_from", "post_start", "pre_stop", "develop", "cap_add", "security_opt", "userns_mode", "uts", "cgroup", "cgroup_parent", "device_cgroup_rules", "use_api_socket")):
             fail("isolation", f"Service {name} uses unsupported shared-state or lifecycle options.")
         for mount in service.get("volumes", []):
             if not isinstance(mount, dict):
                 fail("isolation", "Unresolved mount syntax.")
+            if mount.get("type") not in ("bind", "volume", "tmpfs"):
+                fail("isolation", "Unsupported mount type for isolated validation.")
             if mount.get("type") == "bind":
                 source = Path(mount.get("source", "")).resolve()
                 if not mount.get("read_only") or not source.is_file() or not source.is_relative_to(repo):
                     fail("isolation", f"Service {name} has a writable, external, or non-file bind mount.", "Use only read-only configuration files inside the application directory for validation.")
+        for port in service.get("ports", []):
+            host = port.get("host_ip") or "0.0.0.0"
+            if host not in ("0.0.0.0", "::", "127.0.0.1", "::1"):
+                fail("isolation", "Validation ports must bind to local loopback.")
+            port["host_ip"] = "::1" if host in ("::", "::1") else "127.0.0.1"
+        build = service.get("build")
+        if build:
+            if not isinstance(build, dict):
+                fail("isolation", "Build configuration must be resolved before execution.")
+            if any(build.get(key) for key in ("additional_contexts", "ssh", "secrets", "cache_to", "cache_from", "entitlements", "privileged", "network")):
+                fail("isolation", "Build requests unsupported host access, secrets, or external cache resources.")
+            context = Path(build.get("context", ""))
+            if not context.is_absolute() or not context.resolve().is_relative_to(repo) or not context.is_dir():
+                fail("isolation", "Build context must be a local directory inside the selected project.")
+            dockerfile = context / build.get("dockerfile", "Dockerfile")
+            if not dockerfile.resolve().is_relative_to(repo):
+                fail("isolation", "Build Dockerfile points outside the selected project.")
         if isinstance(service.get("build"), dict) and service["build"].get("tags"):
             fail("isolation", "Additional build tags could replace unrelated images.")
         if service.get("build"):
@@ -203,9 +223,9 @@ def application_endpoint(records, service, container_port, health_path):
     return endpoints.pop()
 
 
-def validate_docker(path, compose_file=None, build=False, run=False, keep_running=False,
+def _validate_docker(path, compose_file=None, build=False, run=False, keep_running=False,
                     service=None, container_port=None, health_path="/", timeout=300.0,
-                    readiness_timeout=90.0):
+                    readiness_timeout=90.0, redactor=None, journal=None):
     repo = Path(path).resolve()
     report = {"success": False, "phase": "repository", "results": [], "logs": "",
               "expected_services": [], "running_services": [], "stopped_services": [],
@@ -240,6 +260,10 @@ def validate_docker(path, compose_file=None, build=False, run=False, keep_runnin
         remaining = deadline - time.monotonic()
         if remaining <= 0:
             fail(phase, "Overall validation deadline exceeded.", "Increase --timeout only after inspecting the stalled stage.")
+        if journal:
+            journal.data["project"] = project
+            journal.data["events"].append(redactor.clean({"phase": phase, "command": shlex.join(args), "status": "requested"}))
+            journal.save()
         result = run_command(args, repo, timeout=min(cap, remaining))
         report["results"].append({**result, "stdout": "[structured configuration omitted]" if sensitive else result["stdout"][-8000:], "stderr": result["stderr"][-8000:]})
         if not result["success"]:
@@ -267,6 +291,8 @@ def validate_docker(path, compose_file=None, build=False, run=False, keep_runnin
         try:
             raw = execute(command + ["config", "--format", "json"], "config", sensitive=True)
             config = json.loads(raw)
+            if redactor:
+                redactor.learn_config(config)
             stage("config")
             if not build and not run:
                 report.update(success=True, phase="config")
@@ -393,3 +419,47 @@ def validate_docker(path, compose_file=None, build=False, run=False, keep_runnin
             if not report["success"]:
                 report["stages"].append({"phase": report["phase"], "success": False})
     return report
+
+
+def _journaled_validation(path, compose_file=None, build=False, run=False, keep_running=False,
+                    service=None, container_port=None, health_path="/", timeout=300.0,
+                    readiness_timeout=90.0):
+    """Sanitize reports and journal authorized execution before side effects."""
+    redactor = Redactor(path)
+    journal = None
+    try:
+        if build or run:
+            action = "run" if run else "build"
+            journal = Journal(path, action, authorize(action, explicit=True), redactor)
+        result = _validate_docker(path, compose_file=compose_file, build=build, run=run,
+                                  keep_running=keep_running, service=service, container_port=container_port,
+                                  health_path=health_path, timeout=timeout, readiness_timeout=readiness_timeout,
+                                  redactor=redactor, journal=journal)
+    except (OSError, ValueError):
+        result = {"success": False, "phase": "safety", "error": "Private execution journal could not be created; execution was refused.",
+                  "cleanup": {"status": "not_needed"}, "environment_state": "not_started"}
+    result = redactor.clean(result)
+    if journal:
+        result["session_id"] = journal.id
+        try:
+            journal.finish("succeeded" if result["success"] else "failed", result)
+        except (OSError, ValueError):
+            result.update(success=False, primary_phase=result.get("phase"), phase="audit",
+                          error="Execution finished but its final journal write failed. Inspect the reported environment and cleanup state.")
+    return result
+
+
+def validate_docker(path, compose_file=None, build=False, run=False, keep_running=False,
+                    service=None, container_port=None, health_path="/", timeout=300.0,
+                    readiness_timeout=90.0):
+    options = dict(compose_file=compose_file, build=build, run=run, keep_running=keep_running,
+                   service=service, container_port=container_port, health_path=health_path,
+                   timeout=timeout, readiness_timeout=readiness_timeout)
+    if options.get("build") or options.get("run"):
+        try:
+            with project_lock(path):
+                return _journaled_validation(path, **options)
+        except (OSError, ValueError):
+            return {"success": False, "phase": "safety", "error": "Cannot obtain private project execution lock. Check journal storage permissions or retry after the active action finishes.",
+                    "cleanup": {"status": "not_needed"}, "environment_state": "not_started"}
+    return _journaled_validation(path, **options)

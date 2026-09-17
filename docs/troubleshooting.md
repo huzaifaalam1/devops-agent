@@ -15,8 +15,8 @@ The default output shows the diagnosis and next steps. `--verbose` adds captured
 command output and service logs, including cleanup failures. `--json` returns the
 structured report, including diagnosis and captured details; when both flags are
 present, output remains JSON. These are the existing bounded captures, not an
-unlimited live log stream. Logs and evidence may contain secrets: comprehensive
-redaction remains step 7 work. Review reports before sharing them.
+unlimited live log stream. Step 7 sanitizes reports and captured details; see [redaction coverage and limits](execution-safety.md).
+Review reports before sharing them.
 
 ## Initial failure catalog
 

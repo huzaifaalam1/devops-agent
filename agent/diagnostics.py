@@ -1,6 +1,8 @@
 """Deterministic troubleshooting advice; never executes repairs or log instructions."""
 
 # Each entry includes a concrete action, its impact, and a resolution check.
+from agent.safety import Redactor
+
 CATALOG = {
     "port_conflict": (
         "A requested host port is occupied.",
@@ -65,7 +67,7 @@ CATALOG = {
 }
 
 
-def diagnose_failure(validation_result: dict, context: dict | None = None) -> dict | None:
+def _diagnose_failure(validation_result: dict, context: dict | None = None) -> dict | None:
     if validation_result.get("success"):
         return None
     phase = validation_result.get("phase", "unknown")
@@ -133,3 +135,8 @@ def diagnose_failure(validation_result: dict, context: dict | None = None) -> di
             "likely_causes": [cause], "suggested_actions": [action],
             "expected_impact": impact, "verification": verification,
             "automatic_repair": False, "details_hint": "Use --verbose for captured command output/logs or --json for the full report."}
+
+
+def diagnose_failure(validation_result: dict, context: dict | None = None) -> dict | None:
+    redactor = Redactor()
+    return redactor.clean(_diagnose_failure(redactor.clean(validation_result), context))

@@ -1,5 +1,6 @@
 import subprocess
 from pathlib import Path
+from agent.safety import Redactor
 
 
 MAX_LOG_LINES = 150
@@ -236,7 +237,7 @@ def collect_diagnostic_context(
     }
 
     if not repo_path.exists() or not repo_path.is_dir():
-        return context
+        return Redactor(repo_path).clean(context)
 
     context["git"] = collect_git_context(repo_path)
     context["files"] = collect_file_context(repo_path)
@@ -245,4 +246,4 @@ def collect_diagnostic_context(
         validation_result
     )
 
-    return context
+    return Redactor(repo_path).clean(context)

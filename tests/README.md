@@ -161,3 +161,35 @@ verbose, JSON, and missing-configuration preflight behavior. Run it through the
 canonical baseline runner; the full suite now has 96 passing checks. These tests
 use captured boundary fixtures and do not need Docker or install dependencies.
 See [troubleshooting](../docs/troubleshooting.md) for the catalog and limits.
+
+
+## Step-7 safety checks
+
+`test_safety.py` covers explicit action categories, private journals, recovery,
+subsequent-edit refusal, dirty Git targets, links, cancellation, concurrent agent
+locks, audit failures, report redaction, and Docker execution scope. Test sessions
+use private temporary journal storage by default; an explicit
+`DEVOPS_AGENT_STATE_DIR` overrides it. The full suite has 118 passing checks.
+The real Docker smoke retry passed against the step-7 implementation, including
+readiness, conflict isolation, failure handling and cleanup. Evidence is in
+ignored `work/step7-docker.json`; no Next.js build was performed. See
+[execution safeguards](../docs/execution-safety.md).
+
+
+## Generated Next.js acceptance
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m tests.docker_nextjs_acceptance --output work/step7-nextjs.json
+```
+
+This runner passed against the real Docker engine. It creates a disposable copy
+of the minimal pinned Next.js fixture, uses CLI proposal/apply, and calls the
+production validator to build and run the generated setup without altering its
+loopback port 3000 mapping. It additionally fetches the response body and requires
+`devops-agent-baseline-ready`, then verifies scoped container and image cleanup.
+It requires port 3000 to be free and at least 8 GiB of host space, uses private
+temporary Buildx/journal storage, and permits npm/image network downloads. Build
+and readiness deadlines are 600 and 120 seconds. Shared base images and build
+cache remain; no global pruning is performed. This is a development image/startup
+check, not a production `next build`. The successful run retained about 24 GiB
+of free host space. Historical baseline evidence is not overwritten.

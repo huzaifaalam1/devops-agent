@@ -77,8 +77,11 @@ redirects, healthchecks, conflict isolation, deliberate process exit,
 authentication failure, and resource cleanup. See [test instructions](../tests/README.md).
 
 This is a point-in-time local readiness result. It does not establish business
-correctness, future uptime, full dependency behavior, production readiness, or
-end-to-end Next.js build acceptance. The smoke test does not install npm packages
-or build Next.js; historical storage-blocked build evidence remains unchanged.
-Docker output and failure logs may contain application secrets; comprehensive
-log redaction is not part of this step.
+correctness, future uptime, full dependency behavior, or production readiness.
+The lightweight smoke test does not install npm packages or build Next.js. A
+separate step-7 generated Next.js acceptance run now passes image build, startup,
+HTTP page-marker verification, and cleanup; historical storage-blocked evidence
+remains unchanged. This is the pinned minimal development fixture, not a
+production `next build` or broad framework certification.
+Step 7 adds private action journals, stricter scope checks and report redaction;
+see [execution safeguards](execution-safety.md) for coverage and limits.

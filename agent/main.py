@@ -12,6 +12,7 @@ from agent.detector import detect_stack
 from agent.docker_generator import propose_docker_files, apply_docker_proposal
 from agent.validator import validate_docker
 from agent.diagnostics import diagnose_failure
+from agent.safety import Redactor, recovery, history
 
 
 app = typer.Typer()
@@ -160,17 +161,19 @@ def analyze(
 ):
     """Analyze a repo and detect its stack without executing project code."""
     repo_info, analysis = inspect_repo(path)
+    redactor = Redactor(path)
+    analysis = redactor.clean(analysis)
 
     if json_output:
-        typer.echo(json.dumps({"schema_version": 1, "repository": repo_info, "analysis": analysis,
+        typer.echo(json.dumps(redactor.clean({"schema_version": 1, "repository": repo_info, "analysis": analysis,
                                "components": [{"path": c["path"], "analysis": detect_stack(c)}
-                                              for c in repo_info.get("components", [])]}, indent=2))
+                                              for c in repo_info.get("components", [])]}), indent=2))
         return
     print_analysis(repo_info, analysis)
     print_project(analysis["project"])
 
     for component in repo_info.get("components", []):
-        component_analysis = detect_stack(component)
+        component_analysis = Redactor(component["path"]).clean(detect_stack(component))
         role = component.get("role", "component").title()
 
         print_analysis(
@@ -191,26 +194,28 @@ def dockerize(
     """Preview Docker development setup. Use --apply to write changes."""
     try:
         proposal = propose_docker_files(path)
+        redactor = Redactor(path)
+        public = redactor.clean(proposal)
         if expect is not None and (not apply or proposal.get("id") != expect):
             raise ValueError("Proposal ID does not match, or --apply is missing. Review a fresh proposal.")
         if not json_output:
             console.print(Panel.fit("Docker development setup proposal", style="bold cyan"))
-            console.print("Status: " + proposal["status"], markup=False)
-            for blocker in proposal["blockers"]:
+            console.print("Status: " + public["status"], markup=False)
+            for blocker in public["blockers"]:
                 console.print(blocker["code"] + ": " + blocker["message"], markup=False)
                 console.print("Next: " + blocker["next_action"], markup=False)
-            for change in proposal["changes"]:
+            for change in public["changes"]:
                 console.print(change["path"] + ": " + change["reason"], markup=False)
                 console.print(change["diff"], markup=False, highlight=False)
-            for note in proposal["notes"]:
+            for note in public["notes"]:
                 console.print(note, markup=False)
-            for filename in proposal["preserved"]:
+            for filename in public["preserved"]:
                 console.print("Preserved: " + filename, markup=False)
-            if proposal.get("id"):
-                console.print("Proposal ID: " + proposal["id"], markup=False)
+            if public.get("id"):
+                console.print("Proposal ID: " + public["id"], markup=False)
         if proposal["status"] == "blocked":
             if json_output:
-                typer.echo(json.dumps(proposal, indent=2))
+                typer.echo(json.dumps(redactor.clean(proposal), indent=2))
             raise typer.Exit(code=1)
         if apply and proposal["status"] == "ready":
             result = apply_docker_proposal(proposal)
@@ -218,12 +223,14 @@ def dockerize(
             if not json_output:
                 console.print("Applied: " + ", ".join(result["created"] + result["updated"]), markup=False)
                 console.print("Run after review: " + result["run_command"], markup=False)
+                console.print("Recovery preview: " + result["recovery_command"], markup=False)
         elif not json_output and proposal["status"] == "ready":
             console.print("Preview only. Rerun with --apply --expect <proposal-id> to apply this proposal.")
         if json_output:
-            typer.echo(json.dumps(proposal, indent=2))
+            typer.echo(json.dumps(redactor.clean(proposal), indent=2))
     except (OSError, ValueError) as error:
         message = str(error) if isinstance(error, ValueError) else "Could not read or write the project files. Check path, permissions, and disk space."
+        message = Redactor(path).text(message)
         if json_output:
             typer.echo(json.dumps({"status": "error", "message": message}))
         else:
@@ -242,7 +249,7 @@ def validate(
     timeout: Annotated[float, typer.Option(min=1, help="Total execution deadline in seconds, excluding bounded cleanup")] = 300,
     readiness_timeout: Annotated[float, typer.Option("--readiness-timeout", min=1)] = 90,
     json_output: Annotated[bool, typer.Option("--json", help="Emit stage, ownership and cleanup evidence")] = False,
-    verbose: Annotated[bool, typer.Option("--verbose", help="Show captured command output and service logs (may contain secrets)")] = False,
+    verbose: Annotated[bool, typer.Option("--verbose", help="Show redacted captured command output and service logs")] = False,
 ):
     """Validate configuration, builds, or isolated runtime readiness."""
     repo_info, analysis = inspect_repo(path)
@@ -256,6 +263,7 @@ def validate(
                                  build=build, run=run, keep_running=keep_running, service=service,
                                  container_port=container_port, health_path=health_path, timeout=timeout,
                                  readiness_timeout=readiness_timeout)
+    result = Redactor(path).clean(result)
     if not result["success"]:
         result["diagnosis"] = diagnose_failure(result)
     if json_output:
@@ -304,6 +312,30 @@ def validate(
             console.print("Unverified: " + item, markup=False)
     if not result["success"]:
         raise typer.Exit(code=130 if result["phase"] == "cancelled" else 1)
+
+
+@app.command()
+def recover(
+    path: Annotated[str, typer.Argument(help="Original application directory")],
+    session_id: Annotated[str, typer.Argument(help="Apply session ID")],
+    apply: Annotated[bool, typer.Option("--apply", help="Restore the recorded pre-edit state")] = False,
+):
+    """Preview recovery; --apply restores only unchanged generated targets."""
+    try:
+        typer.echo(json.dumps(recovery(path, session_id, apply=apply), indent=2))
+    except (OSError, ValueError, KeyError) as error:
+        typer.echo(json.dumps({"success": False, "error": Redactor(path).text(str(error))}))
+        raise typer.Exit(1) from None
+
+
+@app.command("history")
+def session_history(path: Annotated[str, typer.Argument(help="Application directory")] = "."):
+    """List local action/authorization outcomes without exposing snapshots."""
+    try:
+        typer.echo(json.dumps(history(path), indent=2))
+    except (OSError, ValueError):
+        typer.echo(json.dumps({"success": False, "error": "Private session history is unavailable."}))
+        raise typer.Exit(1) from None
 
 
 if __name__ == "__main__":

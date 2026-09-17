@@ -9,6 +9,8 @@ from pathlib import Path
 from agent.detector import detect_stack
 from agent.scanner import scan_repo
 from agent.understanding import read_text
+from agent.safety import Journal, authorize, check_target, project_lock
+import shlex
 
 DOCKERFILE = '''# Local development only; not a production deployment image.
 FROM node:22
@@ -25,6 +27,7 @@ CMD ["npm", "run", "dev"]
 # Appended last so earlier negations cannot re-include environment files.
 IGNORE_RULES = '''# DevOps Agent: local development build exclusions
 .git
+.devops-agent
 node_modules
 .next
 .venv
@@ -125,7 +128,7 @@ def propose_docker_files(path):
     return proposal
 
 
-def apply_docker_proposal(proposal):
+def _apply_docker_proposal(proposal):
     """Apply precisely the reviewed proposal, refusing stale inputs and targets."""
     if proposal.get("status") != "ready":
         raise ValueError("Only a ready proposal can be applied.")
@@ -136,7 +139,7 @@ def apply_docker_proposal(proposal):
     written = []
     try:
         for change in proposal["changes"]:
-            target = root / change["path"]
+            target = check_target(root, change["path"])
             previous = target.read_bytes() if change["operation"] == "update" else None
             if target.is_symlink() or (previous is not None and digest(previous) != change["before_sha256"]):
                 raise ValueError("A target changed during apply. Review a fresh proposal.")
@@ -154,9 +157,10 @@ def apply_docker_proposal(proposal):
                     written.append((target, previous, os.fstat(stream.fileno()).st_ino))
                     stream.write(change["content"])
                     stream.truncate()
-    except Exception:
+    except BaseException:
         for target, previous, inode in reversed(written):
-            if not target.is_symlink() and target.exists() and target.stat().st_ino == inode:
+            expected = next(c["content"].encode() for c in proposal["changes"] if c["path"] == target.name)
+            if not target.is_symlink() and target.exists() and target.stat().st_ino == inode and target.read_bytes() == expected:
                 if previous is None:
                     target.unlink()
                 else:
@@ -165,3 +169,28 @@ def apply_docker_proposal(proposal):
     return {"created": [c["path"] for c in proposal["changes"] if c["operation"] == "create"],
             "updated": [c["path"] for c in proposal["changes"] if c["operation"] == "update"],
             "run_command": proposal["run_command"]}
+
+
+def _journaled_apply(proposal):
+    """Explicit API apply authorizes only this proposal; persist recovery first."""
+    if proposal.get("status") != "ready" or propose_docker_files(proposal["path"]) != proposal:
+        raise ValueError("Repository or proposal changed. Review a fresh proposal before applying.")
+    journal = Journal(proposal["path"], "apply", authorize("apply", explicit=True))
+    try:
+        journal.snapshot(proposal)
+        result = _apply_docker_proposal(proposal)
+    except BaseException:
+        journal.finish("failed", {"error": "Apply failed; rollback attempted. Preserve snapshots for manual recovery if files remain."})
+        raise
+    try:
+        journal.finish("applied", result)
+    except (OSError, ValueError):
+        raise ValueError(f"Files were applied but final journal recording failed. Inspect recovery session {journal.id}.") from None
+    result["session_id"] = journal.id
+    result["recovery_command"] = shlex.join(["devops-agent", "recover", proposal["path"], journal.id])
+    return result
+
+
+def apply_docker_proposal(proposal):
+    with project_lock(proposal["path"]):
+        return _journaled_apply(proposal)
