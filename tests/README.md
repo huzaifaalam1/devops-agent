@@ -151,3 +151,13 @@ remain. Other fixture runs exercise the validator's own automatic cleanup.
 This passed with Docker 29.7.2 / Compose 5.5.0. It is runtime-validator evidence,
 not Next.js build acceptance or Compose v2 certification. Fresh evidence belongs
 in ignored `work/`; historical `docs/baseline/` snapshots are not rewritten.
+
+
+## Step-6 diagnostic checks
+
+`test_diagnostics.py` tests supported failure categories, evidence provenance,
+uncertainty and unknown outcomes, classification precedence, and CLI summary,
+verbose, JSON, and missing-configuration preflight behavior. Run it through the
+canonical baseline runner; the full suite now has 96 passing checks. These tests
+use captured boundary fixtures and do not need Docker or install dependencies.
+See [troubleshooting](../docs/troubleshooting.md) for the catalog and limits.

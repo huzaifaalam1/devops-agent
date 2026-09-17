@@ -54,6 +54,10 @@ container, HTTP, cleanup, and unverified evidence. See
 Current limitations include conservative Next.js startup requirements. Review generated files before running them. The release criteria
 in the scope document remain work to implement and verify.
 
+Failed validation includes an evidence-backed diagnosis, recommended action,
+expected impact, and verification instructions. Use `--verbose` for captured logs
+or `--json` for structured details. See [troubleshooting](docs/troubleshooting.md).
+
 ## Reproduce the baseline
 
 The [step-2 baseline](docs/baseline.md) records the checkpoint, environment,
@@ -69,7 +73,7 @@ python3.12 -m venv .venv
 ```
 
 The historical step-2 baseline has **14 passing checks and 8 known acceptance gaps**.
-After [step 5](docs/runtime-validation.md), the expanded suite has **82 passing
+After [step 6](docs/troubleshooting.md), the expanded suite has **96 passing
 checks and zero expected failures**; G01–G08 are now passing regression checks.
 An expected failure documents missing product behavior; it is not a release
 pass. Docker evidence is separately opt-in. The historical Next.js build was blocked

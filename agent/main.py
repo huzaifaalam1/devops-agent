@@ -242,24 +242,20 @@ def validate(
     timeout: Annotated[float, typer.Option(min=1, help="Total execution deadline in seconds, excluding bounded cleanup")] = 300,
     readiness_timeout: Annotated[float, typer.Option("--readiness-timeout", min=1)] = 90,
     json_output: Annotated[bool, typer.Option("--json", help="Emit stage, ownership and cleanup evidence")] = False,
+    verbose: Annotated[bool, typer.Option("--verbose", help="Show captured command output and service logs (may contain secrets)")] = False,
 ):
     """Validate configuration, builds, or isolated runtime readiness."""
     repo_info, analysis = inspect_repo(path)
     if (build or run) and analysis["project"]["eligibility"] != "eligible":
-        if json_output:
-            typer.echo(json.dumps({"success": False, "phase": "eligibility", "project": analysis["project"]}))
-            raise typer.Exit(code=1)
-        require_eligible(analysis)
-    if not repo_info["compose_files"]:
-        if json_output:
-            typer.echo(json.dumps({"success": False, "phase": "config", "error": "No Docker Compose file was found."}))
-        else:
-            console.print("No Docker Compose file was found.", markup=False)
-        raise typer.Exit(code=1)
-    result = validate_docker(path, compose_file=choose_compose_file(repo_info["compose_files"]),
-                             build=build, run=run, keep_running=keep_running, service=service,
-                             container_port=container_port, health_path=health_path, timeout=timeout,
-                             readiness_timeout=readiness_timeout)
+        result = {"success": False, "phase": "eligibility", "project": analysis["project"],
+                  "error": "Repository is not eligible for build/runtime validation."}
+    elif not repo_info["compose_files"]:
+        result = {"success": False, "phase": "config", "error": "No Docker Compose file was found."}
+    else:
+        result = validate_docker(path, compose_file=choose_compose_file(repo_info["compose_files"]),
+                                 build=build, run=run, keep_running=keep_running, service=service,
+                                 container_port=container_port, health_path=health_path, timeout=timeout,
+                                 readiness_timeout=readiness_timeout)
     if not result["success"]:
         result["diagnosis"] = diagnose_failure(result)
     if json_output:
@@ -270,7 +266,27 @@ def validate(
         for stage in result.get("stages", []):
             console.print(f"• {stage['phase']}: {stage.get('status', 'passed' if stage['success'] else 'failed')}", markup=False)
         if result.get("diagnosis"):
-            console.print("Diagnosis: " + result["diagnosis"]["summary"], markup=False)
+            diagnosis = result["diagnosis"]
+            console.print("Diagnosis: " + diagnosis["summary"] + " (" + diagnosis["confidence"] + " confidence)", markup=False)
+            console.print("Likely cause: " + diagnosis["likely_causes"][0], markup=False)
+            for evidence in diagnosis["evidence"]:
+                console.print("Evidence [" + evidence["source"] + "]: " + evidence["excerpt"], markup=False)
+            console.print("Action: " + diagnosis["suggested_actions"][0], markup=False)
+            console.print("Impact: " + diagnosis["expected_impact"], markup=False)
+            console.print("Verify: " + diagnosis["verification"], markup=False)
+            console.print(diagnosis["uncertainty"], markup=False)
+            if not verbose:
+                console.print(diagnosis["details_hint"], markup=False)
+        if result.get("project") and isinstance(result["project"], dict):
+            print_project(result["project"])
+        if verbose:
+            for command in result.get("results", []) + result.get("cleanup", {}).get("results", []):
+                console.print("Command: " + command.get("command", "unknown"), markup=False)
+                for key in ("stdout", "stderr"):
+                    if command.get(key):
+                        console.print(key + ": " + command[key], markup=False)
+            if result.get("logs"):
+                console.print("Service logs:\n" + result["logs"], markup=False)
         if result.get("error"):
             console.print(result["error"], markup=False)
         if result.get("next_action"):
