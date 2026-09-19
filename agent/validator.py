@@ -11,7 +11,7 @@ import tempfile
 import time
 import uuid
 from pathlib import Path
-from agent.safety import Journal, Redactor, authorize, project_lock
+from agent.safety import Journal, Redactor, authorize, project_lock, repository_fingerprint
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlparse
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
@@ -427,6 +427,7 @@ def _journaled_validation(path, compose_file=None, build=False, run=False, keep_
     """Sanitize reports and journal authorized execution before side effects."""
     redactor = Redactor(path)
     journal = None
+    inputs = repository_fingerprint(path) if run else None
     try:
         if build or run:
             action = "run" if run else "build"
@@ -438,6 +439,11 @@ def _journaled_validation(path, compose_file=None, build=False, run=False, keep_
     except (OSError, ValueError):
         result = {"success": False, "phase": "safety", "error": "Private execution journal could not be created; execution was refused.",
                   "cleanup": {"status": "not_needed"}, "environment_state": "not_started"}
+    result["repair_context"] = {
+        "inputs_sha256": inputs, "compose_file": compose_file,
+        "health_path": health_path, "service": service, "container_port": container_port,
+        "timeout": timeout, "readiness_timeout": readiness_timeout,
+    }
     result = redactor.clean(result)
     if journal:
         result["session_id"] = journal.id

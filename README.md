@@ -63,6 +63,11 @@ Applied edits now have private recovery records; `history` lists actions and
 Reports are redacted, and runtime operations enforce project scope. See
 [execution safeguards](docs/execution-safety.md) for approvals, storage, and limits.
 
+A small [bounded repair workflow](docs/bounded-repair.md) can propose an available
+host port for generated Compose files or retry a supplied readiness route.
+`repair --apply --expect ID` authorizes one verification attempt; unsuccessful
+file edits receive guarded rollback and repeated attempts are refused.
+
 ## Reproduce the baseline
 
 The [step-2 baseline](docs/baseline.md) records the checkpoint, environment,
@@ -78,7 +83,7 @@ python3.12 -m venv .venv
 ```
 
 The historical step-2 baseline has **14 passing checks and 8 known acceptance gaps**.
-After [step 7](docs/execution-safety.md), the expanded suite has **118 passing
+After [step 8](docs/bounded-repair.md), the expanded suite has **138 passing
 checks and zero expected failures**; G01–G08 are now passing regression checks.
 An expected failure documents missing product behavior; it is not a release
 pass. Docker evidence is separately opt-in. The historical storage-blocked result

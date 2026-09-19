@@ -13,6 +13,7 @@ from agent.docker_generator import propose_docker_files, apply_docker_proposal
 from agent.validator import validate_docker
 from agent.diagnostics import diagnose_failure
 from agent.safety import Redactor, recovery, history
+from agent.repair import propose_repair, apply_repair
 
 
 app = typer.Typer()
@@ -271,6 +272,8 @@ def validate(
     else:
         console.print(Panel.fit("Docker validation", style="bold cyan"))
         console.print(("Passed: " if result["success"] else "Failed: ") + result["phase"], markup=False)
+        if result.get("session_id"):
+            console.print("Session: " + result["session_id"], markup=False)
         for stage in result.get("stages", []):
             console.print(f"• {stage['phase']}: {stage.get('status', 'passed' if stage['success'] else 'failed')}", markup=False)
         if result.get("diagnosis"):
@@ -312,6 +315,69 @@ def validate(
             console.print("Unverified: " + item, markup=False)
     if not result["success"]:
         raise typer.Exit(code=130 if result["phase"] == "cancelled" else 1)
+
+
+@app.command()
+def repair(
+    path: Annotated[str, typer.Argument(help="Application directory")],
+    session: Annotated[str, typer.Option("--session", help="Failed runtime validation session ID")],
+    host_port: Annotated[int | None, typer.Option("--host-port", min=1024, max=65535)] = None,
+    health_path: Annotated[str | None, typer.Option("--health-path", help="Existing unauthenticated readiness route")] = None,
+    apply: Annotated[bool, typer.Option("--apply", help="Authorize the reviewed repair and one runtime verification")] = False,
+    expect: Annotated[str | None, typer.Option("--expect", help="Required reviewed proposal ID when applying")] = None,
+    json_output: Annotated[bool, typer.Option("--json")] = False,
+):
+    """Preview a supported repair; apply only after reviewing its exact ID."""
+    try:
+        plan = propose_repair(path, session, host_port=host_port, health_path=health_path)
+        if expect is not None and not apply:
+            raise ValueError("--expect requires --apply.")
+        result = apply_repair(plan, expect) if apply else plan
+        if json_output:
+            typer.echo(json.dumps(result, indent=2))
+        else:
+            console.print("Repair: " + result['status'], markup=False)
+            if not apply:
+                if plan.get('diagnosis'):
+                    console.print(plan['diagnosis']['summary'], markup=False)
+                for key in ('summary', 'impact', 'verification', 'approval'):
+                    if plan.get(key):
+                        console.print(plan[key], markup=False)
+                for change in plan['changes']:
+                    console.print(change['diff'], markup=False, highlight=False)
+                for blocker in plan['blockers']:
+                    console.print("Blocked: " + blocker, markup=False)
+                if plan['status'] == 'blocked' and plan.get('diagnosis'):
+                    console.print("Manual action: " + plan['diagnosis']['suggested_actions'][0], markup=False)
+                if plan.get('id'):
+                    console.print("Proposal ID: " + plan['id'], markup=False)
+                console.print("Attempt limit: 1. Preview performs no repair or Docker execution.", markup=False)
+            else:
+                console.print("Session: " + result['session_id'], markup=False)
+                console.print("Attempts: " + str(result['attempts']), markup=False)
+                console.print("Rollback: " + result['rollback']['status'], markup=False)
+                for key in ('summary', 'error', 'next_action'):
+                    if result.get(key):
+                        console.print(result[key], markup=False)
+                if result.get('diagnosis'):
+                    console.print("Diagnosis: " + result['diagnosis']['summary'], markup=False)
+                    console.print("Manual action: " + result['diagnosis']['suggested_actions'][0], markup=False)
+                if result.get('validation'):
+                    console.print("Validation: " + result['validation']['phase'], markup=False)
+                    console.print("Cleanup: " + result['validation'].get('cleanup', {}).get('status', 'unknown'), markup=False)
+                    check = result['validation'].get('application_check') or {}
+                    if check.get('url'):
+                        console.print("Checked endpoint: " + check['url'], markup=False)
+                console.print("Use --json for full sanitized evidence; successful runs are stopped after verification.", markup=False)
+        if (apply and not result['success']) or (not apply and result['status'] != 'ready'):
+            raise typer.Exit(130 if result.get('status') == 'cancelled' else 1)
+    except (OSError, ValueError, KeyError, TypeError) as error:
+        message = Redactor(path).text(str(error))
+        if json_output:
+            typer.echo(json.dumps({'success': False, 'status': 'refused', 'error': message}))
+        else:
+            console.print("Repair refused: " + message, markup=False)
+        raise typer.Exit(1) from None
 
 
 @app.command()

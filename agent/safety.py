@@ -20,6 +20,7 @@ ACTIONS = {
     "inspect": "read_only",
     "apply": "reversible_project_edit",
     "recover": "reversible_project_edit",
+    "repair": "bounded_project_repair",
     "build": "project_build",
     "run": "project_service_management",
 }
@@ -229,9 +230,9 @@ def _recovery(path, session_id, apply=False):
     if record.is_symlink() or not record.is_file() or record.stat().st_mode & 0o077:
         raise ValueError('Recovery record is missing or has unsafe permissions.')
     data = json.loads(record.read_text())
-    if data.get('repository') != str(root) or data.get('action') != 'apply' or not data.get('changes'):
+    if data.get('repository') != str(root) or data.get('action') not in ('apply', 'repair') or not data.get('changes'):
         raise ValueError('Recovery record does not belong to this project edit.')
-    if data.get('status') not in ('applied', 'prepared'):
+    if data.get('status') not in ('applied', 'prepared', 'repaired'):
         raise ValueError('This session cannot be automatically recovered; inspect incomplete records manually.')
     prepared = []
     if len({c['path'] for c in data['changes']}) != len(data['changes']):
@@ -289,3 +290,37 @@ def recovery(path, session_id, apply=False):
         with project_lock(path):
             return _recovery(path, session_id, apply=True)
     return _recovery(path, session_id)
+
+
+def repository_fingerprint(path):
+    """Bounded source snapshot for stale repair refusal, never expose file values."""
+    root = Path(path).resolve()
+    excluded = {'.git', '.venv', 'venv', 'node_modules', '.next', '__pycache__',
+                'work', 'dist', 'build', 'coverage', '.devops-agent'}
+    digest = hashlib.sha256()
+    count = total = 0
+    def unreadable(error):
+        raise error
+
+    try:
+        for parent, dirs, files in os.walk(root, followlinks=False, onerror=unreadable):
+            dirs[:] = sorted(d for d in dirs if d not in excluded and not d.endswith('.egg-info'))
+            if any((Path(parent) / d).is_symlink() for d in dirs):
+                return None
+            for name in sorted(files):
+                item = Path(parent) / name
+                if item.is_symlink() or not item.is_file():
+                    return None
+                count += 1
+                total += item.stat().st_size
+                if count > 2000 or total > 32 * 1024 * 1024:
+                    return None
+                digest.update(str(item.relative_to(root)).encode() + b'\0')
+                with item.open('rb') as stream:
+                    content = stream.read(32 * 1024 * 1024 + 1)
+                if len(content) > 32 * 1024 * 1024:
+                    return None
+                digest.update(sha(content).encode())
+        return digest.hexdigest()
+    except OSError:
+        return None

@@ -193,3 +193,28 @@ and readiness deadlines are 600 and 120 seconds. Shared base images and build
 cache remain; no global pruning is performed. This is a development image/startup
 check, not a production `next build`. The successful run retained about 24 GiB
 of free host space. Historical baseline evidence is not overwritten.
+
+
+## Step-8 bounded repair
+
+The canonical runner includes `test_repair.py`; the full offline suite has 138
+passing checks. It tests approval and input binding, successful repair, rollback,
+cancellation, concurrent user edits, repeated-attempt refusal, scope exclusions,
+CLI output and secret redaction. Loopback sockets reproduce port ownership;
+Docker execution is replaced by explicit boundary fixtures in this suite.
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m tests.docker_repair_smoke --output work/step8-docker.json
+```
+
+The opt-in real runner exercises generated Next.js port repair and a supplied
+unauthenticated `/health` path after an observed HTTP 401. It requires Docker,
+8 GiB of free space, and image/npm download or cache access. Journals and Buildx
+metadata use private temporary directories. Each validator run cleans its owned
+resources, and the runner independently checks that no run containers remain.
+See [bounded repair](../docs/bounded-repair.md) for usage, bounds and recovery.
+
+The step-8 real Docker run passed both repair kinds and verified cleanup, with
+evidence in `work/step8-docker.json`. The fixture waits for Docker Desktop to
+release its own previous port before approving the readiness-path retry; this
+pre-approval wait is separate from the single allowed repair attempt.

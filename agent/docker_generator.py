@@ -47,6 +47,18 @@ def digest(content):
     return hashlib.sha256(content).hexdigest()
 
 
+def development_compose(mounts, host_port=3000):
+    compose = ('# Local development only.\nservices:\n  app:\n    build: .\n'
+               f'    ports:\n      - "127.0.0.1:{host_port}:3000"\n')
+    if mounts:
+        compose += "    volumes:\n"
+        for filename in mounts:
+            compose += (f"      - type: bind\n        source: ./{filename}\n"
+                        f"        target: /app/{filename}\n        read_only: true\n"
+                        "        bind:\n          create_host_path: false\n")
+    return compose
+
+
 def propose_docker_files(path):
     """Read current evidence and return a proposal without writing any files."""
     root = Path(path).resolve()
@@ -74,14 +86,7 @@ def propose_docker_files(path):
             # Inspection verifies readability and containment. Never embed values.
             read_text(root, filename)
             mounts.append(filename)
-    compose = ('# Local development only.\nservices:\n  app:\n    build: .\n'
-               '    ports:\n      - "127.0.0.1:3000:3000"\n')
-    if mounts:
-        compose += "    volumes:\n"
-        for filename in mounts:
-            compose += (f"      - type: bind\n        source: ./{filename}\n"
-                        f"        target: /app/{filename}\n        read_only: true\n"
-                        "        bind:\n          create_host_path: false\n")
+    compose = development_compose(mounts)
     expected = {
         "Dockerfile": (DOCKERFILE, "Use Node 22, install the reviewed npm lockfile with npm ci, and run the declared dev script."),
         "docker-compose.yml": (compose, "Expose the single app on loopback port 3000; mount existing development dotenv files read-only for Next.js to load." if mounts else "Expose the single app on loopback port 3000. No environment file is required."),

@@ -1,9 +1,9 @@
 # Execution safeguards — step 7
 
 The CLI now applies an explicit action policy, records mutations in private local
-journals, protects existing edits, and supports guarded recovery. No autonomous
-repair, deletion of unrelated resources, deployment, or arbitrary tool executor
-is introduced.
+journals, protects existing edits, and supports guarded recovery. Step 8 adds a
+[narrow approved repair flow](bounded-repair.md); deletion of unrelated resources,
+deployment, and arbitrary tool execution remain unsupported.
 
 ## Authorization and scope
 
@@ -14,6 +14,7 @@ is introduced.
 | Build images | `validate --build` | Project-local build context, run-specific image tags |
 | Start services | `validate --run` | Unique project, local Docker engine, loopback ports, scoped cleanup |
 | Preserve successful environment | `--run --keep-running` | Only that validated project; reports a scoped stop command |
+| Bounded repair | `repair --apply --expect ID` | One reviewed repair, one scoped validation, guarded rollback |
 | Restore pre-edit files | `recover PATH SESSION_ID --apply` | Matching original root, allowlisted files, unchanged post-apply hashes |
 | Destructive/external/infrastructure actions | Not implemented | No generic approval flag or arbitrary command dispatch |
 
