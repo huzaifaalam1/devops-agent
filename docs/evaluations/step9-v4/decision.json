@@ -1,0 +1,11 @@
+{
+  "acceptance_passed": false,
+  "reasons": [
+    "Need at least three explanation wins and no regressions over the deterministic baseline.",
+    "readiness-route-discrepancy: semantic review found a problem or remains incomplete."
+  ],
+  "explanation_wins": 0,
+  "explanation_losses": 2,
+  "reviewer_type": "agent",
+  "scope": "Four synthetic held-out cases; agent review is provisional, not independent human validation."
+}

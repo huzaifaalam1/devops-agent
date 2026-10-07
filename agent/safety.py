@@ -21,6 +21,7 @@ ACTIONS = {
     "apply": "reversible_project_edit",
     "recover": "reversible_project_edit",
     "repair": "bounded_project_repair",
+    "advise": "external_model_request",
     "build": "project_build",
     "run": "project_service_management",
 }
@@ -102,7 +103,7 @@ class Redactor:
         if isinstance(value, list):
             return [self.clean(item) for item in value]
         if isinstance(value, dict):
-            return {key: ('[REDACTED]' if SENSITIVE.search(str(key)) and item is not None else self.clean(item)) for key, item in value.items()}
+            return {key: ('[REDACTED]' if SENSITIVE.search(str(key)) and item is not None and not (key in ('input_tokens', 'output_tokens', 'total_tokens') and type(item) is int and 0 <= item <= 10_000_000) else self.clean(item)) for key, item in value.items()}
         return value
 
 

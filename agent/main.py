@@ -1,6 +1,7 @@
 from typing import Annotated
 
 import json
+import os
 import typer
 import platform
 from rich.console import Console
@@ -14,6 +15,7 @@ from agent.validator import validate_docker
 from agent.diagnostics import diagnose_failure
 from agent.safety import Redactor, recovery, history
 from agent.repair import propose_repair, apply_repair
+from agent.planning import advise as model_advice
 
 
 app = typer.Typer()
@@ -315,6 +317,57 @@ def validate(
             console.print("Unverified: " + item, markup=False)
     if not result["success"]:
         raise typer.Exit(code=130 if result["phase"] == "cancelled" else 1)
+
+
+@app.command()
+def advise(
+    path: Annotated[str, typer.Argument(help="Application directory")],
+    model: Annotated[str | None, typer.Option(help="Override .env/environment model; default depends on provider")] = None,
+    session: Annotated[str | None, typer.Option("--session", help="Optional current runtime validation session")] = None,
+    send: Annotated[bool, typer.Option("--send", help="Send the reviewed sanitized request to the selected provider; grants no execution authority")] = False,
+    expect: Annotated[str | None, typer.Option("--expect", help="Required reviewed request ID when sending")] = None,
+    max_output_tokens: Annotated[int, typer.Option("--max-output-tokens", min=256, max=4096)] = 2000,
+    input_rate: Annotated[float | None, typer.Option("--input-rate", min=0, help="Optional USD per million input tokens for estimation")] = None,
+    output_rate: Annotated[float | None, typer.Option("--output-rate", min=0, help="Optional USD per million output tokens for estimation")] = None,
+    json_output: Annotated[bool, typer.Option("--json")] = False,
+):
+    """Preview model evidence; --send requires its exact reviewed ID."""
+    try:
+        result = model_advice(path, model, session=session,
+                              send=send, expect=expect, max_output_tokens=max_output_tokens,
+                              input_rate=input_rate, output_rate=output_rate)
+        if json_output:
+            typer.echo(json.dumps(result, indent=2))
+        elif not send:
+            console.print("Model request preview: " + result['request']['model'], markup=False)
+            console.print("Destination: " + result['endpoint'], markup=False)
+            console.print(result['notice'], markup=False)
+            bundle = json.loads(result['request']['input'][0]['content'])
+            for fact in bundle['facts']:
+                console.print(f"{fact['id']} [{fact['source']}]: " + json.dumps(fact['value']), markup=False)
+            for action in bundle['actions']:
+                console.print(action['id'] + ": " + action['description'], markup=False)
+            console.print("Request ID: " + result['id'], markup=False)
+            console.print("Use --json to inspect the complete request; --send --expect ID sends it with the bounded retry policy.", markup=False)
+        else:
+            console.print("Unverified model advice: " + result['status'], markup=False)
+            for hypothesis in result.get('plan', {}).get('hypotheses', []):
+                console.print("Hypothesis: " + hypothesis['text'] + " [" + ', '.join(hypothesis['evidence_ids']) + "]", markup=False)
+            for step in result.get('plan', {}).get('steps', []):
+                console.print("Proposed " + step['action_id'] + ": " + step['reason'], markup=False)
+            for uncertainty in result.get('plan', {}).get('uncertainties', []):
+                console.print("Limit: " + uncertainty, markup=False)
+            if result.get('error'):
+                console.print(result['error'], markup=False)
+            console.print("Deterministic baseline: " + result['baseline']['description'], markup=False)
+            console.print("Actions executed: 0. " + result['notice'], markup=False)
+            console.print("Metrics: " + json.dumps(result['metrics']), markup=False)
+        if send and not result['success']:
+            raise typer.Exit(130 if result['status'] == 'cancelled' else 1)
+    except (OSError, ValueError, KeyError) as error:
+        message = Redactor(path).text(str(error))
+        typer.echo(json.dumps({'success': False, 'status': 'refused', 'error': message}) if json_output else message)
+        raise typer.Exit(1) from None
 
 
 @app.command()

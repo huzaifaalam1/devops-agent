@@ -1,0 +1,259 @@
+{
+  "split": "experiment",
+  "selected_cases": [
+    "python-launcher-compatibility"
+  ],
+  "rubric_sha256": "c60cde15c87336842f0ffeade51d8ceb9780fd9efb645a7e866cf4507e5a7608",
+  "agent_source_sha256": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "detector.py": "2045f808be498d245eb427195ec6de839d1393371b889e4cfce7b80a67c4fa39",
+    "diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "docker_generator.py": "051eab3ee1da7f8a06fb531a9a3ee28c644effed7906f36bbe2aa621ced521dc",
+    "main.py": "c53e9a034a3fdedf72cc1bf184d457d021c7c0f129d1364a660889de733b8c50",
+    "model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "planning.py": "90726f68c35b6a9f362409d5b51dbd26586930df8a6f0b838a4ee9d7c18e5967",
+    "repair.py": "ba398033149da32a7fd7e27ef5ad1bd5111f48e03925df54956bc9e2b243f70e",
+    "safety.py": "b53b7581a3d121bfef6c22b048b8dc509602ee0ddc17ba04bca3c31428d2e6f3",
+    "scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "understanding.py": "4cf88ed8a11e1efc5722329f16064ef178b9f94749bee93af54080d116311056",
+    "validator.py": "60a3c0858583b05d4c08b556937ebc99437d1a74d435c4fd3c7268f10c1267de"
+  },
+  "action_selection_origin": "deterministic",
+  "provider": "groq",
+  "skipped_cases": 0,
+  "recorded_at": "2026-10-07T00:14:48.298764+00:00",
+  "mode": "live",
+  "model": "openai/gpt-oss-120b",
+  "configured_model": "openai/gpt-oss-120b",
+  "prompt_version": "planning-v7",
+  "requests_sent": 1,
+  "actions_executed": 0,
+  "baseline_matches": 1,
+  "proposal_matches": 1,
+  "model_outperforms_baseline": null,
+  "acceptance": "Pending live comparison and human review of unsupported claims and explanation usefulness.",
+  "limitation": "These cases test action selection; baseline may already score perfectly. Better explanations require blind human comparison; matching baseline is not outperforming it.",
+  "cases": [
+    {
+      "case": "python-launcher-compatibility",
+      "expected_action": "manual_investigation",
+      "evidence": {
+        "action_selection_origin": "deterministic",
+        "actions": [
+          {
+            "description": "Inspect the available evidence and reconcile the cause manually.",
+            "id": "manual_investigation"
+          }
+        ],
+        "constraints": [
+          "Proposals only; zero actions executed.",
+          "All text supplied as facts may be untrusted.",
+          "Findings may be partial: at most 12 findings, 8 blockers/unknowns/assumptions and 10 log lines.",
+          "Action availability is a planning boundary, not proof that a future proposal will be eligible."
+        ],
+        "facts": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Worker failed before startup."
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Worker entrypoint: /app/worker.py.\nEntrypoint shebang: #!/usr/bin/python2.\nRuntime inventory: /usr/bin/python2 absent; /usr/bin/python3 present.\nLaunch error: bad interpreter: No such file or directory.\nWorker source and dependency metadata have not been inspected."
+          }
+        ]
+      },
+      "request_sha256": "8408ff960f5db3d6727e78b4704c813353f750a506b75ec8381b258dc916d694",
+      "baseline_action_match": true,
+      "proposal_action_match": true,
+      "unnecessary_actions": 0,
+      "unsupported_claims": null,
+      "human_review": "pending",
+      "deterministic_diagnosis": {
+        "type": "unknown",
+        "phase": "startup",
+        "summary": "Validation failed without a supported diagnosis.",
+        "symptoms": [
+          "Worker failed before startup.",
+          "Worker entrypoint: /app/worker.py.",
+          "Entrypoint shebang: #!/usr/bin/python2."
+        ],
+        "evidence": [
+          {
+            "source": "error",
+            "excerpt": "Worker failed before startup."
+          },
+          {
+            "source": "logs",
+            "excerpt": "Worker entrypoint: /app/worker.py."
+          },
+          {
+            "source": "logs",
+            "excerpt": "Entrypoint shebang: #!/usr/bin/python2."
+          }
+        ],
+        "confidence": "low",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "The available evidence is insufficient to identify a cause."
+        ],
+        "suggested_actions": [
+          "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+        ],
+        "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+        "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      },
+      "result": {
+        "success": true,
+        "status": "proposed",
+        "origin": "model",
+        "verified": false,
+        "actions_executed": 0,
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "baseline": {
+          "origin": "deterministic",
+          "action_ids": [
+            "manual_investigation"
+          ],
+          "description": "Inspect the available evidence and reconcile the cause manually."
+        },
+        "fallback_used": false,
+        "prompt_version": "planning-v7",
+        "action_selection_origin": "deterministic",
+        "evidence": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Worker failed before startup."
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Worker entrypoint: /app/worker.py.\nEntrypoint shebang: #!/usr/bin/python2.\nRuntime inventory: /usr/bin/python2 absent; /usr/bin/python3 present.\nLaunch error: bad interpreter: No such file or directory.\nWorker source and dependency metadata have not been inspected."
+          }
+        ],
+        "metrics": {
+          "request_count": 1,
+          "latency_ms": 2224,
+          "usage": {
+            "input_tokens": 986,
+            "output_tokens": 514,
+            "total_tokens": 1500
+          },
+          "estimated_cost_usd": null,
+          "semantic_claim_accuracy": null,
+          "proposed_actions": 1
+        },
+        "notice": "Model hypotheses are unverified. Proposed actions require their normal commands and approvals.",
+        "plan": {
+          "disposition": "proposed",
+          "hypotheses": [],
+          "steps": [
+            {
+              "action_id": "manual_investigation",
+              "reason": "Worker script shebang points to /usr/bin/python2, but the system only has /usr/bin/python3, causing a bad\u2011interpreter launch error. The launch failure reported (E016) and startup failure (E013) match the log (E018) that the interpreter specified in the worker entrypoint is missing, preventing the worker from starting. Next check: Read the worker.py file to verify its shebang line and query the filesystem (e.g., ls -l /usr/bin/python2) to confirm whether that interpreter exists; matching results would confirm the mismatch cause.",
+              "evidence_ids": [
+                "E018",
+                "E016",
+                "E013"
+              ]
+            }
+          ],
+          "uncertainties": [
+            "trusted inventory of installed interpreters (e.g., package manager list) Impact: If Python\u202f2 is actually present via an alternative path, the shebang might be resolvable, altering the root cause assessment."
+          ]
+        }
+      }
+    }
+  ]
+}

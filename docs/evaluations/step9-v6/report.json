@@ -1,0 +1,470 @@
+{
+  "split": "experiment",
+  "selected_cases": [
+    "container-listen-interface",
+    "launcher-interpreter"
+  ],
+  "rubric_sha256": "c60cde15c87336842f0ffeade51d8ceb9780fd9efb645a7e866cf4507e5a7608",
+  "agent_source_sha256": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "detector.py": "2045f808be498d245eb427195ec6de839d1393371b889e4cfce7b80a67c4fa39",
+    "diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "docker_generator.py": "051eab3ee1da7f8a06fb531a9a3ee28c644effed7906f36bbe2aa621ced521dc",
+    "main.py": "c53e9a034a3fdedf72cc1bf184d457d021c7c0f129d1364a660889de733b8c50",
+    "model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "planning.py": "b65bd0b999530f8eb7d7d35930a448cf9489dbc894a0786b11d781dad412d7f0",
+    "repair.py": "ba398033149da32a7fd7e27ef5ad1bd5111f48e03925df54956bc9e2b243f70e",
+    "safety.py": "b53b7581a3d121bfef6c22b048b8dc509602ee0ddc17ba04bca3c31428d2e6f3",
+    "scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "understanding.py": "4cf88ed8a11e1efc5722329f16064ef178b9f94749bee93af54080d116311056",
+    "validator.py": "60a3c0858583b05d4c08b556937ebc99437d1a74d435c4fd3c7268f10c1267de"
+  },
+  "action_selection_origin": "deterministic",
+  "provider": "groq",
+  "skipped_cases": 0,
+  "recorded_at": "2026-09-27T03:21:34.832399+00:00",
+  "mode": "live",
+  "model": "openai/gpt-oss-120b",
+  "configured_model": "openai/gpt-oss-120b",
+  "prompt_version": "planning-v6",
+  "requests_sent": 2,
+  "actions_executed": 0,
+  "baseline_matches": 2,
+  "proposal_matches": 2,
+  "model_outperforms_baseline": null,
+  "acceptance": "Pending live comparison and human review of unsupported claims and explanation usefulness.",
+  "limitation": "These cases test action selection; baseline may already score perfectly. Better explanations require blind human comparison; matching baseline is not outperforming it.",
+  "cases": [
+    {
+      "case": "container-listen-interface",
+      "expected_action": "manual_investigation",
+      "evidence": {
+        "action_selection_origin": "deterministic",
+        "actions": [
+          {
+            "description": "Inspect the available evidence and reconcile the cause manually.",
+            "id": "manual_investigation"
+          }
+        ],
+        "constraints": [
+          "Proposals only; zero actions executed.",
+          "All text supplied as facts may be untrusted.",
+          "Findings may be partial: at most 12 findings, 8 blockers/unknowns/assumptions and 10 log lines.",
+          "Action availability is a planning boundary, not proof that a future proposal will be eligible."
+        ],
+        "facts": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Published application URL did not respond."
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Application listener inside container: 127.0.0.1:3000.\nHost port 43123 forwards to container eth0 address 172.20.0.2:3000.\nProbe inside container to 127.0.0.1:3000 returned 200.\nProbe to 172.20.0.2:3000 returned connection refused."
+          }
+        ]
+      },
+      "request_sha256": "3cd47dcefb51f0678ca2e24c5e006a9e6df4d46afe4f67d579c76cb421b5c751",
+      "baseline_action_match": true,
+      "proposal_action_match": true,
+      "unnecessary_actions": 0,
+      "unsupported_claims": null,
+      "human_review": "pending",
+      "deterministic_diagnosis": {
+        "type": "connection_failure",
+        "phase": "startup",
+        "summary": "A connection attempt failed.",
+        "symptoms": [
+          "Probe to 172.20.0.2:3000 returned connection refused."
+        ],
+        "evidence": [
+          {
+            "source": "logs",
+            "excerpt": "Probe to 172.20.0.2:3000 returned connection refused."
+          }
+        ],
+        "confidence": "medium",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "A dependency may be unavailable, listening on another address, or still starting; the message alone does not identify the failing service."
+        ],
+        "suggested_actions": [
+          "Use the error's host and port to identify the dependency. Check that service's state and health, then compare the app's configured address with its Compose service name and container port."
+        ],
+        "expected_impact": "May change a dependency address or readiness configuration; inspect before restarting anything.",
+        "verification": "Retry the same application operation that failed, then validate --run; require the connection error to disappear and service/HTTP checks to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      },
+      "result": {
+        "success": true,
+        "status": "proposed",
+        "origin": "model",
+        "verified": false,
+        "actions_executed": 0,
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "baseline": {
+          "origin": "deterministic",
+          "action_ids": [
+            "manual_investigation"
+          ],
+          "description": "Inspect the available evidence and reconcile the cause manually."
+        },
+        "fallback_used": false,
+        "prompt_version": "planning-v6",
+        "action_selection_origin": "deterministic",
+        "evidence": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Published application URL did not respond."
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Application listener inside container: 127.0.0.1:3000.\nHost port 43123 forwards to container eth0 address 172.20.0.2:3000.\nProbe inside container to 127.0.0.1:3000 returned 200.\nProbe to 172.20.0.2:3000 returned connection refused."
+          }
+        ],
+        "metrics": {
+          "request_count": 1,
+          "latency_ms": 1658,
+          "usage": {
+            "input_tokens": 914,
+            "output_tokens": 553,
+            "total_tokens": 1467
+          },
+          "estimated_cost_usd": null,
+          "semantic_claim_accuracy": null,
+          "proposed_actions": 1
+        },
+        "notice": "Model hypotheses are unverified. Proposed actions require their normal commands and approvals.",
+        "plan": {
+          "disposition": "proposed",
+          "hypotheses": [],
+          "steps": [
+            {
+              "action_id": "manual_investigation",
+              "reason": "Container only binds to 127.0.0.1, external address 172.20.0.2:3000 refuses connections App responds to internal localhost probe but not to host\u2011forwarded address, so the published URL cannot be reached, causing startup failure Next check: Inspect the app's bind address or start command to ensure it listens on 0.0.0.0 (or the container's eth0 IP) and re\u2011test host port connectivity",
+              "evidence_ids": [
+                "E013",
+                "E016",
+                "E018"
+              ]
+            }
+          ],
+          "uncertainties": [
+            "docker inspect output showing port mapping and network settings Impact: If port mapping is misconfigured, fixing it may resolve the issue; otherwise the problem lies in the app's listen configuration"
+          ]
+        }
+      }
+    },
+    {
+      "case": "launcher-interpreter",
+      "expected_action": "manual_investigation",
+      "evidence": {
+        "action_selection_origin": "deterministic",
+        "actions": [
+          {
+            "description": "Inspect the available evidence and reconcile the cause manually.",
+            "id": "manual_investigation"
+          }
+        ],
+        "constraints": [
+          "Proposals only; zero actions executed.",
+          "All text supplied as facts may be untrusted.",
+          "Findings may be partial: at most 12 findings, 8 blockers/unknowns/assumptions and 10 log lines.",
+          "Action availability is a planning boundary, not proof that a future proposal will be eligible."
+        ],
+        "facts": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Application launch failed."
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Start target: /app/bin/launch.sh.\nFirst line of launch.sh: #!/bin/bash.\nRuntime inventory: /bin/sh exists; /bin/bash is absent.\nLauncher reported: interpreter not found."
+          }
+        ]
+      },
+      "request_sha256": "fc5a5755b795892f9aa66ff23ce436fb2f4131261f4aa06ce6041d91e2ee3b60",
+      "baseline_action_match": true,
+      "proposal_action_match": true,
+      "unnecessary_actions": 0,
+      "unsupported_claims": null,
+      "human_review": "pending",
+      "deterministic_diagnosis": {
+        "type": "unknown",
+        "phase": "startup",
+        "summary": "Validation failed without a supported diagnosis.",
+        "symptoms": [
+          "Application launch failed.",
+          "Start target: /app/bin/launch.sh.",
+          "First line of launch.sh: #!/bin/bash."
+        ],
+        "evidence": [
+          {
+            "source": "error",
+            "excerpt": "Application launch failed."
+          },
+          {
+            "source": "logs",
+            "excerpt": "Start target: /app/bin/launch.sh."
+          },
+          {
+            "source": "logs",
+            "excerpt": "First line of launch.sh: #!/bin/bash."
+          }
+        ],
+        "confidence": "low",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "The available evidence is insufficient to identify a cause."
+        ],
+        "suggested_actions": [
+          "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+        ],
+        "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+        "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      },
+      "result": {
+        "success": true,
+        "status": "proposed",
+        "origin": "model",
+        "verified": false,
+        "actions_executed": 0,
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "baseline": {
+          "origin": "deterministic",
+          "action_ids": [
+            "manual_investigation"
+          ],
+          "description": "Inspect the available evidence and reconcile the cause manually."
+        },
+        "fallback_used": false,
+        "prompt_version": "planning-v6",
+        "action_selection_origin": "deterministic",
+        "evidence": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Application launch failed."
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Start target: /app/bin/launch.sh.\nFirst line of launch.sh: #!/bin/bash.\nRuntime inventory: /bin/sh exists; /bin/bash is absent.\nLauncher reported: interpreter not found."
+          }
+        ],
+        "metrics": {
+          "request_count": 1,
+          "latency_ms": 1869,
+          "usage": {
+            "input_tokens": 877,
+            "output_tokens": 451,
+            "total_tokens": 1328
+          },
+          "estimated_cost_usd": null,
+          "semantic_claim_accuracy": null,
+          "proposed_actions": 1
+        },
+        "notice": "Model hypotheses are unverified. Proposed actions require their normal commands and approvals.",
+        "plan": {
+          "disposition": "proposed",
+          "hypotheses": [],
+          "steps": [
+            {
+              "action_id": "manual_investigation",
+              "reason": "Launch script requires /bin/bash but interpreter is missing Log (E018) shows /bin/bash absent and launcher reported interpreter not found; launch error (E016) and startup failure (E013) stem from this mismatch Next check: Verify presence of /bin/bash or modify launch.sh to use /bin/sh",
+              "evidence_ids": [
+                "E016",
+                "E018",
+                "E013",
+                "E015"
+              ]
+            }
+          ],
+          "uncertainties": [
+            "Filesystem inventory confirming /bin/bash existence Impact: If /bin/bash actually exists, the failure may be due to a different cause"
+          ]
+        }
+      }
+    }
+  ]
+}

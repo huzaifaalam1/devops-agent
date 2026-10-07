@@ -10,8 +10,9 @@ npm** locally with Docker, and report evidence that the intended app is ready.
 The initial target is macOS with Docker Desktop and Docker Compose v2.
 
 This is the first release **target**, not a claim of verified support today.
-The implementation is experimental, uses fixed rules and templates, and has no
-model-driven planning or general autonomous repair loop. Framework detection
+The implementation is experimental. Deterministic rules and templates control
+execution; optional model advice proposes evidence-linked plans without executing
+them. There is no general autonomous repair loop. Framework detection
 does not imply that generation or runtime validation works for that framework.
 
 See the [product scope and acceptance criteria](docs/product-scope.md) for the
@@ -90,3 +91,20 @@ pass. Docker evidence is separately opt-in. The historical storage-blocked resul
 is preserved. Step 7 now also passes the real generated Next.js development
 workflow: image build, startup, HTTP 200 with the fixture page marker, and cleanup.
 This verifies the pinned minimal fixture, not production builds or every Next.js app.
+
+## Model planning (step 9)
+
+`python -m agent.main advise /path/to/app --json` previews
+the sanitized outbound evidence. Sending requires `--send --expect REVIEWED_ID`
+and `GROQ_API_KEY` pasted into this repository’s Git-ignored `.env` file.
+The provider defaults to Groq with `openai/gpt-oss-120b`; no environment exports are needed. Suggestions remain unverified and
+require the normal commands and approvals to act on them.
+No automatic paid-provider fallback is enabled.
+See [model planning and evaluation](docs/model-planning.md) for limits, costs,
+validation-session context, and the live quality acceptance gate.
+
+The current model contract is explanation-only: local policy supplies the action
+and follow-up guidance. 183 offline tests pass; the four-case V8 live evaluation
+passed provisional implementing-agent review. See the [retained result and
+limitations](docs/evaluations/step9-v8/review.md); this is not independent or
+production validation.

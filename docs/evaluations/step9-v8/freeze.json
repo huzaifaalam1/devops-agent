@@ -1,0 +1,29 @@
+{
+  "frozen_at": "2026-10-07T00:22:22.087550+00:00",
+  "prompt_version": "planning-v8",
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "interval_seconds": 60,
+  "retries": false,
+  "files": {
+    "agent/validator.py": "60a3c0858583b05d4c08b556937ebc99437d1a74d435c4fd3c7268f10c1267de",
+    "agent/repair.py": "ba398033149da32a7fd7e27ef5ad1bd5111f48e03925df54956bc9e2b243f70e",
+    "agent/detector.py": "2045f808be498d245eb427195ec6de839d1393371b889e4cfce7b80a67c4fa39",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/understanding.py": "4cf88ed8a11e1efc5722329f16064ef178b9f94749bee93af54080d116311056",
+    "agent/diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/safety.py": "b53b7581a3d121bfef6c22b048b8dc509602ee0ddc17ba04bca3c31428d2e6f3",
+    "agent/main.py": "c311b14d72de3ded6cdb26bf59ffdfebbe2f41622217d0c757b9536a16854d31",
+    "agent/docker_generator.py": "051eab3ee1da7f8a06fb531a9a3ee28c644effed7906f36bbe2aa621ced521dc",
+    "tests/planning_eval.py": "9f977a00e53ce1b7b99445a721cdb384dbc1c4efb0248a40884b170aaf7e41f5",
+    "tests/planning_review.py": "7ad36a73fe8c88a28dceba85262e6a448a5461410b76536bc9d402e6aaee22b3",
+    "/Users/huzaifaalam/Desktop/repos/devops-agent/tests/planning/rubric.json": "43b080e77fc8df335ea585f416dff0ec8555e166ebf571e94644c11da19744dd",
+    "docs/evaluations/step9-v8/prompt.txt": "a0e5b6c8a8926b3a7ca5eb286071dd95d94900d71a5cfcce53c38b806f1dadb0",
+    "docs/evaluations/step9-v8/cases.json": "e40b4c6a65c4b7edc0cd7151ebe582e686a326a7ddc79f74442c9ed71ce85fa2"
+  }
+}

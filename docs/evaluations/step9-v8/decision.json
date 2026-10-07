@@ -1,0 +1,8 @@
+{
+  "acceptance_passed": true,
+  "reasons": [],
+  "explanation_wins": 4,
+  "explanation_losses": 0,
+  "reviewer_type": "agent",
+  "scope": "Four synthetic held-out cases; agent review is provisional, not independent human validation."
+}

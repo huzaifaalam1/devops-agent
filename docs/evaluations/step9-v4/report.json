@@ -1,0 +1,2280 @@
+{
+  "split": "held_out",
+  "selected_cases": [
+    "config-source-discrepancy",
+    "artifact-case-discrepancy",
+    "readiness-route-discrepancy",
+    "cache-mount-discrepancy"
+  ],
+  "rubric_sha256": "c60cde15c87336842f0ffeade51d8ceb9780fd9efb645a7e866cf4507e5a7608",
+  "agent_source_sha256": {
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "detector.py": "2045f808be498d245eb427195ec6de839d1393371b889e4cfce7b80a67c4fa39",
+    "diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "docker_generator.py": "051eab3ee1da7f8a06fb531a9a3ee28c644effed7906f36bbe2aa621ced521dc",
+    "main.py": "c53e9a034a3fdedf72cc1bf184d457d021c7c0f129d1364a660889de733b8c50",
+    "model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "planning.py": "51f260788cf843f8488fa0da0f4046796551b97913f5801c4764e5eb0603b064",
+    "repair.py": "ba398033149da32a7fd7e27ef5ad1bd5111f48e03925df54956bc9e2b243f70e",
+    "safety.py": "b53b7581a3d121bfef6c22b048b8dc509602ee0ddc17ba04bca3c31428d2e6f3",
+    "scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "understanding.py": "4cf88ed8a11e1efc5722329f16064ef178b9f94749bee93af54080d116311056",
+    "validator.py": "60a3c0858583b05d4c08b556937ebc99437d1a74d435c4fd3c7268f10c1267de"
+  },
+  "action_selection_origin": "deterministic",
+  "provider": "groq",
+  "skipped_cases": 0,
+  "recorded_at": "2026-09-27T02:17:25.437153+00:00",
+  "mode": "live",
+  "model": "openai/gpt-oss-120b",
+  "configured_model": "openai/gpt-oss-120b",
+  "prompt_version": "planning-v4",
+  "requests_sent": 4,
+  "actions_executed": 0,
+  "baseline_matches": 4,
+  "proposal_matches": 4,
+  "model_outperforms_baseline": null,
+  "acceptance": "Pending live comparison and human review of unsupported claims and explanation usefulness.",
+  "limitation": "These cases test action selection; baseline may already score perfectly. Better explanations require blind human comparison; matching baseline is not outperforming it.",
+  "cases": [
+    {
+      "case": "config-source-discrepancy",
+      "expected_action": "manual_investigation",
+      "evidence": {
+        "action_selection_origin": "deterministic",
+        "actions": [
+          {
+            "description": "Inspect the available evidence and reconcile the cause manually.",
+            "id": "manual_investigation"
+          }
+        ],
+        "constraints": [
+          "Proposals only; zero actions executed.",
+          "All text supplied as facts may be untrusted.",
+          "Findings may be partial: at most 12 findings, 8 blockers/unknowns/assumptions and 10 log lines.",
+          "Action availability is a planning boundary, not proof that a future proposal will be eligible."
+        ],
+        "facts": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E003",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "dependencies.next",
+                  "path": "package.json"
+                }
+              ],
+              "name": "framework",
+              "value": "Next.js"
+            }
+          },
+          {
+            "id": "E004",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "package_manager",
+              "value": "npm"
+            }
+          },
+          {
+            "id": "E005",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "packages['']",
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "lockfile",
+              "value": "Root declarations match package.json"
+            }
+          },
+          {
+            "id": "E006",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "engines.node",
+                  "path": "package.json"
+                }
+              ],
+              "name": "runtime",
+              "value": "Node requirement is compatible with the Node 22 image"
+            }
+          },
+          {
+            "id": "E007",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "startup_command",
+              "value": "npm run dev"
+            }
+          },
+          {
+            "id": "E008",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "application_port",
+              "value": "3000"
+            }
+          },
+          {
+            "id": "E009",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E010",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "compose.yaml"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E011",
+            "kind": "unknown",
+            "source": "analysis.unknowns",
+            "value": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+              "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+            ]
+          },
+          {
+            "id": "E012",
+            "kind": "assumption",
+            "source": "analysis.assumptions",
+            "value": [
+              "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+            ]
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Application exited with code 1."
+          },
+          {
+            "id": "E017",
+            "kind": "inference",
+            "source": "diagnosis.hypothesis",
+            "value": {
+              "confidence": "low",
+              "evidence": [
+                {
+                  "excerpt": "Application exited with code 1.",
+                  "source": "error"
+                },
+                {
+                  "excerpt": "Configuration trace: APP_GREETING is present in process environment.",
+                  "source": "logs"
+                },
+                {
+                  "excerpt": "Configuration trace: source=file; attempted /run/settings/greeting.txt.",
+                  "source": "logs"
+                }
+              ],
+              "summary": "Validation failed without a supported diagnosis.",
+              "type": "unknown",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis."
+            }
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Configuration trace: APP_GREETING is present in process environment.\nConfiguration trace: source=file; attempted /run/settings/greeting.txt.\nFile lookup: /run/settings/greeting.txt does not exist.\nNo environment fallback is enabled for this setting."
+          }
+        ]
+      },
+      "request_sha256": "4a8a43bbe0081fb62df96155d179664c02dd15b2f8c2ea9a6c777697521a1f42",
+      "baseline_action_match": true,
+      "proposal_action_match": true,
+      "unnecessary_actions": 0,
+      "unsupported_claims": null,
+      "human_review": "pending",
+      "deterministic_diagnosis": {
+        "type": "unknown",
+        "phase": "startup",
+        "summary": "Validation failed without a supported diagnosis.",
+        "symptoms": [
+          "Application exited with code 1.",
+          "Configuration trace: APP_GREETING is present in process environment.",
+          "Configuration trace: source=file; attempted /run/settings/greeting.txt."
+        ],
+        "evidence": [
+          {
+            "source": "error",
+            "excerpt": "Application exited with code 1."
+          },
+          {
+            "source": "logs",
+            "excerpt": "Configuration trace: APP_GREETING is present in process environment."
+          },
+          {
+            "source": "logs",
+            "excerpt": "Configuration trace: source=file; attempted /run/settings/greeting.txt."
+          }
+        ],
+        "confidence": "low",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "The available evidence is insufficient to identify a cause."
+        ],
+        "suggested_actions": [
+          "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+        ],
+        "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+        "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      },
+      "result": {
+        "success": true,
+        "status": "proposed",
+        "origin": "model",
+        "verified": false,
+        "actions_executed": 0,
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "baseline": {
+          "origin": "deterministic",
+          "action_ids": [
+            "manual_investigation"
+          ],
+          "description": "Inspect the available evidence and reconcile the cause manually."
+        },
+        "fallback_used": false,
+        "prompt_version": "planning-v4",
+        "action_selection_origin": "deterministic",
+        "evidence": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E003",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "dependencies.next",
+                  "path": "package.json"
+                }
+              ],
+              "name": "framework",
+              "value": "Next.js"
+            }
+          },
+          {
+            "id": "E004",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "package_manager",
+              "value": "npm"
+            }
+          },
+          {
+            "id": "E005",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "packages['']",
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "lockfile",
+              "value": "Root declarations match package.json"
+            }
+          },
+          {
+            "id": "E006",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "engines.node",
+                  "path": "package.json"
+                }
+              ],
+              "name": "runtime",
+              "value": "Node requirement is compatible with the Node 22 image"
+            }
+          },
+          {
+            "id": "E007",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "startup_command",
+              "value": "npm run dev"
+            }
+          },
+          {
+            "id": "E008",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "application_port",
+              "value": "3000"
+            }
+          },
+          {
+            "id": "E009",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E010",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "compose.yaml"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E011",
+            "kind": "unknown",
+            "source": "analysis.unknowns",
+            "value": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+              "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+            ]
+          },
+          {
+            "id": "E012",
+            "kind": "assumption",
+            "source": "analysis.assumptions",
+            "value": [
+              "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+            ]
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Application exited with code 1."
+          },
+          {
+            "id": "E017",
+            "kind": "inference",
+            "source": "diagnosis.hypothesis",
+            "value": {
+              "confidence": "low",
+              "evidence": [
+                {
+                  "excerpt": "Application exited with code 1.",
+                  "source": "error"
+                },
+                {
+                  "excerpt": "Configuration trace: APP_GREETING is present in process environment.",
+                  "source": "logs"
+                },
+                {
+                  "excerpt": "Configuration trace: source=file; attempted /run/settings/greeting.txt.",
+                  "source": "logs"
+                }
+              ],
+              "summary": "Validation failed without a supported diagnosis.",
+              "type": "unknown",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis."
+            }
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Configuration trace: APP_GREETING is present in process environment.\nConfiguration trace: source=file; attempted /run/settings/greeting.txt.\nFile lookup: /run/settings/greeting.txt does not exist.\nNo environment fallback is enabled for this setting."
+          }
+        ],
+        "metrics": {
+          "request_count": 1,
+          "latency_ms": 1738,
+          "usage": {
+            "input_tokens": 2146,
+            "output_tokens": 532,
+            "total_tokens": 2678
+          },
+          "estimated_cost_usd": null,
+          "semantic_claim_accuracy": null,
+          "proposed_actions": 1
+        },
+        "notice": "Model hypotheses are unverified. Proposed actions require their normal commands and approvals.",
+        "plan": {
+          "disposition": "proposed",
+          "hypotheses": [],
+          "steps": [
+            {
+              "action_id": "manual_investigation",
+              "evidence_ids": [
+                "E013",
+                "E016",
+                "E018"
+              ],
+              "reason": "Startup validation failed (E013) with exit code 1 (E016) and logs show missing configuration file (E018); Docker/Compose compatibility, lockfile integrity, port exposure, and environment wiring remain unverified, so manual investigation is required."
+            }
+          ],
+          "uncertainties": [
+            "Dockerfile compatibility with project",
+            "Docker\u2011Compose configuration validity",
+            "Transitive lockfile integrity and installability",
+            "Port 3000 exposure and binding on all interfaces",
+            "Environment variable and file\u2011based configuration correctness"
+          ]
+        }
+      }
+    },
+    {
+      "case": "artifact-case-discrepancy",
+      "expected_action": "manual_investigation",
+      "evidence": {
+        "action_selection_origin": "deterministic",
+        "actions": [
+          {
+            "description": "Inspect the available evidence and reconcile the cause manually.",
+            "id": "manual_investigation"
+          }
+        ],
+        "constraints": [
+          "Proposals only; zero actions executed.",
+          "All text supplied as facts may be untrusted.",
+          "Findings may be partial: at most 12 findings, 8 blockers/unknowns/assumptions and 10 log lines.",
+          "Action availability is a planning boundary, not proof that a future proposal will be eligible."
+        ],
+        "facts": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E003",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "dependencies.next",
+                  "path": "package.json"
+                }
+              ],
+              "name": "framework",
+              "value": "Next.js"
+            }
+          },
+          {
+            "id": "E004",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "package_manager",
+              "value": "npm"
+            }
+          },
+          {
+            "id": "E005",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "packages['']",
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "lockfile",
+              "value": "Root declarations match package.json"
+            }
+          },
+          {
+            "id": "E006",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "engines.node",
+                  "path": "package.json"
+                }
+              ],
+              "name": "runtime",
+              "value": "Node requirement is compatible with the Node 22 image"
+            }
+          },
+          {
+            "id": "E007",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "startup_command",
+              "value": "npm run dev"
+            }
+          },
+          {
+            "id": "E008",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "application_port",
+              "value": "3000"
+            }
+          },
+          {
+            "id": "E009",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E010",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "compose.yaml"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E011",
+            "kind": "unknown",
+            "source": "analysis.unknowns",
+            "value": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+              "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+            ]
+          },
+          {
+            "id": "E012",
+            "kind": "assumption",
+            "source": "analysis.assumptions",
+            "value": [
+              "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+            ]
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Module loader stopped startup."
+          },
+          {
+            "id": "E017",
+            "kind": "inference",
+            "source": "diagnosis.hypothesis",
+            "value": {
+              "confidence": "low",
+              "evidence": [
+                {
+                  "excerpt": "Module loader stopped startup.",
+                  "source": "error"
+                },
+                {
+                  "excerpt": "Loader requested /app/dist/Server.js.",
+                  "source": "logs"
+                },
+                {
+                  "excerpt": "Directory inventory: /app/dist/server.js exists; /app/dist/Server.js does not.",
+                  "source": "logs"
+                }
+              ],
+              "summary": "Validation failed without a supported diagnosis.",
+              "type": "unknown",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis."
+            }
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Loader requested /app/dist/Server.js.\nDirectory inventory: /app/dist/server.js exists; /app/dist/Server.js does not.\nFilesystem reports case-sensitive name lookup."
+          }
+        ]
+      },
+      "request_sha256": "b1475046cc6aa64d6826de76c8e78b772d20e78c504db6431ae8cc2bb2720fa3",
+      "baseline_action_match": true,
+      "proposal_action_match": true,
+      "unnecessary_actions": 0,
+      "unsupported_claims": null,
+      "human_review": "pending",
+      "deterministic_diagnosis": {
+        "type": "unknown",
+        "phase": "startup",
+        "summary": "Validation failed without a supported diagnosis.",
+        "symptoms": [
+          "Module loader stopped startup.",
+          "Loader requested /app/dist/Server.js.",
+          "Directory inventory: /app/dist/server.js exists; /app/dist/Server.js does not."
+        ],
+        "evidence": [
+          {
+            "source": "error",
+            "excerpt": "Module loader stopped startup."
+          },
+          {
+            "source": "logs",
+            "excerpt": "Loader requested /app/dist/Server.js."
+          },
+          {
+            "source": "logs",
+            "excerpt": "Directory inventory: /app/dist/server.js exists; /app/dist/Server.js does not."
+          }
+        ],
+        "confidence": "low",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "The available evidence is insufficient to identify a cause."
+        ],
+        "suggested_actions": [
+          "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+        ],
+        "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+        "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      },
+      "result": {
+        "success": true,
+        "status": "proposed",
+        "origin": "model",
+        "verified": false,
+        "actions_executed": 0,
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "baseline": {
+          "origin": "deterministic",
+          "action_ids": [
+            "manual_investigation"
+          ],
+          "description": "Inspect the available evidence and reconcile the cause manually."
+        },
+        "fallback_used": false,
+        "prompt_version": "planning-v4",
+        "action_selection_origin": "deterministic",
+        "evidence": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E003",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "dependencies.next",
+                  "path": "package.json"
+                }
+              ],
+              "name": "framework",
+              "value": "Next.js"
+            }
+          },
+          {
+            "id": "E004",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "package_manager",
+              "value": "npm"
+            }
+          },
+          {
+            "id": "E005",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "packages['']",
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "lockfile",
+              "value": "Root declarations match package.json"
+            }
+          },
+          {
+            "id": "E006",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "engines.node",
+                  "path": "package.json"
+                }
+              ],
+              "name": "runtime",
+              "value": "Node requirement is compatible with the Node 22 image"
+            }
+          },
+          {
+            "id": "E007",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "startup_command",
+              "value": "npm run dev"
+            }
+          },
+          {
+            "id": "E008",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "application_port",
+              "value": "3000"
+            }
+          },
+          {
+            "id": "E009",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E010",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "compose.yaml"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E011",
+            "kind": "unknown",
+            "source": "analysis.unknowns",
+            "value": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+              "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+            ]
+          },
+          {
+            "id": "E012",
+            "kind": "assumption",
+            "source": "analysis.assumptions",
+            "value": [
+              "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+            ]
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Module loader stopped startup."
+          },
+          {
+            "id": "E017",
+            "kind": "inference",
+            "source": "diagnosis.hypothesis",
+            "value": {
+              "confidence": "low",
+              "evidence": [
+                {
+                  "excerpt": "Module loader stopped startup.",
+                  "source": "error"
+                },
+                {
+                  "excerpt": "Loader requested /app/dist/Server.js.",
+                  "source": "logs"
+                },
+                {
+                  "excerpt": "Directory inventory: /app/dist/server.js exists; /app/dist/Server.js does not.",
+                  "source": "logs"
+                }
+              ],
+              "summary": "Validation failed without a supported diagnosis.",
+              "type": "unknown",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis."
+            }
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Loader requested /app/dist/Server.js.\nDirectory inventory: /app/dist/server.js exists; /app/dist/Server.js does not.\nFilesystem reports case-sensitive name lookup."
+          }
+        ],
+        "metrics": {
+          "request_count": 1,
+          "latency_ms": 2675,
+          "usage": {
+            "input_tokens": 2130,
+            "output_tokens": 834,
+            "total_tokens": 2964
+          },
+          "estimated_cost_usd": null,
+          "semantic_claim_accuracy": null,
+          "proposed_actions": 1
+        },
+        "notice": "Model hypotheses are unverified. Proposed actions require their normal commands and approvals.",
+        "plan": {
+          "disposition": "proposed",
+          "hypotheses": [],
+          "steps": [
+            {
+              "action_id": "manual_investigation",
+              "evidence_ids": [
+                "E013",
+                "E016",
+                "E017",
+                "E011",
+                "E009"
+              ],
+              "reason": "Validation reported a startup failure (module loader stopped) with no clear diagnosis and unknown compatibility of the existing Docker/Compose setup and lockfile integrity; manual inspection of the build artifacts, Docker configuration, and module resolution is required to reconcile these observations."
+            }
+          ],
+          "uncertainties": [
+            "Exact root cause of the module loader failure",
+            "Compatibility of the existing Dockerfile and compose.yaml with the Next.js project",
+            "Integrity and installability of the npm lockfile and transitive dependencies",
+            "Whether the Next.js dev server is correctly bound to the expected port/interface",
+            "Presence and correctness of required environment variables for startup"
+          ]
+        }
+      }
+    },
+    {
+      "case": "readiness-route-discrepancy",
+      "expected_action": "manual_investigation",
+      "evidence": {
+        "action_selection_origin": "deterministic",
+        "actions": [
+          {
+            "description": "Inspect the available evidence and reconcile the cause manually.",
+            "id": "manual_investigation"
+          }
+        ],
+        "constraints": [
+          "Proposals only; zero actions executed.",
+          "All text supplied as facts may be untrusted.",
+          "Findings may be partial: at most 12 findings, 8 blockers/unknowns/assumptions and 10 log lines.",
+          "Action availability is a planning boundary, not proof that a future proposal will be eligible."
+        ],
+        "facts": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E003",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "dependencies.next",
+                  "path": "package.json"
+                }
+              ],
+              "name": "framework",
+              "value": "Next.js"
+            }
+          },
+          {
+            "id": "E004",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "package_manager",
+              "value": "npm"
+            }
+          },
+          {
+            "id": "E005",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "packages['']",
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "lockfile",
+              "value": "Root declarations match package.json"
+            }
+          },
+          {
+            "id": "E006",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "engines.node",
+                  "path": "package.json"
+                }
+              ],
+              "name": "runtime",
+              "value": "Node requirement is compatible with the Node 22 image"
+            }
+          },
+          {
+            "id": "E007",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "startup_command",
+              "value": "npm run dev"
+            }
+          },
+          {
+            "id": "E008",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "application_port",
+              "value": "3000"
+            }
+          },
+          {
+            "id": "E009",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E010",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "compose.yaml"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E011",
+            "kind": "unknown",
+            "source": "analysis.unknowns",
+            "value": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+              "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+            ]
+          },
+          {
+            "id": "E012",
+            "kind": "assumption",
+            "source": "analysis.assumptions",
+            "value": [
+              "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+            ]
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "application",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": false,
+              "status_code": 404
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Readiness probe received 404."
+          },
+          {
+            "id": "E017",
+            "kind": "inference",
+            "source": "diagnosis.hypothesis",
+            "value": {
+              "confidence": "low",
+              "evidence": [
+                {
+                  "excerpt": "Readiness probe received 404.",
+                  "source": "error"
+                },
+                {
+                  "excerpt": "Request log: GET /health returned 404.",
+                  "source": "logs"
+                },
+                {
+                  "excerpt": "Request log: GET /ready returned 200.",
+                  "source": "logs"
+                }
+              ],
+              "summary": "Validation failed without a supported diagnosis.",
+              "type": "unknown",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis."
+            }
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Request log: GET /health returned 404.\nRequest log: GET /ready returned 200.\nBoth requests were served by the same application process.\nRoute table: /ready is the readiness handler; /health has no handler."
+          }
+        ]
+      },
+      "request_sha256": "633aa69d4c362e772f8f7372f5e00691c919cfedf499731a44f6fcd5c1f58270",
+      "baseline_action_match": true,
+      "proposal_action_match": true,
+      "unnecessary_actions": 0,
+      "unsupported_claims": null,
+      "human_review": "pending",
+      "deterministic_diagnosis": {
+        "type": "unknown",
+        "phase": "application",
+        "summary": "Validation failed without a supported diagnosis.",
+        "symptoms": [
+          "Readiness probe received 404.",
+          "Request log: GET /health returned 404.",
+          "Request log: GET /ready returned 200."
+        ],
+        "evidence": [
+          {
+            "source": "error",
+            "excerpt": "Readiness probe received 404."
+          },
+          {
+            "source": "logs",
+            "excerpt": "Request log: GET /health returned 404."
+          },
+          {
+            "source": "logs",
+            "excerpt": "Request log: GET /ready returned 200."
+          }
+        ],
+        "confidence": "low",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "The available evidence is insufficient to identify a cause."
+        ],
+        "suggested_actions": [
+          "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+        ],
+        "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+        "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      },
+      "result": {
+        "success": true,
+        "status": "proposed",
+        "origin": "model",
+        "verified": false,
+        "actions_executed": 0,
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "baseline": {
+          "origin": "deterministic",
+          "action_ids": [
+            "manual_investigation"
+          ],
+          "description": "Inspect the available evidence and reconcile the cause manually."
+        },
+        "fallback_used": false,
+        "prompt_version": "planning-v4",
+        "action_selection_origin": "deterministic",
+        "evidence": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E003",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "dependencies.next",
+                  "path": "package.json"
+                }
+              ],
+              "name": "framework",
+              "value": "Next.js"
+            }
+          },
+          {
+            "id": "E004",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "package_manager",
+              "value": "npm"
+            }
+          },
+          {
+            "id": "E005",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "packages['']",
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "lockfile",
+              "value": "Root declarations match package.json"
+            }
+          },
+          {
+            "id": "E006",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "engines.node",
+                  "path": "package.json"
+                }
+              ],
+              "name": "runtime",
+              "value": "Node requirement is compatible with the Node 22 image"
+            }
+          },
+          {
+            "id": "E007",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "startup_command",
+              "value": "npm run dev"
+            }
+          },
+          {
+            "id": "E008",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "application_port",
+              "value": "3000"
+            }
+          },
+          {
+            "id": "E009",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E010",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "compose.yaml"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E011",
+            "kind": "unknown",
+            "source": "analysis.unknowns",
+            "value": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+              "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+            ]
+          },
+          {
+            "id": "E012",
+            "kind": "assumption",
+            "source": "analysis.assumptions",
+            "value": [
+              "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+            ]
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "application",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": false,
+              "status_code": 404
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Readiness probe received 404."
+          },
+          {
+            "id": "E017",
+            "kind": "inference",
+            "source": "diagnosis.hypothesis",
+            "value": {
+              "confidence": "low",
+              "evidence": [
+                {
+                  "excerpt": "Readiness probe received 404.",
+                  "source": "error"
+                },
+                {
+                  "excerpt": "Request log: GET /health returned 404.",
+                  "source": "logs"
+                },
+                {
+                  "excerpt": "Request log: GET /ready returned 200.",
+                  "source": "logs"
+                }
+              ],
+              "summary": "Validation failed without a supported diagnosis.",
+              "type": "unknown",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis."
+            }
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Request log: GET /health returned 404.\nRequest log: GET /ready returned 200.\nBoth requests were served by the same application process.\nRoute table: /ready is the readiness handler; /health has no handler."
+          }
+        ],
+        "metrics": {
+          "request_count": 1,
+          "latency_ms": 2149,
+          "usage": {
+            "input_tokens": 2139,
+            "output_tokens": 585,
+            "total_tokens": 2724
+          },
+          "estimated_cost_usd": null,
+          "semantic_claim_accuracy": null,
+          "proposed_actions": 1
+        },
+        "notice": "Model hypotheses are unverified. Proposed actions require their normal commands and approvals.",
+        "plan": {
+          "disposition": "proposed",
+          "hypotheses": [],
+          "steps": [
+            {
+              "action_id": "manual_investigation",
+              "evidence_ids": [
+                "E013",
+                "E015",
+                "E016",
+                "E018"
+              ],
+              "reason": "Validation failed (application phase false, HTTP health check 404, readiness probe 404) and the Docker/Compose infrastructure has not been verified; a manual investigation is needed to reconcile these observations and identify the missing or mis\u2011configured components."
+            }
+          ],
+          "uncertainties": [
+            "Dockerfile and compose configuration compatibility with the Next.js app is unverified",
+            "Whether the application actually provides a /health endpoint",
+            "Port exposure and interface binding (e.g., listening on all interfaces) may be incorrect",
+            "Lockfile integrity and npm installability have not been validated"
+          ]
+        }
+      }
+    },
+    {
+      "case": "cache-mount-discrepancy",
+      "expected_action": "manual_investigation",
+      "evidence": {
+        "action_selection_origin": "deterministic",
+        "actions": [
+          {
+            "description": "Inspect the available evidence and reconcile the cause manually.",
+            "id": "manual_investigation"
+          }
+        ],
+        "constraints": [
+          "Proposals only; zero actions executed.",
+          "All text supplied as facts may be untrusted.",
+          "Findings may be partial: at most 12 findings, 8 blockers/unknowns/assumptions and 10 log lines.",
+          "Action availability is a planning boundary, not proof that a future proposal will be eligible."
+        ],
+        "facts": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E003",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "dependencies.next",
+                  "path": "package.json"
+                }
+              ],
+              "name": "framework",
+              "value": "Next.js"
+            }
+          },
+          {
+            "id": "E004",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "package_manager",
+              "value": "npm"
+            }
+          },
+          {
+            "id": "E005",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "packages['']",
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "lockfile",
+              "value": "Root declarations match package.json"
+            }
+          },
+          {
+            "id": "E006",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "engines.node",
+                  "path": "package.json"
+                }
+              ],
+              "name": "runtime",
+              "value": "Node requirement is compatible with the Node 22 image"
+            }
+          },
+          {
+            "id": "E007",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "startup_command",
+              "value": "npm run dev"
+            }
+          },
+          {
+            "id": "E008",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "application_port",
+              "value": "3000"
+            }
+          },
+          {
+            "id": "E009",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E010",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "compose.yaml"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E011",
+            "kind": "unknown",
+            "source": "analysis.unknowns",
+            "value": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+              "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+            ]
+          },
+          {
+            "id": "E012",
+            "kind": "assumption",
+            "source": "analysis.assumptions",
+            "value": [
+              "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+            ]
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Application initialization stopped."
+          },
+          {
+            "id": "E017",
+            "kind": "inference",
+            "source": "diagnosis.hypothesis",
+            "value": {
+              "confidence": "low",
+              "evidence": [
+                {
+                  "excerpt": "Application initialization stopped.",
+                  "source": "error"
+                },
+                {
+                  "excerpt": "Effective CACHE_DIR=/app/cache.",
+                  "source": "logs"
+                },
+                {
+                  "excerpt": "Mount inventory: /app/cache has read_only=true.",
+                  "source": "logs"
+                }
+              ],
+              "summary": "Validation failed without a supported diagnosis.",
+              "type": "unknown",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis."
+            }
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Effective CACHE_DIR=/app/cache.\nMount inventory: /app/cache has read_only=true.\nStartup trace: cache initialization writes /app/cache/index.json.\nWrite operation returned EROFS."
+          }
+        ]
+      },
+      "request_sha256": "672629d675c6347040597e053154faa4e39014d66b842d607b235d86c19469ac",
+      "baseline_action_match": true,
+      "proposal_action_match": true,
+      "unnecessary_actions": 0,
+      "unsupported_claims": null,
+      "human_review": "pending",
+      "deterministic_diagnosis": {
+        "type": "unknown",
+        "phase": "startup",
+        "summary": "Validation failed without a supported diagnosis.",
+        "symptoms": [
+          "Application initialization stopped.",
+          "Effective CACHE_DIR=/app/cache.",
+          "Mount inventory: /app/cache has read_only=true."
+        ],
+        "evidence": [
+          {
+            "source": "error",
+            "excerpt": "Application initialization stopped."
+          },
+          {
+            "source": "logs",
+            "excerpt": "Effective CACHE_DIR=/app/cache."
+          },
+          {
+            "source": "logs",
+            "excerpt": "Mount inventory: /app/cache has read_only=true."
+          }
+        ],
+        "confidence": "low",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "The available evidence is insufficient to identify a cause."
+        ],
+        "suggested_actions": [
+          "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+        ],
+        "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+        "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      },
+      "result": {
+        "success": true,
+        "status": "proposed",
+        "origin": "model",
+        "verified": false,
+        "actions_executed": 0,
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "baseline": {
+          "origin": "deterministic",
+          "action_ids": [
+            "manual_investigation"
+          ],
+          "description": "Inspect the available evidence and reconcile the cause manually."
+        },
+        "fallback_used": false,
+        "prompt_version": "planning-v4",
+        "action_selection_origin": "deterministic",
+        "evidence": [
+          {
+            "id": "E001",
+            "kind": "observation",
+            "source": "analysis.eligibility",
+            "value": "eligible"
+          },
+          {
+            "id": "E002",
+            "kind": "observation",
+            "source": "analysis.setup",
+            "value": "existing"
+          },
+          {
+            "id": "E003",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "dependencies.next",
+                  "path": "package.json"
+                }
+              ],
+              "name": "framework",
+              "value": "Next.js"
+            }
+          },
+          {
+            "id": "E004",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "package_manager",
+              "value": "npm"
+            }
+          },
+          {
+            "id": "E005",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "packages['']",
+                  "path": "package-lock.json"
+                }
+              ],
+              "name": "lockfile",
+              "value": "Root declarations match package.json"
+            }
+          },
+          {
+            "id": "E006",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "engines.node",
+                  "path": "package.json"
+                }
+              ],
+              "name": "runtime",
+              "value": "Node requirement is compatible with the Node 22 image"
+            }
+          },
+          {
+            "id": "E007",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "startup_command",
+              "value": "npm run dev"
+            }
+          },
+          {
+            "id": "E008",
+            "kind": "inference",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "field": "scripts.dev",
+                  "path": "package.json"
+                }
+              ],
+              "name": "application_port",
+              "value": "3000"
+            }
+          },
+          {
+            "id": "E009",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E010",
+            "kind": "observation",
+            "source": "analysis.finding",
+            "value": {
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "compose.yaml"
+                }
+              ],
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified"
+            }
+          },
+          {
+            "id": "E011",
+            "kind": "unknown",
+            "source": "analysis.unknowns",
+            "value": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+              "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+            ]
+          },
+          {
+            "id": "E012",
+            "kind": "assumption",
+            "source": "analysis.assumptions",
+            "value": [
+              "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+            ]
+          },
+          {
+            "id": "E013",
+            "kind": "observation",
+            "source": "validation.result",
+            "value": {
+              "environment_state": null,
+              "phase": "startup",
+              "success": false,
+              "unverified": null,
+              "verified": null
+            }
+          },
+          {
+            "id": "E014",
+            "kind": "observation",
+            "source": "validation.cleanup",
+            "value": "complete"
+          },
+          {
+            "id": "E015",
+            "kind": "observation",
+            "source": "validation.http",
+            "value": {
+              "error": null,
+              "healthy": null,
+              "status_code": null
+            }
+          },
+          {
+            "id": "E016",
+            "kind": "observation",
+            "source": "validation.error",
+            "value": "Application initialization stopped."
+          },
+          {
+            "id": "E017",
+            "kind": "inference",
+            "source": "diagnosis.hypothesis",
+            "value": {
+              "confidence": "low",
+              "evidence": [
+                {
+                  "excerpt": "Application initialization stopped.",
+                  "source": "error"
+                },
+                {
+                  "excerpt": "Effective CACHE_DIR=/app/cache.",
+                  "source": "logs"
+                },
+                {
+                  "excerpt": "Mount inventory: /app/cache has read_only=true.",
+                  "source": "logs"
+                }
+              ],
+              "summary": "Validation failed without a supported diagnosis.",
+              "type": "unknown",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis."
+            }
+          },
+          {
+            "id": "E018",
+            "kind": "untrusted_log",
+            "source": "logs.untrusted_excerpt",
+            "value": "Effective CACHE_DIR=/app/cache.\nMount inventory: /app/cache has read_only=true.\nStartup trace: cache initialization writes /app/cache/index.json.\nWrite operation returned EROFS."
+          }
+        ],
+        "metrics": {
+          "request_count": 1,
+          "latency_ms": 2253,
+          "usage": {
+            "input_tokens": 2121,
+            "output_tokens": 592,
+            "total_tokens": 2713
+          },
+          "estimated_cost_usd": null,
+          "semantic_claim_accuracy": null,
+          "proposed_actions": 1
+        },
+        "notice": "Model hypotheses are unverified. Proposed actions require their normal commands and approvals.",
+        "plan": {
+          "disposition": "proposed",
+          "hypotheses": [],
+          "steps": [
+            {
+              "action_id": "manual_investigation",
+              "evidence_ids": [
+                "E013",
+                "E016",
+                "E018",
+                "E011"
+              ],
+              "reason": "Observed startup failure (E013) with error \"Application initialization stopped\" (E016) and untrusted cache write errors (E018). Unknown lockfile integrity and environment wiring (E011) leave the root cause unverified, requiring manual inspection."
+            }
+          ],
+          "uncertainties": [
+            "Exact reason for cache write failure is unverified",
+            "Lockfile installability has not been validated",
+            "Docker/Compose compatibility remains unknown"
+          ]
+        }
+      }
+    }
+  ]
+}

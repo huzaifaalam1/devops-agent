@@ -218,3 +218,17 @@ The step-8 real Docker run passed both repair kinds and verified cleanup, with
 evidence in `work/step8-docker.json`. The fixture waits for Docker Desktop to
 release its own previous port before approving the readiness-path retry; this
 pre-approval wait is separate from the single allowed repair attempt.
+
+## Model planning
+
+`python -m tests.planning_eval --output work/planning-contract.json` runs eight
+simulated planning scenarios without network access. `--live`
+sends up to eight synthetic requests using the configured provider key from the agent repository’s `.env` or environment. It stops on authentication or quota failures.
+See [the evaluation protocol](../docs/model-planning.md) before interpreting
+action matches as model quality. Unsupported semantic claims need human review.
+
+Current frozen evidence: `docs/evaluations/step9-v8/` contains the prompt, cases,
+rubric, source hashes, live report and attributed semantic review. The full suite
+has 183 passing tests. Retained V7 checks/uncertainties are replayed to prove
+rejection and fallback; these mocked tests do not prove live explanation quality.
+The V8 held-out cases have now been used; further runs are regression evidence.
