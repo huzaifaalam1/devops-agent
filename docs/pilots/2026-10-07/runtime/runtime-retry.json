@@ -1,0 +1,198 @@
+{
+  "success": true,
+  "phase": "application",
+  "results": [
+    {
+      "command": "docker compose --project-directory <agent-repo>/work/pilot-runtime-2026-10-07/app -p devops-validation-12d8db3dbae9 -f <agent-repo>/work/pilot-runtime-2026-10-07/app/compose.pilot.yaml config --format json",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+      "success": true,
+      "stdout": "\"unix://<home>/.docker/run/docker.sock\"\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <agent-repo>/work/pilot-runtime-2026-10-07/app -p devops-validation-12d8db3dbae9 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-nedbzngl/compose.json build",
+      "success": true,
+      "stdout": "#[REDACTED] [internal] load local bake definitions\n#[REDACTED] reading from stdin 659B done\n#[REDACTED] DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile.dev\n#2 transferring dockerfile: 2.26kB done\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/node:24.14.0-slim\n#3 DONE 9.7s\n\n#4 [internal] load .dockerignore\n#4 transferring context: [REDACTED].27kB 0.1s done\n#4 DONE 0.1s\n\n#5 [internal] load build context\n#5 transferring context: 548.11kB 0.0s done\n#5 DONE 0.1s\n\n#6 [dev [REDACTED]/6] FROM docker.io/library/node:24.14.0-slim@sha256:d8e448a56fc63242f70026718378bd4b00f8c82e78d20eefb199224a4d8e33d8\n#6 resolve docker.io/library/node:24.14.0-slim@sha256:d8e448a56fc63242f70026718378bd4b00f8c82e78d20eefb199224a4d8e33d8 done\n#6 sha256:b4ce1a4e7aed8f5d1e629cfa3b43d63c1c54b38b9e893c9c49f1a265ca13b1b9 445B / 445B 0.1s done\n#6 sha256:e80029a4d4c205672b072bb108643be5e069def1488c6bf848120da322bbe71a 0B / [REDACTED].71MB 0.2s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 0B / 49.27MB 0.2s\n#6 sha256:3e4c7e3fe650ea48675a79e718dab566733446a0b70284dae37b0974f0b34d1c 0B / 3.31kB 0.2s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 0B / 28.12MB 0.2s\n#6 sha256:e80029a4d4c205672b072bb108643be5e069def1488c6bf848120da322bbe71a [REDACTED].71MB / [REDACTED].71MB 0.3s done\n#6 sha256:3e4c7e3fe650ea48675a79e718dab566733446a0b70284dae37b0974f0b34d1c 3.31kB / 3.31kB 0.3s done\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 3.15MB / 49.27MB 0.8s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 3.15MB / 28.12MB 0.8s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 6.29MB / 49.27MB [REDACTED].1s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 5.24MB / 28.12MB [REDACTED].1s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 7.34MB / 49.27MB 6.2s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 6.29MB / 28.12MB 6.2s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 8.39MB / 28.12MB 7.3s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 10.49MB / 28.12MB 7.5s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 10.49MB / 49.27MB 7.6s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 13.63MB / 28.12MB 7.6s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 15.73MB / 28.12MB 7.8s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 13.63MB / 49.27MB 8.0s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 17.83MB / 28.12MB 7.9s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 22.02MB / 28.12MB 8.1s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 17.83MB / 49.27MB 8.2s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 25.17MB / 28.12MB 8.2s\n#6 sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a 28.12MB / 28.12MB 8.4s done\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 27.26MB / 49.27MB 8.7s\n#6 extracting sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 31.46MB / 49.27MB 8.8s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 34.60MB / 49.27MB 9.0s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 38.80MB / 49.27MB 9.1s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 41.94MB / 49.27MB 9.3s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 45.09MB / 49.27MB 9.4s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 49.27MB / 49.27MB 9.6s\n#6 sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c 49.27MB / 49.27MB 9.6s done\n#6 extracting sha256:d997cc310c981ac52155d0d9fe28888b261a7746a3877bb0ca848fd1a83d319a [REDACTED].4s done\n#6 DONE 9.9s\n\n#6 [dev [REDACTED]/6] FROM docker.io/library/node:24.14.0-slim@sha256:d8e448a56fc63242f70026718378bd4b00f8c82e78d20eefb199224a4d8e33d8\n#6 extracting sha256:3e4c7e3fe650ea48675a79e718dab566733446a0b70284dae37b0974f0b34d1c done\n#6 extracting sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c\n#6 extracting sha256:8df906294e460b824506492d4982087c92371603564ed7dc681dc5273873573c [REDACTED].5s done\n#6 DONE 11.4s\n\n#6 [dev [REDACTED]/6] FROM docker.io/library/node:24.14.0-slim@sha256:d8e448a56fc63242f70026718378bd4b00f8c82e78d20eefb199224a4d8e33d8\n#6 extracting sha256:e80029a4d4c205672b072bb108643be5e069def1488c6bf848120da322bbe71a 0.0s done\n#6 extracting sha256:b4ce1a4e7aed8f5d1e629cfa3b43d63c1c54b38b9e893c9c49f1a265ca13b1b9 done\n#6 DONE 11.4s\n\n#7 [dev 2/6] WORKDIR /app\n#7 DONE 0.5s\n\n#8 [dev 3/6] COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc* ./\n#8 DONE 0.0s\n\n#9 [dev 4/6] RUN --mount=type=cache,target=/root/.npm     --mount=type=cache,target=/usr/local/share/.cache/yarn     --mount=type=cache,target=/root/.local/share/pnpm/store   if [ -f package-lock.json ]; then     npm ci --no-audit --no-fund;   elif [ -f yarn.lock ]; then     corepack enable yarn && yarn install --frozen-lockfile --production=false;   elif [ -f pnpm-lock.yaml ]; then     corepack enable pnpm && pnpm install --frozen-lockfile;   else     echo \"No lockfile found.\" && exit [REDACTED];   fi\n#9 2.342 npm warn deprecated whatwg-encoding@3.[REDACTED].[REDACTED]: Use @exodus/bytes instead for a more spec-conformant and faster implementation\n#9 11.30 \n#9 11.30 added 461 packages in 11s\n#9 11.30 npm notice\n#9 11.30 npm notice New minor version of npm available! 11.9.0 -> 11.21.0\n#9 11.30 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.0\n#9 11.30 npm notice To update run: npm install -g npm@11.21.0\n#9 11.30 npm notice\n#9 DONE 14.5s\n\n#10 [dev 5/6] COPY . .\n#10 DONE 0.2s\n\n#11 [dev 6/6] RUN chown -R node:node /app\n#11 DONE 15.1s\n\n#12 exporting to image\n#12 exporting layers\n#12 exporting layers 13.8s done\n#12 exporting manifest sha256:4b768b4f74b7b6d83657a634904dffe178abf2bb14b31d3aed5706de427fb121 done\n#12 exporting config sha256:0ad0ba254d82e35e9ad8b510dcab7c09d16d6429f25ba3a84acb5eef442c2fdf done\n#12 exporting attestation manifest sha256:0616b7bed7ea6ed8835478b10b76b73ffe94492b56c86c74b625ac8df82266c2 0.0s done\n#12 exporting manifest list sha256:df4a0c959fb9c3ffd3cc9c4a7b422afdc1dc718954944100421302b4267391ed done\n#12 naming to docker.io/library/devops-validation-12d8db3dbae9-app:validation done\n#12 unpacking to docker.io/library/devops-validation-12d8db3dbae9-app:validation\n#12 unpacking to docker.io/library/devops-validation-12d8db3dbae9-app:validation 7.3s done\n#12 DONE 21.2s\n\n#13 resolving provenance for metadata file\n#13 DONE 0.0s\n",
+      "stderr": " Image devops-validation-12d8db3dbae9-app:validation Building \n Image devops-validation-12d8db3dbae9-app:validation Built \n",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <agent-repo>/work/pilot-runtime-2026-10-07/app -p devops-validation-12d8db3dbae9 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-nedbzngl/compose.json up -d --no-build",
+      "success": true,
+      "stdout": "",
+      "stderr": " Network devops-validation-12d8db3dbae9_default Creating \n Network devops-validation-12d8db3dbae9_default Creating \n Network devops-validation-12d8db3dbae9_default Created \n Network devops-validation-12d8db3dbae9_default Created \n Container devops-validation-12d8db3dbae9-app-[REDACTED] Creating \n Container devops-validation-12d8db3dbae9-app-[REDACTED] Created \n Container devops-validation-12d8db3dbae9-app-[REDACTED] Starting \n Container devops-validation-12d8db3dbae9-app-[REDACTED] Started \n",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <agent-repo>/work/pilot-runtime-2026-10-07/app -p devops-validation-12d8db3dbae9 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-nedbzngl/compose.json ps --all --quiet",
+      "success": true,
+      "stdout": "563e0ca99e902ef2696dbbd1c2e1bbda4ceb2d32b72642c6bfac5ce1bb72818a\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker inspect 563e0ca99e902ef2696dbbd1c2e1bbda4ceb2d32b72642c6bfac5ce1bb72818a",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <agent-repo>/work/pilot-runtime-2026-10-07/app -p devops-validation-12d8db3dbae9 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-nedbzngl/compose.json ps --all --quiet",
+      "success": true,
+      "stdout": "563e0ca99e902ef2696dbbd1c2e1bbda4ceb2d32b72642c6bfac5ce1bb72818a\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker inspect 563e0ca99e902ef2696dbbd1c2e1bbda4ceb2d32b72642c6bfac5ce1bb72818a",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <agent-repo>/work/pilot-runtime-2026-10-07/app -p devops-validation-12d8db3dbae9 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-nedbzngl/compose.json ps --all --quiet",
+      "success": true,
+      "stdout": "563e0ca99e902ef2696dbbd1c2e1bbda4ceb2d32b72642c6bfac5ce1bb72818a\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker inspect 563e0ca99e902ef2696dbbd1c2e1bbda4ceb2d32b72642c6bfac5ce1bb72818a",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    }
+  ],
+  "logs": "",
+  "expected_services": [
+    "app"
+  ],
+  "running_services": [
+    "app"
+  ],
+  "stopped_services": [],
+  "application_check": {
+    "url": "http://127.0.0.[REDACTED]:53946/",
+    "reachable": true,
+    "healthy": true,
+    "status_code": 200,
+    "redirect_url": null,
+    "error": null,
+    "redirects": [],
+    "final_url": "http://127.0.0.[REDACTED]:53946/",
+    "success": true,
+    "container_id": "563e0ca99e902ef2696dbbd1c2e1bbda4ceb2d32b72642c6bfac5ce1bb72818a"
+  },
+  "stages": [
+    {
+      "phase": "config",
+      "success": true
+    },
+    {
+      "phase": "build",
+      "success": true
+    },
+    {
+      "phase": "startup",
+      "success": true
+    },
+    {
+      "phase": "dependencies",
+      "success": true,
+      "status": "not_required"
+    },
+    {
+      "phase": "services",
+      "success": true
+    },
+    {
+      "phase": "application",
+      "success": true
+    }
+  ],
+  "cleanup": {
+    "status": "kept_running",
+    "project": "devops-validation-12d8db3dbae9",
+    "stop_command": "docker compose --project-directory <agent-repo>/work/pilot-runtime-2026-10-07/app -p devops-validation-12d8db3dbae9 -f <agent-repo>/work/pilot-runtime-2026-10-07/app/compose.pilot.yaml down --volumes"
+  },
+  "verified": [
+    "config",
+    "build",
+    "startup",
+    "services",
+    "application"
+  ],
+  "unverified": [
+    "Business correctness and production readiness",
+    "Future health after validation returns"
+  ],
+  "environment_state": "running",
+  "project": "devops-validation-12d8db3dbae9",
+  "application_service": "app",
+  "container_port": 3000,
+  "service_states": {
+    "app": {
+      "id": "563e0ca99e902ef2696dbbd1c2e1bbda4ceb2d32b72642c6bfac5ce1bb72818a",
+      "state": "running",
+      "health": null,
+      "ports": {
+        "3000/tcp": [
+          {
+            "HostIp": "127.0.0.[REDACTED]",
+            "HostPort": "53946"
+          }
+        ]
+      }
+    }
+  },
+  "dependency_checks": {},
+  "repair_context": {
+    "inputs_sha256": "6cc934d34bdec66e7920f7ff77d8778f3dbd1986a5385a6e2d76e71368b49bc1",
+    "compose_file": "compose.pilot.yaml",
+    "health_path": "/",
+    "service": null,
+    "container_port": null,
+    "timeout": 600.0,
+    "readiness_timeout": 90.0
+  },
+  "session_id": "5fbae499f93746d4b664742184d7724e",
+  "eligibility_basis": {
+    "mode": "existing_setup",
+    "compose_file": "compose.pilot.yaml",
+    "deferred_template_checks": [
+      {
+        "code": "package_manager",
+        "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+        "evidence": [
+          {
+            "path": "package.json"
+          }
+        ],
+        "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+        "needs_input": true
+      },
+      {
+        "code": "unknown_runtime",
+        "message": "No Node engine requirement is declared.",
+        "evidence": [
+          {
+            "path": "package.json"
+          }
+        ],
+        "next_action": "Declare engines.node compatible with the Node 22 image.",
+        "needs_input": true
+      }
+    ],
+    "notice": "Runtime and package-manager compatibility are established by the existing build and readiness checks, not by the Node 22 generation template. Isolation checks remain mandatory."
+  }
+}

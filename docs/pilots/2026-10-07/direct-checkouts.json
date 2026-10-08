@@ -1,0 +1,3204 @@
+{
+  "recorded_at": "2026-10-08T05:17:01.023606+00:00",
+  "mode": "direct-original-checkouts",
+  "cases": [
+    {
+      "name": "next-learn",
+      "commit": "bb2558441a6673ab76c89914c25018bffa27a2ba",
+      "checks": {
+        "analyze": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "analyze",
+            "<home>/Desktop/repos/next-learn/basics/learn-starter",
+            "--json"
+          ],
+          "exit_code": 0,
+          "seconds": 0.362,
+          "result": {
+            "schema_version": 1,
+            "repository": {
+              "path": "<home>/Desktop/repos/next-learn/basics/learn-starter",
+              "name": "learn-starter",
+              "role": "component",
+              "is_component": false,
+              "found_files": [
+                "package.json"
+              ],
+              "dockerfiles": [],
+              "compose_files": [],
+              "config_files": [],
+              "workflow_files": [],
+              "components": []
+            },
+            "analysis": {
+              "project": {
+                "eligibility": "needs_input",
+                "findings": [
+                  {
+                    "name": "framework",
+                    "value": "Next.js",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "dependencies.next"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "package_manager",
+                    "value": "pnpm",
+                    "certainty": "inferred",
+                    "evidence": [
+                      {
+                        "path": "pnpm-lock.yaml"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "runtime",
+                    "value": "Node requirement is compatible with the Node 22 image",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "engines.node"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "startup_command",
+                    "value": "npm run dev",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "scripts.dev"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "application_port",
+                    "value": "3000",
+                    "certainty": "inferred",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "scripts.dev"
+                      }
+                    ]
+                  }
+                ],
+                "blockers": [
+                  {
+                    "code": "package_manager",
+                    "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+                    "evidence": [
+                      {
+                        "path": "package.json"
+                      }
+                    ],
+                    "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+                    "needs_input": false
+                  },
+                  {
+                    "code": "missing_lockfile",
+                    "message": "A readable package-lock.json is required.",
+                    "evidence": [
+                      {
+                        "path": "package-lock.json"
+                      }
+                    ],
+                    "next_action": "Generate and review an npm lockfile before dockerizing.",
+                    "needs_input": false
+                  },
+                  {
+                    "code": "runtime_conflict",
+                    "message": "Runtime-file evidence does not establish Node 22 compatibility.",
+                    "evidence": [
+                      {
+                        "path": ".nvmrc"
+                      }
+                    ],
+                    "next_action": "Resolve the runtime file and engines.node requirement together.",
+                    "needs_input": true
+                  }
+                ],
+                "assumptions": [
+                  "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+                ],
+                "unknowns": [
+                  "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated."
+                ],
+                "application_candidates": [],
+                "setup": "none",
+                "startup_command": "npm run dev",
+                "services": [],
+                "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+              },
+              "detected": [
+                "Next.js app",
+                "Node.js app"
+              ],
+              "services": [],
+              "runtime": [
+                "Node.js runtime"
+              ],
+              "startup_commands": [
+                "npm run dev"
+              ],
+              "missing": [
+                "Dockerfile",
+                "docker-compose.yml",
+                "GitHub Actions workflow"
+              ],
+              "recommendations": [
+                "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+                "Generate and review an npm lockfile before dockerizing.",
+                "Resolve the runtime file and engines.node requirement together."
+              ]
+            },
+            "components": []
+          }
+        },
+        "proposal": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "dockerize",
+            "<home>/Desktop/repos/next-learn/basics/learn-starter",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.199,
+          "result": {
+            "schema_version": 1,
+            "path": "<home>/Desktop/repos/next-learn/basics/learn-starter",
+            "purpose": "local development",
+            "status": "blocked",
+            "blockers": [
+              {
+                "code": "package_manager",
+                "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+                "evidence": [
+                  {
+                    "path": "package.json"
+                  }
+                ],
+                "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+                "needs_input": false
+              },
+              {
+                "code": "missing_lockfile",
+                "message": "A readable package-lock.json is required.",
+                "evidence": [
+                  {
+                    "path": "package-lock.json"
+                  }
+                ],
+                "next_action": "Generate and review an npm lockfile before dockerizing.",
+                "needs_input": false
+              },
+              {
+                "code": "runtime_conflict",
+                "message": "Runtime-file evidence does not establish Node 22 compatibility.",
+                "evidence": [
+                  {
+                    "path": ".nvmrc"
+                  }
+                ],
+                "next_action": "Resolve the runtime file and engines.node requirement together.",
+                "needs_input": true
+              }
+            ],
+            "changes": [],
+            "preserved": [],
+            "notes": [],
+            "run_command": null
+          }
+        },
+        "config-default": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/next-learn/basics/learn-starter",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.161,
+          "result": {
+            "success": false,
+            "phase": "config",
+            "error": "No Docker Compose file was found.",
+            "diagnosis": {
+              "type": "unknown",
+              "phase": "config",
+              "summary": "Validation failed without a supported diagnosis.",
+              "symptoms": [
+                "No Docker Compose file was found."
+              ],
+              "evidence": [
+                {
+                  "source": "error",
+                  "excerpt": "No Docker Compose file was found."
+                }
+              ],
+              "confidence": "low",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+              "likely_causes": [
+                "The available evidence is insufficient to identify a cause."
+              ],
+              "suggested_actions": [
+                "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+              ],
+              "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+              "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+              "automatic_repair": false,
+              "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+            }
+          }
+        },
+        "runtime": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/next-learn/basics/learn-starter",
+            "--run",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.367,
+          "result": {
+            "success": false,
+            "phase": "eligibility",
+            "project": {
+              "eligibility": "needs_input",
+              "findings": [
+                {
+                  "name": "framework",
+                  "value": "Next.js",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "dependencies.next"
+                    }
+                  ]
+                },
+                {
+                  "name": "package_manager",
+                  "value": "pnpm",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "pnpm-lock.yaml"
+                    }
+                  ]
+                },
+                {
+                  "name": "runtime",
+                  "value": "Node requirement is compatible with the Node 22 image",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "engines.node"
+                    }
+                  ]
+                },
+                {
+                  "name": "startup_command",
+                  "value": "npm run dev",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "scripts.dev"
+                    }
+                  ]
+                },
+                {
+                  "name": "application_port",
+                  "value": "3000",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "scripts.dev"
+                    }
+                  ]
+                }
+              ],
+              "blockers": [
+                {
+                  "code": "package_manager",
+                  "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+                  "needs_input": false
+                },
+                {
+                  "code": "missing_lockfile",
+                  "message": "A readable package-lock.json is required.",
+                  "evidence": [
+                    {
+                      "path": "package-lock.json"
+                    }
+                  ],
+                  "next_action": "Generate and review an npm lockfile before dockerizing.",
+                  "needs_input": false
+                },
+                {
+                  "code": "runtime_conflict",
+                  "message": "Runtime-file evidence does not establish Node 22 compatibility.",
+                  "evidence": [
+                    {
+                      "path": ".nvmrc"
+                    }
+                  ],
+                  "next_action": "Resolve the runtime file and engines.node requirement together.",
+                  "needs_input": true
+                }
+              ],
+              "assumptions": [
+                "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+              ],
+              "unknowns": [
+                "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated."
+              ],
+              "application_candidates": [],
+              "setup": "none",
+              "startup_command": "npm run dev",
+              "services": [],
+              "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+            },
+            "error": "Repository is not eligible for build/runtime validation.",
+            "diagnosis": {
+              "type": "unknown",
+              "phase": "eligibility",
+              "summary": "Validation failed without a supported diagnosis.",
+              "symptoms": [
+                "Repository is not eligible for build/runtime validation."
+              ],
+              "evidence": [
+                {
+                  "source": "error",
+                  "excerpt": "Repository is not eligible for build/runtime validation."
+                }
+              ],
+              "confidence": "low",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+              "likely_causes": [
+                "The available evidence is insufficient to identify a cause."
+              ],
+              "suggested_actions": [
+                "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+              ],
+              "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+              "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+              "automatic_repair": false,
+              "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+            }
+          }
+        }
+      },
+      "files_unchanged": true,
+      "git_clean": true
+    },
+    {
+      "name": "docker-nextjs-sample",
+      "commit": "3d7cd2d9ab13f19bbba780e095d99f6bdadc89d4",
+      "checks": {
+        "analyze": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "analyze",
+            "<home>/Desktop/repos/docker-nextjs-sample",
+            "--json"
+          ],
+          "exit_code": 0,
+          "seconds": 0.199,
+          "result": {
+            "schema_version": 1,
+            "repository": {
+              "path": "<home>/Desktop/repos/docker-nextjs-sample",
+              "name": "docker-nextjs-sample",
+              "role": "component",
+              "is_component": false,
+              "found_files": [
+                "package.json"
+              ],
+              "dockerfiles": [
+                "Dockerfile",
+                "Dockerfile.bun",
+                "Dockerfile.dev",
+                "Dockerfile.export",
+                "Dockerfile.nginx",
+                "Dockerfile.output",
+                "Dockerfile.serve"
+              ],
+              "compose_files": [
+                "compose.yaml"
+              ],
+              "config_files": [],
+              "workflow_files": [
+                "ci.yml"
+              ],
+              "components": []
+            },
+            "analysis": {
+              "project": {
+                "eligibility": "needs_input",
+                "findings": [
+                  {
+                    "name": "framework",
+                    "value": "Next.js",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "dependencies.next"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "package_manager",
+                    "value": "npm",
+                    "certainty": "inferred",
+                    "evidence": [
+                      {
+                        "path": "package-lock.json"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "package_manager",
+                    "value": "pnpm",
+                    "certainty": "inferred",
+                    "evidence": [
+                      {
+                        "path": "pnpm-lock.yaml"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "lockfile",
+                    "value": "Root declarations match package.json",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "package-lock.json",
+                        "field": "packages['']"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "startup_command",
+                    "value": "npm run dev",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "scripts.dev"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "application_port",
+                    "value": "3000",
+                    "certainty": "inferred",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "scripts.dev"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Reuse candidate; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "Dockerfile"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Reuse candidate; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "Dockerfile.bun"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Reuse candidate; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "Dockerfile.dev"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Reuse candidate; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "Dockerfile.export"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Reuse candidate; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "Dockerfile.nginx"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Reuse candidate; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "Dockerfile.output"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Reuse candidate; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "Dockerfile.serve"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Reuse candidate; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "compose.yaml"
+                      }
+                    ]
+                  }
+                ],
+                "blockers": [
+                  {
+                    "code": "package_manager",
+                    "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+                    "evidence": [
+                      {
+                        "path": "package.json"
+                      }
+                    ],
+                    "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "unknown_runtime",
+                    "message": "No Node engine requirement is declared.",
+                    "evidence": [
+                      {
+                        "path": "package.json"
+                      }
+                    ],
+                    "next_action": "Declare engines.node compatible with the Node 22 image.",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "compose_selection",
+                    "message": "Multiple Docker/Compose variants require explicit selection.",
+                    "evidence": [
+                      {
+                        "path": "."
+                      }
+                    ],
+                    "next_action": "For validation, select the intended configuration with validate --compose-file FILE; its build definitions select Dockerfiles. Generation does not overwrite existing variants.",
+                    "needs_input": true
+                  }
+                ],
+                "assumptions": [
+                  "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+                ],
+                "unknowns": [
+                  "Transitive lockfile integrity and installability require npm validation.",
+                  "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+                  "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+                ],
+                "application_candidates": [],
+                "setup": "ambiguous",
+                "startup_command": "npm run dev",
+                "services": [],
+                "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+              },
+              "detected": [
+                "Next.js app",
+                "Node.js app"
+              ],
+              "services": [],
+              "runtime": [
+                "Docker-based development",
+                "Node.js runtime"
+              ],
+              "startup_commands": [
+                "npm run dev",
+                "docker compose -f compose.yaml up"
+              ],
+              "missing": [],
+              "recommendations": [
+                "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+                "Declare engines.node compatible with the Node 22 image.",
+                "For validation, select the intended configuration with validate --compose-file FILE; its build definitions select Dockerfiles. Generation does not overwrite existing variants."
+              ]
+            },
+            "components": []
+          }
+        },
+        "proposal": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "dockerize",
+            "<home>/Desktop/repos/docker-nextjs-sample",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.37,
+          "result": {
+            "schema_version": 1,
+            "path": "<home>/Desktop/repos/docker-nextjs-sample",
+            "purpose": "local development",
+            "status": "blocked",
+            "blockers": [
+              {
+                "code": "package_manager",
+                "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+                "evidence": [
+                  {
+                    "path": "package.json"
+                  }
+                ],
+                "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+                "needs_input": true
+              },
+              {
+                "code": "unknown_runtime",
+                "message": "No Node engine requirement is declared.",
+                "evidence": [
+                  {
+                    "path": "package.json"
+                  }
+                ],
+                "next_action": "Declare engines.node compatible with the Node 22 image.",
+                "needs_input": true
+              },
+              {
+                "code": "compose_selection",
+                "message": "Multiple Docker/Compose variants require explicit selection.",
+                "evidence": [
+                  {
+                    "path": "."
+                  }
+                ],
+                "next_action": "For validation, select the intended configuration with validate --compose-file FILE; its build definitions select Dockerfiles. Generation does not overwrite existing variants.",
+                "needs_input": true
+              }
+            ],
+            "changes": [],
+            "preserved": [],
+            "notes": [],
+            "run_command": null
+          }
+        },
+        "config-default": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/docker-nextjs-sample",
+            "--json"
+          ],
+          "exit_code": 0,
+          "seconds": 0.468,
+          "result": {
+            "success": true,
+            "phase": "config",
+            "results": [
+              {
+                "command": "docker compose --project-directory <home>/Desktop/repos/docker-nextjs-sample -p devops-validation-c54772ca35e5 -f <home>/Desktop/repos/docker-nextjs-sample/compose.yaml config --format json",
+                "success": true,
+                "stdout": "[structured configuration omitted]",
+                "stderr": "",
+                "returncode": 0
+              }
+            ],
+            "logs": "",
+            "expected_services": [],
+            "running_services": [],
+            "stopped_services": [],
+            "application_check": null,
+            "stages": [
+              {
+                "phase": "config",
+                "success": true
+              }
+            ],
+            "cleanup": {
+              "status": "not_needed"
+            },
+            "verified": [
+              "config"
+            ],
+            "unverified": [
+              "Business correctness and production readiness",
+              "Image build, services and application readiness"
+            ],
+            "environment_state": "not_started",
+            "project": "devops-validation-c54772ca35e5",
+            "repair_context": {
+              "inputs_sha256": null,
+              "compose_file": "compose.yaml",
+              "health_path": "/",
+              "service": null,
+              "container_port": null,
+              "timeout": 300.0,
+              "readiness_timeout": 90.0
+            }
+          }
+        },
+        "runtime": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/docker-nextjs-sample",
+            "--run",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.381,
+          "result": {
+            "success": false,
+            "phase": "eligibility",
+            "project": {
+              "eligibility": "needs_input",
+              "findings": [
+                {
+                  "name": "framework",
+                  "value": "Next.js",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "dependencies.next"
+                    }
+                  ]
+                },
+                {
+                  "name": "package_manager",
+                  "value": "npm",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "package-lock.json"
+                    }
+                  ]
+                },
+                {
+                  "name": "package_manager",
+                  "value": "pnpm",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "pnpm-lock.yaml"
+                    }
+                  ]
+                },
+                {
+                  "name": "lockfile",
+                  "value": "Root declarations match package.json",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package-lock.json",
+                      "field": "packages['']"
+                    }
+                  ]
+                },
+                {
+                  "name": "startup_command",
+                  "value": "npm run dev",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "scripts.dev"
+                    }
+                  ]
+                },
+                {
+                  "name": "application_port",
+                  "value": "3000",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "scripts.dev"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.bun"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.dev"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.export"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.nginx"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.output"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.serve"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "compose.yaml"
+                    }
+                  ]
+                }
+              ],
+              "blockers": [
+                {
+                  "code": "package_manager",
+                  "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+                  "needs_input": true
+                },
+                {
+                  "code": "unknown_runtime",
+                  "message": "No Node engine requirement is declared.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Declare engines.node compatible with the Node 22 image.",
+                  "needs_input": true
+                },
+                {
+                  "code": "compose_selection",
+                  "message": "Multiple Docker/Compose variants require explicit selection.",
+                  "evidence": [
+                    {
+                      "path": "."
+                    }
+                  ],
+                  "next_action": "For validation, select the intended configuration with validate --compose-file FILE; its build definitions select Dockerfiles. Generation does not overwrite existing variants.",
+                  "needs_input": true
+                }
+              ],
+              "assumptions": [
+                "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+              ],
+              "unknowns": [
+                "Transitive lockfile integrity and installability require npm validation.",
+                "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+                "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+              ],
+              "application_candidates": [],
+              "setup": "ambiguous",
+              "startup_command": "npm run dev",
+              "services": [],
+              "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+            },
+            "error": "Repository is not eligible for build/runtime validation.",
+            "diagnosis": {
+              "type": "unknown",
+              "phase": "eligibility",
+              "summary": "Validation failed without a supported diagnosis.",
+              "symptoms": [
+                "Repository is not eligible for build/runtime validation."
+              ],
+              "evidence": [
+                {
+                  "source": "error",
+                  "excerpt": "Repository is not eligible for build/runtime validation."
+                }
+              ],
+              "confidence": "low",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+              "likely_causes": [
+                "The available evidence is insufficient to identify a cause."
+              ],
+              "suggested_actions": [
+                "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+              ],
+              "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+              "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+              "automatic_repair": false,
+              "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+            }
+          }
+        },
+        "config-selected": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/docker-nextjs-sample",
+            "--compose-file",
+            "compose.yaml",
+            "--json"
+          ],
+          "exit_code": 0,
+          "seconds": 0.497,
+          "result": {
+            "success": true,
+            "phase": "config",
+            "results": [
+              {
+                "command": "docker compose --project-directory <home>/Desktop/repos/docker-nextjs-sample -p devops-validation-b767de205c76 -f <home>/Desktop/repos/docker-nextjs-sample/compose.yaml config --format json",
+                "success": true,
+                "stdout": "[structured configuration omitted]",
+                "stderr": "",
+                "returncode": 0
+              }
+            ],
+            "logs": "",
+            "expected_services": [],
+            "running_services": [],
+            "stopped_services": [],
+            "application_check": null,
+            "stages": [
+              {
+                "phase": "config",
+                "success": true
+              }
+            ],
+            "cleanup": {
+              "status": "not_needed"
+            },
+            "verified": [
+              "config"
+            ],
+            "unverified": [
+              "Business correctness and production readiness",
+              "Image build, services and application readiness"
+            ],
+            "environment_state": "not_started",
+            "project": "devops-validation-b767de205c76",
+            "repair_context": {
+              "inputs_sha256": null,
+              "compose_file": "compose.yaml",
+              "health_path": "/",
+              "service": null,
+              "container_port": null,
+              "timeout": 300.0,
+              "readiness_timeout": 90.0
+            }
+          }
+        },
+        "runtime-selected": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/docker-nextjs-sample",
+            "--compose-file",
+            "compose.yaml",
+            "--run",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.417,
+          "result": {
+            "success": false,
+            "phase": "eligibility",
+            "project": {
+              "eligibility": "needs_input",
+              "findings": [
+                {
+                  "name": "framework",
+                  "value": "Next.js",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "dependencies.next"
+                    }
+                  ]
+                },
+                {
+                  "name": "package_manager",
+                  "value": "npm",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "package-lock.json"
+                    }
+                  ]
+                },
+                {
+                  "name": "package_manager",
+                  "value": "pnpm",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "pnpm-lock.yaml"
+                    }
+                  ]
+                },
+                {
+                  "name": "lockfile",
+                  "value": "Root declarations match package.json",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package-lock.json",
+                      "field": "packages['']"
+                    }
+                  ]
+                },
+                {
+                  "name": "startup_command",
+                  "value": "npm run dev",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "scripts.dev"
+                    }
+                  ]
+                },
+                {
+                  "name": "application_port",
+                  "value": "3000",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "scripts.dev"
+                    }
+                  ]
+                },
+                {
+                  "name": "selected_compose_file",
+                  "value": "compose.yaml",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "compose.yaml"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.bun"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.dev"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.export"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.nginx"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.output"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile.serve"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "compose.yaml"
+                    }
+                  ]
+                }
+              ],
+              "blockers": [
+                {
+                  "code": "package_manager",
+                  "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+                  "needs_input": true
+                },
+                {
+                  "code": "unknown_runtime",
+                  "message": "No Node engine requirement is declared.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Declare engines.node compatible with the Node 22 image.",
+                  "needs_input": true
+                }
+              ],
+              "assumptions": [
+                "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+              ],
+              "unknowns": [
+                "Transitive lockfile integrity and installability require npm validation.",
+                "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+                "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+              ],
+              "application_candidates": [],
+              "setup": "existing",
+              "startup_command": "npm run dev",
+              "services": [],
+              "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+            },
+            "error": "Repository is not eligible for build/runtime validation.",
+            "diagnosis": {
+              "type": "unknown",
+              "phase": "eligibility",
+              "summary": "Validation failed without a supported diagnosis.",
+              "symptoms": [
+                "Repository is not eligible for build/runtime validation."
+              ],
+              "evidence": [
+                {
+                  "source": "error",
+                  "excerpt": "Repository is not eligible for build/runtime validation."
+                }
+              ],
+              "confidence": "low",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+              "likely_causes": [
+                "The available evidence is insufficient to identify a cause."
+              ],
+              "suggested_actions": [
+                "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+              ],
+              "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+              "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+              "automatic_repair": false,
+              "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+            }
+          }
+        }
+      },
+      "files_unchanged": true,
+      "git_clean": true
+    },
+    {
+      "name": "nextjs-docker-postgres-template",
+      "commit": "1b41f5b4aee4ef19621f2141feee0412b56614e6",
+      "checks": {
+        "analyze": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "analyze",
+            "<home>/Desktop/repos/nextjs-docker-postgres-template",
+            "--json"
+          ],
+          "exit_code": 0,
+          "seconds": 0.244,
+          "result": {
+            "schema_version": 1,
+            "repository": {
+              "path": "<home>/Desktop/repos/nextjs-docker-[REDACTED]-template",
+              "name": "nextjs-docker-[REDACTED]-template",
+              "role": "component",
+              "is_component": false,
+              "found_files": [
+                "package.json"
+              ],
+              "dockerfiles": [
+                "Dockerfile"
+              ],
+              "compose_files": [
+                "docker-compose.dev.yml",
+                "docker-compose.yml"
+              ],
+              "config_files": [
+                ".env.example"
+              ],
+              "workflow_files": [],
+              "components": []
+            },
+            "analysis": {
+              "project": {
+                "eligibility": "needs_input",
+                "findings": [
+                  {
+                    "name": "framework",
+                    "value": "Next.js",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "dependencies.next"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "package_manager",
+                    "value": "npm",
+                    "certainty": "inferred",
+                    "evidence": [
+                      {
+                        "path": "package-lock.json"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "lockfile",
+                    "value": "Root declarations match package.json",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "package-lock.json",
+                        "field": "packages['']"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "startup_command",
+                    "value": "npm run dev",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "scripts.dev"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "application_port",
+                    "value": "[REDACTED]",
+                    "certainty": "inferred",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "scripts.dev"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "service_dependency",
+                    "value": "Database (Prisma)",
+                    "certainty": "inferred",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "dependencies.@prisma/client"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "documented_variable",
+                    "value": "POSTGRES_USER",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "documented_variable",
+                    "value": "POSTGRES_PASSWORD",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "documented_variable",
+                    "value": "POSTGRES_DB",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "documented_variable",
+                    "value": "POSTGRES_PORT",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "documented_variable",
+                    "value": "APP_PORT",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "documented_variable",
+                    "value": "DATABASE_URL",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Reuse candidate; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "Dockerfile"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Reuse candidate; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "docker-compose.dev.yml"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Reuse candidate; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "docker-compose.yml"
+                      }
+                    ]
+                  }
+                ],
+                "blockers": [
+                  {
+                    "code": "unknown_runtime",
+                    "message": "No Node engine requirement is declared.",
+                    "evidence": [
+                      {
+                        "path": "package.json"
+                      }
+                    ],
+                    "next_action": "Declare engines.node compatible with the Node 22 image.",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "service_dependency",
+                    "message": "Dependency evidence suggests Database (Prisma); it does not prove a running service is required.",
+                    "evidence": [
+                      {
+                        "path": "package.json"
+                      }
+                    ],
+                    "next_action": "Clarify/remove the dependency or defer this app until service-backed workflows are supported.",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "environment_missing",
+                    "message": "Documented variable APP_PORT has no nonempty value in inspected environment files.",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ],
+                    "next_action": "Provide APP_PORT locally or clarify whether it is optional; values will not be printed.",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "environment_missing",
+                    "message": "Documented variable DATABASE_URL has no nonempty value in inspected environment files.",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ],
+                    "next_action": "Provide DATABASE_URL locally or clarify whether it is optional; values will not be printed.",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "environment_missing",
+                    "message": "Documented variable POSTGRES_DB has no nonempty value in inspected environment files.",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ],
+                    "next_action": "Provide POSTGRES_DB locally or clarify whether it is optional; values will not be printed.",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "environment_missing",
+                    "message": "Documented variable POSTGRES_PASSWORD has no nonempty value in inspected environment files.",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ],
+                    "next_action": "Provide POSTGRES_PASSWORD locally or clarify whether it is optional; values will not be printed.",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "environment_missing",
+                    "message": "Documented variable POSTGRES_PORT has no nonempty value in inspected environment files.",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ],
+                    "next_action": "Provide POSTGRES_PORT locally or clarify whether it is optional; values will not be printed.",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "environment_missing",
+                    "message": "Documented variable POSTGRES_USER has no nonempty value in inspected environment files.",
+                    "evidence": [
+                      {
+                        "path": ".env.example"
+                      }
+                    ],
+                    "next_action": "Provide POSTGRES_USER locally or clarify whether it is optional; values will not be printed.",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "compose_selection",
+                    "message": "Multiple Docker/Compose variants require explicit selection.",
+                    "evidence": [
+                      {
+                        "path": "."
+                      }
+                    ],
+                    "next_action": "For validation, select the intended configuration with validate --compose-file FILE; its build definitions select Dockerfiles. Generation does not overwrite existing variants.",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "docker_runtime_conflict",
+                    "message": "Existing Dockerfile declares a Node image outside the Node 22 target.",
+                    "evidence": [
+                      {
+                        "path": "Dockerfile"
+                      }
+                    ],
+                    "next_action": "Resolve Dockerfile and package runtime requirements together.",
+                    "needs_input": true
+                  }
+                ],
+                "assumptions": [
+                  "Absent explicit flags, next dev is assumed to listen on port [REDACTED] on all interfaces; runtime validation is still required."
+                ],
+                "unknowns": [
+                  "Transitive lockfile integrity and installability require npm validation.",
+                  "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+                  "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+                ],
+                "application_candidates": [],
+                "setup": "ambiguous",
+                "startup_command": "npm run dev",
+                "services": [
+                  "Database (Prisma)"
+                ],
+                "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+              },
+              "detected": [
+                "Next.js app",
+                "Node.js app"
+              ],
+              "services": [
+                "Database (Prisma)"
+              ],
+              "runtime": [
+                "Docker-based development",
+                "Node.js runtime"
+              ],
+              "startup_commands": [
+                "docker compose up",
+                "npm run dev",
+                "docker compose -f docker-compose.dev.yml up"
+              ],
+              "missing": [
+                "GitHub Actions workflow"
+              ],
+              "recommendations": [
+                "Declare engines.node compatible with the Node 22 image.",
+                "Clarify/remove the dependency or defer this app until service-backed workflows are supported.",
+                "Provide APP_PORT locally or clarify whether it is optional; values will not be printed.",
+                "Provide DATABASE_URL locally or clarify whether it is optional; values will not be printed.",
+                "Provide POSTGRES_DB locally or clarify whether it is optional; values will not be printed.",
+                "Provide POSTGRES_PASSWORD locally or clarify whether it is optional; values will not be printed.",
+                "Provide POSTGRES_PORT locally or clarify whether it is optional; values will not be printed.",
+                "Provide POSTGRES_USER locally or clarify whether it is optional; values will not be printed.",
+                "For validation, select the intended configuration with validate --compose-file FILE; its build definitions select Dockerfiles. Generation does not overwrite existing variants.",
+                "Resolve Dockerfile and package runtime requirements together."
+              ]
+            },
+            "components": []
+          }
+        },
+        "proposal": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "dockerize",
+            "<home>/Desktop/repos/nextjs-docker-postgres-template",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.396,
+          "result": {
+            "schema_version": 1,
+            "path": "<home>/Desktop/repos/nextjs-docker-[REDACTED]-template",
+            "purpose": "local development",
+            "status": "blocked",
+            "blockers": [
+              {
+                "code": "unknown_runtime",
+                "message": "No Node engine requirement is declared.",
+                "evidence": [
+                  {
+                    "path": "package.json"
+                  }
+                ],
+                "next_action": "Declare engines.node compatible with the Node 22 image.",
+                "needs_input": true
+              },
+              {
+                "code": "service_dependency",
+                "message": "Dependency evidence suggests Database (Prisma); it does not prove a running service is required.",
+                "evidence": [
+                  {
+                    "path": "package.json"
+                  }
+                ],
+                "next_action": "Clarify/remove the dependency or defer this app until service-backed workflows are supported.",
+                "needs_input": true
+              },
+              {
+                "code": "environment_missing",
+                "message": "Documented variable APP_PORT has no nonempty value in inspected environment files.",
+                "evidence": [
+                  {
+                    "path": ".env.example"
+                  }
+                ],
+                "next_action": "Provide APP_PORT locally or clarify whether it is optional; values will not be printed.",
+                "needs_input": true
+              },
+              {
+                "code": "environment_missing",
+                "message": "Documented variable DATABASE_URL has no nonempty value in inspected environment files.",
+                "evidence": [
+                  {
+                    "path": ".env.example"
+                  }
+                ],
+                "next_action": "Provide DATABASE_URL locally or clarify whether it is optional; values will not be printed.",
+                "needs_input": true
+              },
+              {
+                "code": "environment_missing",
+                "message": "Documented variable POSTGRES_DB has no nonempty value in inspected environment files.",
+                "evidence": [
+                  {
+                    "path": ".env.example"
+                  }
+                ],
+                "next_action": "Provide POSTGRES_DB locally or clarify whether it is optional; values will not be printed.",
+                "needs_input": true
+              },
+              {
+                "code": "environment_missing",
+                "message": "Documented variable POSTGRES_PASSWORD has no nonempty value in inspected environment files.",
+                "evidence": [
+                  {
+                    "path": ".env.example"
+                  }
+                ],
+                "next_action": "Provide POSTGRES_PASSWORD locally or clarify whether it is optional; values will not be printed.",
+                "needs_input": true
+              },
+              {
+                "code": "environment_missing",
+                "message": "Documented variable POSTGRES_PORT has no nonempty value in inspected environment files.",
+                "evidence": [
+                  {
+                    "path": ".env.example"
+                  }
+                ],
+                "next_action": "Provide POSTGRES_PORT locally or clarify whether it is optional; values will not be printed.",
+                "needs_input": true
+              },
+              {
+                "code": "environment_missing",
+                "message": "Documented variable POSTGRES_USER has no nonempty value in inspected environment files.",
+                "evidence": [
+                  {
+                    "path": ".env.example"
+                  }
+                ],
+                "next_action": "Provide POSTGRES_USER locally or clarify whether it is optional; values will not be printed.",
+                "needs_input": true
+              },
+              {
+                "code": "compose_selection",
+                "message": "Multiple Docker/Compose variants require explicit selection.",
+                "evidence": [
+                  {
+                    "path": "."
+                  }
+                ],
+                "next_action": "For validation, select the intended configuration with validate --compose-file FILE; its build definitions select Dockerfiles. Generation does not overwrite existing variants.",
+                "needs_input": true
+              },
+              {
+                "code": "docker_runtime_conflict",
+                "message": "Existing Dockerfile declares a Node image outside the Node 22 target.",
+                "evidence": [
+                  {
+                    "path": "Dockerfile"
+                  }
+                ],
+                "next_action": "Resolve Dockerfile and package runtime requirements together.",
+                "needs_input": true
+              }
+            ],
+            "changes": [],
+            "preserved": [],
+            "notes": [],
+            "run_command": null
+          }
+        },
+        "config-default": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/nextjs-docker-postgres-template",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.4,
+          "result": {
+            "success": false,
+            "phase": "selection",
+            "error": "Multiple Compose files found; select one with --compose-file FILE."
+          }
+        },
+        "runtime": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/nextjs-docker-postgres-template",
+            "--run",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.4,
+          "result": {
+            "success": false,
+            "phase": "selection",
+            "error": "Multiple Compose files found; select one with --compose-file FILE."
+          }
+        },
+        "config-selected": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/nextjs-docker-postgres-template",
+            "--compose-file",
+            "docker-compose.dev.yml",
+            "--json"
+          ],
+          "exit_code": 0,
+          "seconds": 0.344,
+          "result": {
+            "success": true,
+            "phase": "config",
+            "results": [
+              {
+                "command": "docker compose --project-directory <home>/Desktop/repos/nextjs-docker-[REDACTED]-template -p devops-validation-33fec0b648cd -f <home>/Desktop/repos/nextjs-docker-[REDACTED]-template/docker-compose.dev.yml config --format json",
+                "success": true,
+                "stdout": "[structured configuration omitted]",
+                "stderr": "",
+                "returncode": 0
+              }
+            ],
+            "logs": "",
+            "expected_services": [],
+            "running_services": [],
+            "stopped_services": [],
+            "application_check": null,
+            "stages": [
+              {
+                "phase": "config",
+                "success": true
+              }
+            ],
+            "cleanup": {
+              "status": "not_needed"
+            },
+            "verified": [
+              "config"
+            ],
+            "unverified": [
+              "Business correctness and production readiness",
+              "Image build, services and application readiness"
+            ],
+            "environment_state": "not_started",
+            "project": "devops-validation-33fec0b648cd",
+            "repair_context": {
+              "inputs_sha256": null,
+              "compose_file": "docker-compose.dev.yml",
+              "health_path": "/",
+              "service": null,
+              "container_port": null,
+              "timeout": 300.0,
+              "readiness_timeout": 90.0
+            }
+          }
+        },
+        "runtime-selected": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/nextjs-docker-postgres-template",
+            "--compose-file",
+            "docker-compose.dev.yml",
+            "--run",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.417,
+          "result": {
+            "success": false,
+            "phase": "eligibility",
+            "project": {
+              "eligibility": "needs_input",
+              "findings": [
+                {
+                  "name": "framework",
+                  "value": "Next.js",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "dependencies.next"
+                    }
+                  ]
+                },
+                {
+                  "name": "package_manager",
+                  "value": "npm",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "package-lock.json"
+                    }
+                  ]
+                },
+                {
+                  "name": "lockfile",
+                  "value": "Root declarations match package.json",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package-lock.json",
+                      "field": "packages['']"
+                    }
+                  ]
+                },
+                {
+                  "name": "startup_command",
+                  "value": "npm run dev",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "scripts.dev"
+                    }
+                  ]
+                },
+                {
+                  "name": "application_port",
+                  "value": "[REDACTED]",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "scripts.dev"
+                    }
+                  ]
+                },
+                {
+                  "name": "service_dependency",
+                  "value": "Database (Prisma)",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "package.json",
+                      "field": "dependencies.@prisma/client"
+                    }
+                  ]
+                },
+                {
+                  "name": "documented_variable",
+                  "value": "POSTGRES_USER",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ]
+                },
+                {
+                  "name": "documented_variable",
+                  "value": "POSTGRES_PASSWORD",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ]
+                },
+                {
+                  "name": "documented_variable",
+                  "value": "POSTGRES_DB",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ]
+                },
+                {
+                  "name": "documented_variable",
+                  "value": "POSTGRES_PORT",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ]
+                },
+                {
+                  "name": "documented_variable",
+                  "value": "APP_PORT",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ]
+                },
+                {
+                  "name": "documented_variable",
+                  "value": "DATABASE_URL",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ]
+                },
+                {
+                  "name": "selected_compose_file",
+                  "value": "docker-compose.dev.yml",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "docker-compose.dev.yml"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "docker-compose.dev.yml"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "docker-compose.yml"
+                    }
+                  ]
+                }
+              ],
+              "blockers": [
+                {
+                  "code": "unknown_runtime",
+                  "message": "No Node engine requirement is declared.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Declare engines.node compatible with the Node 22 image.",
+                  "needs_input": true
+                },
+                {
+                  "code": "service_dependency",
+                  "message": "Dependency evidence suggests Database (Prisma); it does not prove a running service is required.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Clarify/remove the dependency or defer this app until service-backed workflows are supported.",
+                  "needs_input": true
+                },
+                {
+                  "code": "environment_missing",
+                  "message": "Documented variable APP_PORT has no nonempty value in inspected environment files.",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ],
+                  "next_action": "Provide APP_PORT locally or clarify whether it is optional; values will not be printed.",
+                  "needs_input": true
+                },
+                {
+                  "code": "environment_missing",
+                  "message": "Documented variable DATABASE_URL has no nonempty value in inspected environment files.",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ],
+                  "next_action": "Provide DATABASE_URL locally or clarify whether it is optional; values will not be printed.",
+                  "needs_input": true
+                },
+                {
+                  "code": "environment_missing",
+                  "message": "Documented variable POSTGRES_DB has no nonempty value in inspected environment files.",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ],
+                  "next_action": "Provide POSTGRES_DB locally or clarify whether it is optional; values will not be printed.",
+                  "needs_input": true
+                },
+                {
+                  "code": "environment_missing",
+                  "message": "Documented variable POSTGRES_PASSWORD has no nonempty value in inspected environment files.",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ],
+                  "next_action": "Provide POSTGRES_PASSWORD locally or clarify whether it is optional; values will not be printed.",
+                  "needs_input": true
+                },
+                {
+                  "code": "environment_missing",
+                  "message": "Documented variable POSTGRES_PORT has no nonempty value in inspected environment files.",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ],
+                  "next_action": "Provide POSTGRES_PORT locally or clarify whether it is optional; values will not be printed.",
+                  "needs_input": true
+                },
+                {
+                  "code": "environment_missing",
+                  "message": "Documented variable POSTGRES_USER has no nonempty value in inspected environment files.",
+                  "evidence": [
+                    {
+                      "path": ".env.example"
+                    }
+                  ],
+                  "next_action": "Provide POSTGRES_USER locally or clarify whether it is optional; values will not be printed.",
+                  "needs_input": true
+                },
+                {
+                  "code": "docker_runtime_conflict",
+                  "message": "Existing Dockerfile declares a Node image outside the Node 22 target.",
+                  "evidence": [
+                    {
+                      "path": "Dockerfile"
+                    }
+                  ],
+                  "next_action": "Resolve Dockerfile and package runtime requirements together.",
+                  "needs_input": true
+                }
+              ],
+              "assumptions": [
+                "Absent explicit flags, next dev is assumed to listen on port [REDACTED] on all interfaces; runtime validation is still required."
+              ],
+              "unknowns": [
+                "Transitive lockfile integrity and installability require npm validation.",
+                "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+                "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+              ],
+              "application_candidates": [],
+              "setup": "existing",
+              "startup_command": "npm run dev",
+              "services": [
+                "Database (Prisma)"
+              ],
+              "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+            },
+            "error": "Repository is not eligible for build/runtime validation.",
+            "diagnosis": {
+              "type": "missing_environment",
+              "phase": "eligibility",
+              "summary": "Required environment configuration is missing.",
+              "symptoms": [
+                "Documented variable APP_PORT has no nonempty value in inspected environment files.",
+                "Documented variable DATABASE_URL has no nonempty value in inspected environment files.",
+                "Documented variable POSTGRES_DB has no nonempty value in inspected environment files."
+              ],
+              "evidence": [
+                {
+                  "source": "project.blockers[2]",
+                  "excerpt": "Documented variable APP_PORT has no nonempty value in inspected environment files."
+                },
+                {
+                  "source": "project.blockers[3]",
+                  "excerpt": "Documented variable DATABASE_URL has no nonempty value in inspected environment files."
+                },
+                {
+                  "source": "project.blockers[4]",
+                  "excerpt": "Documented variable POSTGRES_DB has no nonempty value in inspected environment files."
+                }
+              ],
+              "confidence": "high",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+              "likely_causes": [
+                "A required value is absent or is not loaded into the application."
+              ],
+              "suggested_actions": [
+                "Compare the reported variable names with .env.example and the app's configuration; supply actual local values in the expected environment file and verify its Compose mount/env_file configuration."
+              ],
+              "expected_impact": "Changes local application configuration; do not invent credentials or commit secret [REDACTED]",
+              "verification": "Rerun analyze to clear environment blockers, then validate --run; require the missing-variable error to disappear and HTTP readiness to pass.",
+              "automatic_repair": false,
+              "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+            }
+          }
+        }
+      },
+      "files_unchanged": true,
+      "git_clean": true
+    },
+    {
+      "name": "Docker-Django-Vue-Postgres",
+      "commit": "ddb006764651d1f68a59eab9056627244c0a6bea",
+      "checks": {
+        "analyze": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "analyze",
+            "<home>/Desktop/repos/Docker-Django-Vue-Postgres",
+            "--json"
+          ],
+          "exit_code": 0,
+          "seconds": 0.222,
+          "result": {
+            "schema_version": 1,
+            "repository": {
+              "path": "<home>/Desktop/repos/Docker-Django-Vue-Postgres",
+              "name": "Docker-Django-Vue-Postgres",
+              "role": "component",
+              "is_component": false,
+              "found_files": [],
+              "dockerfiles": [],
+              "compose_files": [
+                "docker-compose.yml"
+              ],
+              "config_files": [],
+              "workflow_files": [],
+              "components": [
+                {
+                  "path": "<home>/Desktop/repos/Docker-Django-Vue-Postgres/backend",
+                  "name": "backend",
+                  "role": "backend",
+                  "is_component": true,
+                  "found_files": [
+                    "requirements.txt",
+                    "manage.py"
+                  ],
+                  "dockerfiles": [
+                    "dockerfile"
+                  ],
+                  "compose_files": [],
+                  "config_files": [],
+                  "workflow_files": []
+                },
+                {
+                  "path": "<home>/Desktop/repos/Docker-Django-Vue-Postgres/frontend",
+                  "name": "frontend",
+                  "role": "frontend",
+                  "is_component": true,
+                  "found_files": [
+                    "package.json"
+                  ],
+                  "dockerfiles": [
+                    "dockerfile"
+                  ],
+                  "compose_files": [],
+                  "config_files": [],
+                  "workflow_files": []
+                }
+              ]
+            },
+            "analysis": {
+              "project": {
+                "eligibility": "blocked",
+                "findings": [
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Present; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "docker-compose.yml"
+                      }
+                    ]
+                  }
+                ],
+                "blockers": [
+                  {
+                    "code": "application_selection",
+                    "message": "Additional application directories were found.",
+                    "evidence": [
+                      {
+                        "path": "."
+                      }
+                    ],
+                    "next_action": "Which application should be inspected? Run the command with one of: backend, frontend",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "unsupported_framework",
+                    "message": "No declared Next.js dependency was found.",
+                    "evidence": [
+                      {
+                        "path": "package.json"
+                      }
+                    ],
+                    "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+                    "needs_input": false
+                  }
+                ],
+                "assumptions": [
+                  "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+                ],
+                "unknowns": [
+                  "Framework-specific prerequisites and runtime readiness have not been evaluated."
+                ],
+                "application_candidates": [
+                  "backend",
+                  "frontend"
+                ],
+                "setup": "unverified",
+                "startup_command": null,
+                "services": [],
+                "scope": "Analysis only; preserve the existing framework. Automated setup and runtime validation are unsupported."
+              },
+              "detected": [
+                "Django app backend",
+                "Full-stack / multi-component app",
+                "Node.js app frontend",
+                "Python dependencies file backend",
+                "Vue app frontend"
+              ],
+              "services": [
+                "PostgreSQL"
+              ],
+              "runtime": [
+                "Docker-based development",
+                "Node.js runtime",
+                "Python runtime"
+              ],
+              "startup_commands": [
+                "docker compose up"
+              ],
+              "missing": [
+                "Dockerfile",
+                "GitHub Actions workflow"
+              ],
+              "recommendations": [
+                "Which application should be inspected? Run the command with one of: backend, frontend",
+                "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework."
+              ]
+            },
+            "components": [
+              {
+                "path": "<home>/Desktop/repos/Docker-Django-Vue-Postgres/backend",
+                "analysis": {
+                  "project": {
+                    "eligibility": "blocked",
+                    "findings": [
+                      {
+                        "name": "existing_infrastructure",
+                        "value": "Present; compatibility unverified",
+                        "certainty": "confirmed",
+                        "evidence": [
+                          {
+                            "path": "dockerfile"
+                          }
+                        ]
+                      }
+                    ],
+                    "blockers": [
+                      {
+                        "code": "unsupported_framework",
+                        "message": "No declared Next.js dependency was found.",
+                        "evidence": [
+                          {
+                            "path": "package.json"
+                          }
+                        ],
+                        "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+                        "needs_input": false
+                      }
+                    ],
+                    "assumptions": [
+                      "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+                    ],
+                    "unknowns": [
+                      "Framework-specific prerequisites and runtime readiness have not been evaluated."
+                    ],
+                    "application_candidates": [],
+                    "setup": "unverified",
+                    "startup_command": null,
+                    "services": [],
+                    "scope": "Analysis only; preserve the existing framework. Automated setup and runtime validation are unsupported."
+                  },
+                  "detected": [
+                    "Django app",
+                    "Python dependencies file"
+                  ],
+                  "services": [
+                    "PostgreSQL"
+                  ],
+                  "runtime": [
+                    "Docker-based development",
+                    "Python runtime"
+                  ],
+                  "startup_commands": [
+                    "python manage.py runserver"
+                  ],
+                  "missing": [],
+                  "recommendations": [
+                    "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework."
+                  ]
+                }
+              },
+              {
+                "path": "<home>/Desktop/repos/Docker-Django-Vue-Postgres/frontend",
+                "analysis": {
+                  "project": {
+                    "eligibility": "blocked",
+                    "findings": [
+                      {
+                        "name": "framework",
+                        "value": "Vue",
+                        "certainty": "confirmed",
+                        "evidence": [
+                          {
+                            "path": "package.json",
+                            "field": "dependencies.vue"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "existing_infrastructure",
+                        "value": "Present; compatibility unverified",
+                        "certainty": "confirmed",
+                        "evidence": [
+                          {
+                            "path": "dockerfile"
+                          }
+                        ]
+                      }
+                    ],
+                    "blockers": [
+                      {
+                        "code": "unsupported_framework",
+                        "message": "No declared Next.js dependency was found.",
+                        "evidence": [
+                          {
+                            "path": "package.json"
+                          }
+                        ],
+                        "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+                        "needs_input": false
+                      }
+                    ],
+                    "assumptions": [],
+                    "unknowns": [
+                      "Framework-specific prerequisites and runtime readiness have not been evaluated."
+                    ],
+                    "application_candidates": [],
+                    "setup": "unverified",
+                    "startup_command": null,
+                    "services": [],
+                    "scope": "Analysis only; preserve the existing framework. Automated setup and runtime validation are unsupported."
+                  },
+                  "detected": [
+                    "Node.js app",
+                    "Vue app"
+                  ],
+                  "services": [],
+                  "runtime": [
+                    "Docker-based development",
+                    "Node.js runtime"
+                  ],
+                  "startup_commands": [
+                    "npm run dev"
+                  ],
+                  "missing": [],
+                  "recommendations": [
+                    "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework."
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "proposal": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "dockerize",
+            "<home>/Desktop/repos/Docker-Django-Vue-Postgres",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.208,
+          "result": {
+            "schema_version": 1,
+            "path": "<home>/Desktop/repos/Docker-Django-Vue-Postgres",
+            "purpose": "local development",
+            "status": "blocked",
+            "blockers": [
+              {
+                "code": "application_selection",
+                "message": "Additional application directories were found.",
+                "evidence": [
+                  {
+                    "path": "."
+                  }
+                ],
+                "next_action": "Which application should be inspected? Run the command with one of: backend, frontend",
+                "needs_input": true
+              },
+              {
+                "code": "unsupported_framework",
+                "message": "No declared Next.js dependency was found.",
+                "evidence": [
+                  {
+                    "path": "package.json"
+                  }
+                ],
+                "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+                "needs_input": false
+              }
+            ],
+            "changes": [],
+            "preserved": [],
+            "notes": [],
+            "run_command": null
+          }
+        },
+        "config-default": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/Docker-Django-Vue-Postgres",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.397,
+          "result": {
+            "success": false,
+            "phase": "config",
+            "results": [
+              {
+                "command": "docker compose --project-directory <home>/Desktop/repos/Docker-Django-Vue-Postgres -p devops-validation-67b58f6019c8 -f <home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml config --format json",
+                "success": false,
+                "stdout": "[structured configuration omitted]",
+                "stderr": "time=\"2026-10-07T22:17:15-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\"\nenv file <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env not found: stat <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env: no such file or directory\n",
+                "returncode": 1
+              }
+            ],
+            "logs": "",
+            "expected_services": [],
+            "running_services": [],
+            "stopped_services": [],
+            "application_check": null,
+            "stages": [
+              {
+                "phase": "config",
+                "success": false
+              }
+            ],
+            "cleanup": {
+              "status": "not_needed"
+            },
+            "verified": [],
+            "unverified": [
+              "Business correctness and production readiness"
+            ],
+            "environment_state": "not_started",
+            "project": "devops-validation-67b58f6019c8",
+            "error": "time=\"2026-10-07T22:17:15-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\"\nenv file <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env not found: stat <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env: no such file or directory\n",
+            "next_action": "Inspect the command failure and retry after correcting it.",
+            "repair_context": {
+              "inputs_sha256": null,
+              "compose_file": "docker-compose.yml",
+              "health_path": "/",
+              "service": null,
+              "container_port": null,
+              "timeout": 300.0,
+              "readiness_timeout": 90.0
+            },
+            "diagnosis": {
+              "type": "unknown",
+              "phase": "config",
+              "summary": "Validation failed without a supported diagnosis.",
+              "symptoms": [
+                "time=\"2026-10-07T22:17:15-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\"",
+                "env file <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env not found: stat <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env: no such file or directory",
+                "time=\"2026-10-07T22:17:15-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\""
+              ],
+              "evidence": [
+                {
+                  "source": "error",
+                  "excerpt": "time=\"2026-10-07T22:17:15-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\""
+                },
+                {
+                  "source": "error",
+                  "excerpt": "env file <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env not found: stat <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env: no such file or directory"
+                },
+                {
+                  "source": "results[0].stderr",
+                  "excerpt": "time=\"2026-10-07T22:17:15-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\""
+                }
+              ],
+              "confidence": "low",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+              "likely_causes": [
+                "The available evidence is insufficient to identify a cause."
+              ],
+              "suggested_actions": [
+                "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+              ],
+              "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+              "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+              "automatic_repair": false,
+              "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+            }
+          }
+        },
+        "runtime": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/Docker-Django-Vue-Postgres",
+            "--run",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.301,
+          "result": {
+            "success": false,
+            "phase": "eligibility",
+            "project": {
+              "eligibility": "blocked",
+              "findings": [
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Present; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "docker-compose.yml"
+                    }
+                  ]
+                }
+              ],
+              "blockers": [
+                {
+                  "code": "application_selection",
+                  "message": "Additional application directories were found.",
+                  "evidence": [
+                    {
+                      "path": "."
+                    }
+                  ],
+                  "next_action": "Which application should be inspected? Run the command with one of: backend, frontend",
+                  "needs_input": true
+                },
+                {
+                  "code": "unsupported_framework",
+                  "message": "No declared Next.js dependency was found.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+                  "needs_input": false
+                }
+              ],
+              "assumptions": [
+                "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+              ],
+              "unknowns": [
+                "Framework-specific prerequisites and runtime readiness have not been evaluated."
+              ],
+              "application_candidates": [
+                "backend",
+                "frontend"
+              ],
+              "setup": "unverified",
+              "startup_command": null,
+              "services": [],
+              "scope": "Analysis only; preserve the existing framework. Automated setup and runtime validation are unsupported."
+            },
+            "error": "Repository is not eligible for build/runtime validation.",
+            "diagnosis": {
+              "type": "unknown",
+              "phase": "eligibility",
+              "summary": "Validation failed without a supported diagnosis.",
+              "symptoms": [
+                "Repository is not eligible for build/runtime validation."
+              ],
+              "evidence": [
+                {
+                  "source": "error",
+                  "excerpt": "Repository is not eligible for build/runtime validation."
+                }
+              ],
+              "confidence": "low",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+              "likely_causes": [
+                "The available evidence is insufficient to identify a cause."
+              ],
+              "suggested_actions": [
+                "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+              ],
+              "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+              "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+              "automatic_repair": false,
+              "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+            }
+          }
+        },
+        "config-selected": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/Docker-Django-Vue-Postgres",
+            "--compose-file",
+            "docker-compose.yml",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.566,
+          "result": {
+            "success": false,
+            "phase": "config",
+            "results": [
+              {
+                "command": "docker compose --project-directory <home>/Desktop/repos/Docker-Django-Vue-Postgres -p devops-validation-cd5c1220554a -f <home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml config --format json",
+                "success": false,
+                "stdout": "[structured configuration omitted]",
+                "stderr": "time=\"2026-10-07T22:17:16-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\"\nenv file <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env not found: stat <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env: no such file or directory\n",
+                "returncode": 1
+              }
+            ],
+            "logs": "",
+            "expected_services": [],
+            "running_services": [],
+            "stopped_services": [],
+            "application_check": null,
+            "stages": [
+              {
+                "phase": "config",
+                "success": false
+              }
+            ],
+            "cleanup": {
+              "status": "not_needed"
+            },
+            "verified": [],
+            "unverified": [
+              "Business correctness and production readiness"
+            ],
+            "environment_state": "not_started",
+            "project": "devops-validation-cd5c1220554a",
+            "error": "time=\"2026-10-07T22:17:16-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\"\nenv file <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env not found: stat <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env: no such file or directory\n",
+            "next_action": "Inspect the command failure and retry after correcting it.",
+            "repair_context": {
+              "inputs_sha256": null,
+              "compose_file": "docker-compose.yml",
+              "health_path": "/",
+              "service": null,
+              "container_port": null,
+              "timeout": 300.0,
+              "readiness_timeout": 90.0
+            },
+            "diagnosis": {
+              "type": "unknown",
+              "phase": "config",
+              "summary": "Validation failed without a supported diagnosis.",
+              "symptoms": [
+                "time=\"2026-10-07T22:17:16-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\"",
+                "env file <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env not found: stat <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env: no such file or directory",
+                "time=\"2026-10-07T22:17:16-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\""
+              ],
+              "evidence": [
+                {
+                  "source": "error",
+                  "excerpt": "time=\"2026-10-07T22:17:16-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\""
+                },
+                {
+                  "source": "error",
+                  "excerpt": "env file <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env not found: stat <home>/Desktop/repos/Docker-Django-Vue-Postgres/.env: no such file or directory"
+                },
+                {
+                  "source": "results[0].stderr",
+                  "excerpt": "time=\"2026-10-07T22:17:16-07:00\" level=warning msg=\"<home>/Desktop/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\""
+                }
+              ],
+              "confidence": "low",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+              "likely_causes": [
+                "The available evidence is insufficient to identify a cause."
+              ],
+              "suggested_actions": [
+                "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+              ],
+              "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+              "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+              "automatic_repair": false,
+              "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+            }
+          }
+        },
+        "runtime-selected": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "validate",
+            "<home>/Desktop/repos/Docker-Django-Vue-Postgres",
+            "--compose-file",
+            "docker-compose.yml",
+            "--run",
+            "--json"
+          ],
+          "exit_code": 1,
+          "seconds": 0.299,
+          "result": {
+            "success": false,
+            "phase": "eligibility",
+            "project": {
+              "eligibility": "blocked",
+              "findings": [
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Present; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "docker-compose.yml"
+                    }
+                  ]
+                }
+              ],
+              "blockers": [
+                {
+                  "code": "application_selection",
+                  "message": "Additional application directories were found.",
+                  "evidence": [
+                    {
+                      "path": "."
+                    }
+                  ],
+                  "next_action": "Which application should be inspected? Run the command with one of: backend, frontend",
+                  "needs_input": true
+                },
+                {
+                  "code": "unsupported_framework",
+                  "message": "No declared Next.js dependency was found.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+                  "needs_input": false
+                }
+              ],
+              "assumptions": [
+                "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+              ],
+              "unknowns": [
+                "Framework-specific prerequisites and runtime readiness have not been evaluated."
+              ],
+              "application_candidates": [
+                "backend",
+                "frontend"
+              ],
+              "setup": "unverified",
+              "startup_command": null,
+              "services": [],
+              "scope": "Analysis only; preserve the existing framework. Automated setup and runtime validation are unsupported."
+            },
+            "error": "Repository is not eligible for build/runtime validation.",
+            "diagnosis": {
+              "type": "unknown",
+              "phase": "eligibility",
+              "summary": "Validation failed without a supported diagnosis.",
+              "symptoms": [
+                "Repository is not eligible for build/runtime validation."
+              ],
+              "evidence": [
+                {
+                  "source": "error",
+                  "excerpt": "Repository is not eligible for build/runtime validation."
+                }
+              ],
+              "confidence": "low",
+              "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+              "likely_causes": [
+                "The available evidence is insufficient to identify a cause."
+              ],
+              "suggested_actions": [
+                "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+              ],
+              "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+              "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+              "automatic_repair": false,
+              "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+            }
+          }
+        },
+        "backend": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "analyze",
+            "<home>/Desktop/repos/Docker-Django-Vue-Postgres/backend",
+            "--json"
+          ],
+          "exit_code": 0,
+          "seconds": 0.32,
+          "result": {
+            "schema_version": 1,
+            "repository": {
+              "path": "<home>/Desktop/repos/Docker-Django-Vue-Postgres/backend",
+              "name": "backend",
+              "role": "backend",
+              "is_component": false,
+              "found_files": [
+                "requirements.txt",
+                "manage.py"
+              ],
+              "dockerfiles": [
+                "dockerfile"
+              ],
+              "compose_files": [],
+              "config_files": [],
+              "workflow_files": [],
+              "components": []
+            },
+            "analysis": {
+              "project": {
+                "eligibility": "blocked",
+                "findings": [
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Present; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "dockerfile"
+                      }
+                    ]
+                  }
+                ],
+                "blockers": [
+                  {
+                    "code": "unsupported_framework",
+                    "message": "No declared Next.js dependency was found.",
+                    "evidence": [
+                      {
+                        "path": "package.json"
+                      }
+                    ],
+                    "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+                    "needs_input": false
+                  }
+                ],
+                "assumptions": [
+                  "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+                ],
+                "unknowns": [
+                  "Framework-specific prerequisites and runtime readiness have not been evaluated."
+                ],
+                "application_candidates": [],
+                "setup": "unverified",
+                "startup_command": null,
+                "services": [],
+                "scope": "Analysis only; preserve the existing framework. Automated setup and runtime validation are unsupported."
+              },
+              "detected": [
+                "Django app",
+                "Python dependencies file"
+              ],
+              "services": [
+                "PostgreSQL"
+              ],
+              "runtime": [
+                "Docker-based development",
+                "Python runtime"
+              ],
+              "startup_commands": [
+                "python manage.py runserver"
+              ],
+              "missing": [
+                "docker-compose.yml",
+                "GitHub Actions workflow"
+              ],
+              "recommendations": [
+                "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework."
+              ]
+            },
+            "components": []
+          }
+        },
+        "frontend": {
+          "command": [
+            "<home>/Desktop/repos/devops-agent/.venv/bin/python",
+            "-m",
+            "agent.main",
+            "analyze",
+            "<home>/Desktop/repos/Docker-Django-Vue-Postgres/frontend",
+            "--json"
+          ],
+          "exit_code": 0,
+          "seconds": 0.319,
+          "result": {
+            "schema_version": 1,
+            "repository": {
+              "path": "<home>/Desktop/repos/Docker-Django-Vue-Postgres/frontend",
+              "name": "frontend",
+              "role": "frontend",
+              "is_component": false,
+              "found_files": [
+                "package.json"
+              ],
+              "dockerfiles": [
+                "dockerfile"
+              ],
+              "compose_files": [],
+              "config_files": [],
+              "workflow_files": [],
+              "components": []
+            },
+            "analysis": {
+              "project": {
+                "eligibility": "blocked",
+                "findings": [
+                  {
+                    "name": "framework",
+                    "value": "Vue",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "package.json",
+                        "field": "dependencies.vue"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "existing_infrastructure",
+                    "value": "Present; compatibility unverified",
+                    "certainty": "confirmed",
+                    "evidence": [
+                      {
+                        "path": "dockerfile"
+                      }
+                    ]
+                  }
+                ],
+                "blockers": [
+                  {
+                    "code": "unsupported_framework",
+                    "message": "No declared Next.js dependency was found.",
+                    "evidence": [
+                      {
+                        "path": "package.json"
+                      }
+                    ],
+                    "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+                    "needs_input": false
+                  }
+                ],
+                "assumptions": [],
+                "unknowns": [
+                  "Framework-specific prerequisites and runtime readiness have not been evaluated."
+                ],
+                "application_candidates": [],
+                "setup": "unverified",
+                "startup_command": null,
+                "services": [],
+                "scope": "Analysis only; preserve the existing framework. Automated setup and runtime validation are unsupported."
+              },
+              "detected": [
+                "Node.js app",
+                "Vue app"
+              ],
+              "services": [],
+              "runtime": [
+                "Docker-based development",
+                "Node.js runtime"
+              ],
+              "startup_commands": [
+                "npm run dev"
+              ],
+              "missing": [
+                "docker-compose.yml",
+                "GitHub Actions workflow"
+              ],
+              "recommendations": [
+                "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework."
+              ]
+            },
+            "components": []
+          }
+        }
+      },
+      "files_unchanged": true,
+      "git_clean": true
+    }
+  ],
+  "container_inventory_unchanged": true,
+  "agent_source_sha256": {
+    "agent/validator.py": "60a3c0858583b05d4c08b556937ebc99437d1a74d435c4fd3c7268f10c1267de",
+    "agent/repair.py": "ba398033149da32a7fd7e27ef5ad1bd5111f48e03925df54956bc9e2b243f70e",
+    "agent/detector.py": "2045f808be498d245eb427195ec6de839d1393371b889e4cfce7b80a67c4fa39",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/understanding.py": "ff1761482cf9706da27624cf0774ea90161bc99985b473527849f8ae13b7280b",
+    "agent/diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/safety.py": "b53b7581a3d121bfef6c22b048b8dc509602ee0ddc17ba04bca3c31428d2e6f3",
+    "agent/main.py": "469db67768ae30e381789cdb0ee5db22bfb71011819b83d922b32a67453a268e",
+    "agent/docker_generator.py": "051eab3ee1da7f8a06fb531a9a3ee28c644effed7906f36bbe2aa621ced521dc"
+  }
+}

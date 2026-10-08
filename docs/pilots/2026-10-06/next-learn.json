@@ -1,0 +1,376 @@
+{
+  "analyze": {
+    "exit_code": 0,
+    "seconds": 0.234,
+    "result": {
+      "schema_version": 1,
+      "repository": {
+        "path": "<pilot>/repos/next-learn",
+        "name": "next-learn",
+        "role": "component",
+        "is_component": false,
+        "found_files": [
+          "package.json"
+        ],
+        "dockerfiles": [],
+        "compose_files": [],
+        "config_files": [],
+        "workflow_files": [],
+        "components": []
+      },
+      "analysis": {
+        "project": {
+          "eligibility": "needs_input",
+          "findings": [
+            {
+              "name": "framework",
+              "value": "Next.js",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "package.json",
+                  "field": "dependencies.next"
+                }
+              ]
+            },
+            {
+              "name": "package_manager",
+              "value": "pnpm",
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "pnpm-lock.yaml"
+                }
+              ]
+            },
+            {
+              "name": "runtime",
+              "value": "Node requirement is compatible with the Node 22 image",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "package.json",
+                  "field": "engines.node"
+                }
+              ]
+            },
+            {
+              "name": "startup_command",
+              "value": "npm run dev",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "package.json",
+                  "field": "scripts.dev"
+                }
+              ]
+            },
+            {
+              "name": "application_port",
+              "value": "3000",
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "package.json",
+                  "field": "scripts.dev"
+                }
+              ]
+            }
+          ],
+          "blockers": [
+            {
+              "code": "package_manager",
+              "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+              "evidence": [
+                {
+                  "path": "package.json"
+                }
+              ],
+              "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+              "needs_input": false
+            },
+            {
+              "code": "missing_lockfile",
+              "message": "A readable package-lock.json is required.",
+              "evidence": [
+                {
+                  "path": "package-lock.json"
+                }
+              ],
+              "next_action": "Generate and review an npm lockfile before dockerizing.",
+              "needs_input": false
+            },
+            {
+              "code": "runtime_conflict",
+              "message": "Runtime-file evidence does not establish Node 22 compatibility.",
+              "evidence": [
+                {
+                  "path": ".nvmrc"
+                }
+              ],
+              "next_action": "Resolve the runtime file and engines.node requirement together.",
+              "needs_input": true
+            }
+          ],
+          "assumptions": [
+            "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+          ],
+          "unknowns": [
+            "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated."
+          ],
+          "application_candidates": [],
+          "setup": "none",
+          "startup_command": "npm run dev",
+          "services": [],
+          "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+        },
+        "detected": [
+          "Next.js app",
+          "Node.js app"
+        ],
+        "services": [],
+        "runtime": [
+          "Node.js runtime"
+        ],
+        "startup_commands": [
+          "npm run dev"
+        ],
+        "missing": [
+          "Dockerfile",
+          "docker-compose.yml",
+          "GitHub Actions workflow"
+        ],
+        "recommendations": [
+          "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+          "Generate and review an npm lockfile before dockerizing.",
+          "Resolve the runtime file and engines.node requirement together."
+        ]
+      },
+      "components": []
+    }
+  },
+  "dockerize": {
+    "exit_code": 1,
+    "seconds": 0.147,
+    "result": {
+      "schema_version": 1,
+      "path": "<pilot>/repos/next-learn",
+      "purpose": "local development",
+      "status": "blocked",
+      "blockers": [
+        {
+          "code": "package_manager",
+          "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+          "evidence": [
+            {
+              "path": "package.json"
+            }
+          ],
+          "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+          "needs_input": false
+        },
+        {
+          "code": "missing_lockfile",
+          "message": "A readable package-lock.json is required.",
+          "evidence": [
+            {
+              "path": "package-lock.json"
+            }
+          ],
+          "next_action": "Generate and review an npm lockfile before dockerizing.",
+          "needs_input": false
+        },
+        {
+          "code": "runtime_conflict",
+          "message": "Runtime-file evidence does not establish Node 22 compatibility.",
+          "evidence": [
+            {
+              "path": ".nvmrc"
+            }
+          ],
+          "next_action": "Resolve the runtime file and engines.node requirement together.",
+          "needs_input": true
+        }
+      ],
+      "changes": [],
+      "preserved": [],
+      "notes": [],
+      "run_command": null
+    }
+  },
+  "validate": {
+    "exit_code": 1,
+    "seconds": 0.143,
+    "result": {
+      "success": false,
+      "phase": "config",
+      "error": "No Docker Compose file was found.",
+      "diagnosis": {
+        "type": "unknown",
+        "phase": "config",
+        "summary": "Validation failed without a supported diagnosis.",
+        "symptoms": [
+          "No Docker Compose file was found."
+        ],
+        "evidence": [
+          {
+            "source": "error",
+            "excerpt": "No Docker Compose file was found."
+          }
+        ],
+        "confidence": "low",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "The available evidence is insufficient to identify a cause."
+        ],
+        "suggested_actions": [
+          "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+        ],
+        "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+        "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      }
+    }
+  },
+  "runtime": {
+    "exit_code": 1,
+    "seconds": 0.457,
+    "result": {
+      "success": false,
+      "phase": "eligibility",
+      "project": {
+        "eligibility": "needs_input",
+        "findings": [
+          {
+            "name": "framework",
+            "value": "Next.js",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "package.json",
+                "field": "dependencies.next"
+              }
+            ]
+          },
+          {
+            "name": "package_manager",
+            "value": "pnpm",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "pnpm-lock.yaml"
+              }
+            ]
+          },
+          {
+            "name": "runtime",
+            "value": "Node requirement is compatible with the Node 22 image",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "package.json",
+                "field": "engines.node"
+              }
+            ]
+          },
+          {
+            "name": "startup_command",
+            "value": "npm run dev",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "package.json",
+                "field": "scripts.dev"
+              }
+            ]
+          },
+          {
+            "name": "application_port",
+            "value": "3000",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "package.json",
+                "field": "scripts.dev"
+              }
+            ]
+          }
+        ],
+        "blockers": [
+          {
+            "code": "package_manager",
+            "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+            "evidence": [
+              {
+                "path": "package.json"
+              }
+            ],
+            "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+            "needs_input": false
+          },
+          {
+            "code": "missing_lockfile",
+            "message": "A readable package-lock.json is required.",
+            "evidence": [
+              {
+                "path": "package-lock.json"
+              }
+            ],
+            "next_action": "Generate and review an npm lockfile before dockerizing.",
+            "needs_input": false
+          },
+          {
+            "code": "runtime_conflict",
+            "message": "Runtime-file evidence does not establish Node 22 compatibility.",
+            "evidence": [
+              {
+                "path": ".nvmrc"
+              }
+            ],
+            "next_action": "Resolve the runtime file and engines.node requirement together.",
+            "needs_input": true
+          }
+        ],
+        "assumptions": [
+          "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+        ],
+        "unknowns": [
+          "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated."
+        ],
+        "application_candidates": [],
+        "setup": "none",
+        "startup_command": "npm run dev",
+        "services": [],
+        "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+      },
+      "error": "Repository is not eligible for build/runtime validation.",
+      "diagnosis": {
+        "type": "unknown",
+        "phase": "eligibility",
+        "summary": "Validation failed without a supported diagnosis.",
+        "symptoms": [
+          "Repository is not eligible for build/runtime validation."
+        ],
+        "evidence": [
+          {
+            "source": "error",
+            "excerpt": "Repository is not eligible for build/runtime validation."
+          }
+        ],
+        "confidence": "low",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "The available evidence is insufficient to identify a cause."
+        ],
+        "suggested_actions": [
+          "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+        ],
+        "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+        "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      }
+    }
+  }
+}

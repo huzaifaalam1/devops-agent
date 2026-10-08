@@ -50,47 +50,21 @@ def require_eligible(analysis):
         raise typer.Exit(code=1)
 
 
-def choose_compose_file(compose_files: list[str]) -> str:
-    filenames = {
-        Path(compose_file).name: compose_file
-        for compose_file in compose_files
-    }
+def choose_compose_file(repo_info, requested=None):
+    """Select a discovered root file without following symlinks or guessing variants."""
+    files = repo_info["compose_files"]
+    if requested is None:
+        if len(files) > 1:
+            raise ValueError("Multiple Compose files found; select one with --compose-file FILE.")
+        return files[0] if files else None
+    candidate = Path(requested)
+    root = Path(repo_info["path"]).resolve()
+    if (candidate.is_absolute() or len(candidate.parts) != 1 or requested not in files
+            or (root / requested).is_symlink() or not (root / requested).is_file()
+            or not (root / requested).resolve().is_relative_to(root)):
+        raise ValueError("--compose-file must name a discovered regular Compose file in the application root; symlinks and outside paths are refused.")
+    return requested
 
-    system = platform.system()
-
-    if system == "Darwin":
-        preferred_files = [
-            "local_mac.yml",
-            "local_mac.yaml",
-            "docker-compose.mac.yml",
-            "docker-compose.mac.yaml",
-            "compose.mac.yml",
-            "compose.mac.yaml",
-        ]
-    elif system == "Linux":
-        preferred_files = [
-            "local_linux.yml",
-            "local_linux.yaml",
-        ]
-    else:
-        preferred_files = []
-
-    preferred_files.extend(
-        [
-            "local.yml",
-            "local.yaml",
-            "docker-compose.yml",
-            "docker-compose.yaml",
-            "compose.yml",
-            "compose.yaml",
-        ]
-    )
-
-    for preferred_file in preferred_files:
-        if preferred_file in filenames:
-            return filenames[preferred_file]
-
-    return compose_files[0]
 
 @app.callback()
 def main():
@@ -243,6 +217,8 @@ def dockerize(
 @app.command()
 def validate(
     path: Annotated[str, typer.Argument(help="Path to the repo")] = ".",
+    compose_file: Annotated[str | None, typer.Option("--compose-file", help="Select one root Compose file; does not override isolation checks")] = None,
+    existing_setup: Annotated[bool, typer.Option("--existing-setup", help="Use the selected existing Next.js Docker setup to establish runtime/package-manager behavior instead of the generation template")] = False,
     build: Annotated[bool, typer.Option(help="Verify image builds in an isolated validation project")] = False,
     run: Annotated[bool, typer.Option(help="Start isolated services and verify application readiness")] = False,
     keep_running: Annotated[bool, typer.Option("--keep-running", help="Keep only a successfully validated environment running")] = False,
@@ -256,16 +232,40 @@ def validate(
 ):
     """Validate configuration, builds, or isolated runtime readiness."""
     repo_info, analysis = inspect_repo(path)
-    if (build or run) and analysis["project"]["eligibility"] != "eligible":
+    try:
+        if existing_setup and compose_file is None:
+            raise ValueError("--existing-setup requires an explicit --compose-file selection.")
+        selected = choose_compose_file(repo_info, compose_file)
+        if compose_file is not None:
+            repo_info["selected_compose_file"] = selected
+            analysis = detect_stack(repo_info)
+    except ValueError as error:
+        result = {"success": False, "phase": "selection", "error": str(error)}
+        typer.echo(json.dumps(result) if json_output else result["error"])
+        raise typer.Exit(1) from None
+    project = analysis["project"]
+    deferred = []
+    blocking = project["blockers"]
+    if existing_setup:
+        # These checks constrain our generated Node 22 template, not a reviewed
+        # existing Dockerfile. Build/runtime outcomes remain independently checked.
+        template_codes = {"package_manager", "unknown_runtime", "runtime", "runtime_conflict", "docker_runtime_conflict"}
+        deferred = [item for item in blocking if item["code"] in template_codes]
+        blocking = [item for item in blocking if item["code"] not in template_codes]
+    if (build or run) and blocking:
         result = {"success": False, "phase": "eligibility", "project": analysis["project"],
                   "error": "Repository is not eligible for build/runtime validation."}
     elif not repo_info["compose_files"]:
         result = {"success": False, "phase": "config", "error": "No Docker Compose file was found."}
     else:
-        result = validate_docker(path, compose_file=choose_compose_file(repo_info["compose_files"]),
+        result = validate_docker(path, compose_file=selected,
                                  build=build, run=run, keep_running=keep_running, service=service,
                                  container_port=container_port, health_path=health_path, timeout=timeout,
                                  readiness_timeout=readiness_timeout)
+    if existing_setup:
+        result["eligibility_basis"] = {"mode": "existing_setup", "compose_file": selected,
+            "deferred_template_checks": deferred,
+            "notice": "Runtime and package-manager compatibility are established by the existing build and readiness checks, not by the Node 22 generation template. Isolation checks remain mandatory."}
     result = Redactor(path).clean(result)
     if not result["success"]:
         result["diagnosis"] = diagnose_failure(result)

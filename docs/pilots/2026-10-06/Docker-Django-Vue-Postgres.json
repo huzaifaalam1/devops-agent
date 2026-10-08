@@ -1,0 +1,760 @@
+{
+  "analyze": {
+    "exit_code": 0,
+    "seconds": 0.421,
+    "result": {
+      "schema_version": 1,
+      "repository": {
+        "path": "<pilot>/repos/Docker-Django-Vue-Postgres",
+        "name": "Docker-Django-Vue-Postgres",
+        "role": "component",
+        "is_component": false,
+        "found_files": [],
+        "dockerfiles": [],
+        "compose_files": [
+          "docker-compose.yml"
+        ],
+        "config_files": [],
+        "workflow_files": [],
+        "components": [
+          {
+            "path": "<pilot>/repos/Docker-Django-Vue-Postgres/backend",
+            "name": "backend",
+            "role": "backend",
+            "is_component": true,
+            "found_files": [
+              "requirements.txt",
+              "manage.py"
+            ],
+            "dockerfiles": [
+              "dockerfile"
+            ],
+            "compose_files": [],
+            "config_files": [],
+            "workflow_files": []
+          },
+          {
+            "path": "<pilot>/repos/Docker-Django-Vue-Postgres/frontend",
+            "name": "frontend",
+            "role": "frontend",
+            "is_component": true,
+            "found_files": [
+              "package.json"
+            ],
+            "dockerfiles": [
+              "dockerfile"
+            ],
+            "compose_files": [],
+            "config_files": [],
+            "workflow_files": []
+          }
+        ]
+      },
+      "analysis": {
+        "project": {
+          "eligibility": "needs_input",
+          "findings": [
+            {
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "docker-compose.yml"
+                }
+              ]
+            }
+          ],
+          "blockers": [
+            {
+              "code": "application_selection",
+              "message": "Additional application directories were found.",
+              "evidence": [
+                {
+                  "path": "."
+                }
+              ],
+              "next_action": "Which application should be inspected? Run the command with one of: backend, frontend",
+              "needs_input": true
+            },
+            {
+              "code": "unsupported_framework",
+              "message": "No declared Next.js dependency was found.",
+              "evidence": [
+                {
+                  "path": "package.json"
+                }
+              ],
+              "next_action": "Select a single Next.js application using npm; other stacks are analysis-only.",
+              "needs_input": false
+            },
+            {
+              "code": "package_manager",
+              "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+              "evidence": [
+                {
+                  "path": "package.json"
+                }
+              ],
+              "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+              "needs_input": false
+            },
+            {
+              "code": "missing_lockfile",
+              "message": "A readable package-lock.json is required.",
+              "evidence": [
+                {
+                  "path": "package-lock.json"
+                }
+              ],
+              "next_action": "Generate and review an npm lockfile before dockerizing.",
+              "needs_input": false
+            },
+            {
+              "code": "unknown_runtime",
+              "message": "No Node engine requirement is declared.",
+              "evidence": [
+                {
+                  "path": "package.json"
+                }
+              ],
+              "next_action": "Declare engines.node compatible with the Node 22 image.",
+              "needs_input": true
+            },
+            {
+              "code": "startup",
+              "message": "Cannot establish a direct next dev startup command.",
+              "evidence": [
+                {
+                  "path": "package.json"
+                }
+              ],
+              "next_action": "Declare scripts.dev as a direct next dev command, or clarify custom startup requirements.",
+              "needs_input": true
+            },
+            {
+              "code": "partial_setup",
+              "message": "Docker setup is incomplete: both Dockerfile and Compose are required for this workflow.",
+              "evidence": [
+                {
+                  "path": "docker-compose.yml"
+                }
+              ],
+              "next_action": "Complete or review the existing setup; no files will be overwritten.",
+              "needs_input": false
+            }
+          ],
+          "assumptions": [
+            "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+          ],
+          "unknowns": [
+            "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+            "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+          ],
+          "application_candidates": [
+            "backend",
+            "frontend"
+          ],
+          "setup": "partial",
+          "startup_command": null,
+          "services": [],
+          "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+        },
+        "detected": [
+          "Django app backend",
+          "Full-stack / multi-component app",
+          "Node.js app frontend",
+          "Python dependencies file backend",
+          "Vue app frontend"
+        ],
+        "services": [
+          "PostgreSQL"
+        ],
+        "runtime": [
+          "Docker-based development",
+          "Node.js runtime",
+          "Python runtime"
+        ],
+        "startup_commands": [
+          "docker compose up"
+        ],
+        "missing": [
+          "Dockerfile",
+          "GitHub Actions workflow"
+        ],
+        "recommendations": [
+          "Which application should be inspected? Run the command with one of: backend, frontend",
+          "Select a single Next.js application using npm; other stacks are analysis-only.",
+          "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+          "Generate and review an npm lockfile before dockerizing.",
+          "Declare engines.node compatible with the Node 22 image.",
+          "Declare scripts.dev as a direct next dev command, or clarify custom startup requirements.",
+          "Complete or review the existing setup; no files will be overwritten."
+        ]
+      },
+      "components": [
+        {
+          "path": "<pilot>/repos/Docker-Django-Vue-Postgres/backend",
+          "analysis": {
+            "project": {
+              "eligibility": "needs_input",
+              "findings": [
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "dockerfile"
+                    }
+                  ]
+                }
+              ],
+              "blockers": [
+                {
+                  "code": "unsupported_framework",
+                  "message": "No declared Next.js dependency was found.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Select a single Next.js application using npm; other stacks are analysis-only.",
+                  "needs_input": false
+                },
+                {
+                  "code": "package_manager",
+                  "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+                  "needs_input": false
+                },
+                {
+                  "code": "missing_lockfile",
+                  "message": "A readable package-lock.json is required.",
+                  "evidence": [
+                    {
+                      "path": "package-lock.json"
+                    }
+                  ],
+                  "next_action": "Generate and review an npm lockfile before dockerizing.",
+                  "needs_input": false
+                },
+                {
+                  "code": "unknown_runtime",
+                  "message": "No Node engine requirement is declared.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Declare engines.node compatible with the Node 22 image.",
+                  "needs_input": true
+                },
+                {
+                  "code": "startup",
+                  "message": "Cannot establish a direct next dev startup command.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Declare scripts.dev as a direct next dev command, or clarify custom startup requirements.",
+                  "needs_input": true
+                },
+                {
+                  "code": "partial_setup",
+                  "message": "Docker setup is incomplete: both Dockerfile and Compose are required for this workflow.",
+                  "evidence": [
+                    {
+                      "path": "dockerfile"
+                    }
+                  ],
+                  "next_action": "Complete or review the existing setup; no files will be overwritten.",
+                  "needs_input": false
+                }
+              ],
+              "assumptions": [
+                "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+              ],
+              "unknowns": [
+                "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+                "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+              ],
+              "application_candidates": [],
+              "setup": "partial",
+              "startup_command": null,
+              "services": [],
+              "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+            },
+            "detected": [
+              "Django app",
+              "Python dependencies file"
+            ],
+            "services": [
+              "PostgreSQL"
+            ],
+            "runtime": [
+              "Docker-based development",
+              "Python runtime"
+            ],
+            "startup_commands": [
+              "python manage.py runserver"
+            ],
+            "missing": [],
+            "recommendations": [
+              "Select a single Next.js application using npm; other stacks are analysis-only.",
+              "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+              "Generate and review an npm lockfile before dockerizing.",
+              "Declare engines.node compatible with the Node 22 image.",
+              "Declare scripts.dev as a direct next dev command, or clarify custom startup requirements.",
+              "Complete or review the existing setup; no files will be overwritten."
+            ]
+          }
+        },
+        {
+          "path": "<pilot>/repos/Docker-Django-Vue-Postgres/frontend",
+          "analysis": {
+            "project": {
+              "eligibility": "needs_input",
+              "findings": [
+                {
+                  "name": "package_manager",
+                  "value": "npm",
+                  "certainty": "inferred",
+                  "evidence": [
+                    {
+                      "path": "package-lock.json"
+                    }
+                  ]
+                },
+                {
+                  "name": "lockfile",
+                  "value": "Root declarations match package.json",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "package-lock.json",
+                      "field": "packages['']"
+                    }
+                  ]
+                },
+                {
+                  "name": "existing_infrastructure",
+                  "value": "Reuse candidate; compatibility unverified",
+                  "certainty": "confirmed",
+                  "evidence": [
+                    {
+                      "path": "dockerfile"
+                    }
+                  ]
+                }
+              ],
+              "blockers": [
+                {
+                  "code": "unsupported_framework",
+                  "message": "No declared Next.js dependency was found.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Select a single Next.js application using npm; other stacks are analysis-only.",
+                  "needs_input": false
+                },
+                {
+                  "code": "unknown_runtime",
+                  "message": "No Node engine requirement is declared.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Declare engines.node compatible with the Node 22 image.",
+                  "needs_input": true
+                },
+                {
+                  "code": "startup",
+                  "message": "Cannot establish a direct next dev startup command.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Declare scripts.dev as a direct next dev command, or clarify custom startup requirements.",
+                  "needs_input": true
+                },
+                {
+                  "code": "partial_setup",
+                  "message": "Docker setup is incomplete: both Dockerfile and Compose are required for this workflow.",
+                  "evidence": [
+                    {
+                      "path": "dockerfile"
+                    }
+                  ],
+                  "next_action": "Complete or review the existing setup; no files will be overwritten.",
+                  "needs_input": false
+                }
+              ],
+              "assumptions": [],
+              "unknowns": [
+                "Transitive lockfile integrity and installability require npm validation.",
+                "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+                "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+              ],
+              "application_candidates": [],
+              "setup": "partial",
+              "startup_command": null,
+              "services": [],
+              "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+            },
+            "detected": [
+              "Node.js app",
+              "Vue app"
+            ],
+            "services": [],
+            "runtime": [
+              "Docker-based development",
+              "Node.js runtime"
+            ],
+            "startup_commands": [
+              "npm run dev"
+            ],
+            "missing": [],
+            "recommendations": [
+              "Select a single Next.js application using npm; other stacks are analysis-only.",
+              "Declare engines.node compatible with the Node 22 image.",
+              "Declare scripts.dev as a direct next dev command, or clarify custom startup requirements.",
+              "Complete or review the existing setup; no files will be overwritten."
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "dockerize": {
+    "exit_code": 1,
+    "seconds": 0.417,
+    "result": {
+      "schema_version": 1,
+      "path": "<pilot>/repos/Docker-Django-Vue-Postgres",
+      "purpose": "local development",
+      "status": "blocked",
+      "blockers": [
+        {
+          "code": "application_selection",
+          "message": "Additional application directories were found.",
+          "evidence": [
+            {
+              "path": "."
+            }
+          ],
+          "next_action": "Which application should be inspected? Run the command with one of: backend, frontend",
+          "needs_input": true
+        },
+        {
+          "code": "unsupported_framework",
+          "message": "No declared Next.js dependency was found.",
+          "evidence": [
+            {
+              "path": "package.json"
+            }
+          ],
+          "next_action": "Select a single Next.js application using npm; other stacks are analysis-only.",
+          "needs_input": false
+        },
+        {
+          "code": "package_manager",
+          "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+          "evidence": [
+            {
+              "path": "package.json"
+            }
+          ],
+          "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+          "needs_input": false
+        },
+        {
+          "code": "missing_lockfile",
+          "message": "A readable package-lock.json is required.",
+          "evidence": [
+            {
+              "path": "package-lock.json"
+            }
+          ],
+          "next_action": "Generate and review an npm lockfile before dockerizing.",
+          "needs_input": false
+        },
+        {
+          "code": "unknown_runtime",
+          "message": "No Node engine requirement is declared.",
+          "evidence": [
+            {
+              "path": "package.json"
+            }
+          ],
+          "next_action": "Declare engines.node compatible with the Node 22 image.",
+          "needs_input": true
+        },
+        {
+          "code": "startup",
+          "message": "Cannot establish a direct next dev startup command.",
+          "evidence": [
+            {
+              "path": "package.json"
+            }
+          ],
+          "next_action": "Declare scripts.dev as a direct next dev command, or clarify custom startup requirements.",
+          "needs_input": true
+        },
+        {
+          "code": "partial_setup",
+          "message": "Docker setup is incomplete: both Dockerfile and Compose are required for this workflow.",
+          "evidence": [
+            {
+              "path": "docker-compose.yml"
+            }
+          ],
+          "next_action": "Complete or review the existing setup; no files will be overwritten.",
+          "needs_input": false
+        }
+      ],
+      "changes": [],
+      "preserved": [],
+      "notes": [],
+      "run_command": null
+    }
+  },
+  "validate": {
+    "exit_code": 1,
+    "seconds": 0.49,
+    "result": {
+      "success": false,
+      "phase": "config",
+      "results": [
+        {
+          "command": "docker compose --project-directory <pilot>/repos/Docker-Django-Vue-Postgres -p devops-validation-e7e64742baac -f <pilot>/repos/Docker-Django-Vue-Postgres/docker-compose.yml config --format json",
+          "success": false,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "time=\"2026-10-06T18:31:59-07:00\" level=warning msg=\"<pilot>/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\"\nenv file <pilot>/repos/Docker-Django-Vue-Postgres/.env not found: stat <pilot>/repos/Docker-Django-Vue-Postgres/.env: no such file or directory\n",
+          "returncode": 1
+        }
+      ],
+      "logs": "",
+      "expected_services": [],
+      "running_services": [],
+      "stopped_services": [],
+      "application_check": null,
+      "stages": [
+        {
+          "phase": "config",
+          "success": false
+        }
+      ],
+      "cleanup": {
+        "status": "not_needed"
+      },
+      "verified": [],
+      "unverified": [
+        "Business correctness and production readiness"
+      ],
+      "environment_state": "not_started",
+      "project": "devops-validation-e7e64742baac",
+      "error": "time=\"2026-10-06T18:31:59-07:00\" level=warning msg=\"<pilot>/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\"\nenv file <pilot>/repos/Docker-Django-Vue-Postgres/.env not found: stat <pilot>/repos/Docker-Django-Vue-Postgres/.env: no such file or directory\n",
+      "next_action": "Inspect the command failure and retry after correcting it.",
+      "repair_context": {
+        "inputs_sha256": null,
+        "compose_file": "docker-compose.yml",
+        "health_path": "/",
+        "service": null,
+        "container_port": null,
+        "timeout": 300.0,
+        "readiness_timeout": 90.0
+      },
+      "diagnosis": {
+        "type": "unknown",
+        "phase": "config",
+        "summary": "Validation failed without a supported diagnosis.",
+        "symptoms": [
+          "time=\"2026-10-06T18:31:59-07:00\" level=warning msg=\"<pilot>/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\"",
+          "env file <pilot>/repos/Docker-Django-Vue-Postgres/.env not found: stat <pilot>/repos/Docker-Django-Vue-Postgres/.env: no such file or directory",
+          "time=\"2026-10-06T18:31:59-07:00\" level=warning msg=\"<pilot>/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\""
+        ],
+        "evidence": [
+          {
+            "source": "error",
+            "excerpt": "time=\"2026-10-06T18:31:59-07:00\" level=warning msg=\"<pilot>/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\""
+          },
+          {
+            "source": "error",
+            "excerpt": "env file <pilot>/repos/Docker-Django-Vue-Postgres/.env not found: stat <pilot>/repos/Docker-Django-Vue-Postgres/.env: no such file or directory"
+          },
+          {
+            "source": "results[0].stderr",
+            "excerpt": "time=\"2026-10-06T18:31:59-07:00\" level=warning msg=\"<pilot>/repos/Docker-Django-Vue-Postgres/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion\""
+          }
+        ],
+        "confidence": "low",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "The available evidence is insufficient to identify a cause."
+        ],
+        "suggested_actions": [
+          "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+        ],
+        "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+        "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      }
+    }
+  },
+  "runtime": {
+    "exit_code": 1,
+    "seconds": 0.399,
+    "result": {
+      "success": false,
+      "phase": "eligibility",
+      "project": {
+        "eligibility": "needs_input",
+        "findings": [
+          {
+            "name": "existing_infrastructure",
+            "value": "Reuse candidate; compatibility unverified",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "docker-compose.yml"
+              }
+            ]
+          }
+        ],
+        "blockers": [
+          {
+            "code": "application_selection",
+            "message": "Additional application directories were found.",
+            "evidence": [
+              {
+                "path": "."
+              }
+            ],
+            "next_action": "Which application should be inspected? Run the command with one of: backend, frontend",
+            "needs_input": true
+          },
+          {
+            "code": "unsupported_framework",
+            "message": "No declared Next.js dependency was found.",
+            "evidence": [
+              {
+                "path": "package.json"
+              }
+            ],
+            "next_action": "Select a single Next.js application using npm; other stacks are analysis-only.",
+            "needs_input": false
+          },
+          {
+            "code": "package_manager",
+            "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+            "evidence": [
+              {
+                "path": "package.json"
+              }
+            ],
+            "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+            "needs_input": false
+          },
+          {
+            "code": "missing_lockfile",
+            "message": "A readable package-lock.json is required.",
+            "evidence": [
+              {
+                "path": "package-lock.json"
+              }
+            ],
+            "next_action": "Generate and review an npm lockfile before dockerizing.",
+            "needs_input": false
+          },
+          {
+            "code": "unknown_runtime",
+            "message": "No Node engine requirement is declared.",
+            "evidence": [
+              {
+                "path": "package.json"
+              }
+            ],
+            "next_action": "Declare engines.node compatible with the Node 22 image.",
+            "needs_input": true
+          },
+          {
+            "code": "startup",
+            "message": "Cannot establish a direct next dev startup command.",
+            "evidence": [
+              {
+                "path": "package.json"
+              }
+            ],
+            "next_action": "Declare scripts.dev as a direct next dev command, or clarify custom startup requirements.",
+            "needs_input": true
+          },
+          {
+            "code": "partial_setup",
+            "message": "Docker setup is incomplete: both Dockerfile and Compose are required for this workflow.",
+            "evidence": [
+              {
+                "path": "docker-compose.yml"
+              }
+            ],
+            "next_action": "Complete or review the existing setup; no files will be overwritten.",
+            "needs_input": false
+          }
+        ],
+        "assumptions": [
+          "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+        ],
+        "unknowns": [
+          "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+          "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+        ],
+        "application_candidates": [
+          "backend",
+          "frontend"
+        ],
+        "setup": "partial",
+        "startup_command": null,
+        "services": [],
+        "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+      },
+      "error": "Repository is not eligible for build/runtime validation.",
+      "diagnosis": {
+        "type": "unknown",
+        "phase": "eligibility",
+        "summary": "Validation failed without a supported diagnosis.",
+        "symptoms": [
+          "Repository is not eligible for build/runtime validation."
+        ],
+        "evidence": [
+          {
+            "source": "error",
+            "excerpt": "Repository is not eligible for build/runtime validation."
+          }
+        ],
+        "confidence": "low",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "The available evidence is insufficient to identify a cause."
+        ],
+        "suggested_actions": [
+          "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+        ],
+        "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+        "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      }
+    }
+  }
+}

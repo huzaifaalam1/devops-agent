@@ -125,3 +125,11 @@ project with no environment requirements. Templates and runtime readiness logic
 are unchanged. Eligibility does not certify lockfile transitive integrity,
 Compose semantics, endpoint identity, deployment safety, or production readiness.
 No Docker images were built or services started for this step.
+
+## Unsupported frameworks
+
+Projects without a declared Next.js dependency remain analysis-only and blocked
+for automated setup/runtime validation. Their framework/service detection and
+component candidates remain visible, but npm lockfile, Node 22, Next startup and
+template-completeness checks are not presented as defects to repair. The guidance
+is to preserve the existing stack and inspect its own documented workflow.

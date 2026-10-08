@@ -1,0 +1,126 @@
+{
+  "agent_commit": "4b56b8e5bf43cdc77b0ab4f8bfc8df33da975b3d",
+  "cases": [
+    {
+      "name": "next-learn",
+      "commit": "bb2558441a6673ab76c89914c25018bffa27a2ba",
+      "eligibility": "needs_input",
+      "blockers": [
+        "package_manager",
+        "missing_lockfile",
+        "runtime_conflict"
+      ],
+      "proposal_status": "blocked",
+      "configuration_success": false,
+      "runtime_success": false,
+      "runtime_phase": "eligibility",
+      "seconds": {
+        "analyze": 0.234,
+        "dockerize": 0.147,
+        "validate": 0.143,
+        "runtime": 0.457
+      },
+      "original_checkout_clean": true,
+      "pilot_copy_unchanged": true
+    },
+    {
+      "name": "docker-nextjs-sample",
+      "commit": "3d7cd2d9ab13f19bbba780e095d99f6bdadc89d4",
+      "eligibility": "needs_input",
+      "blockers": [
+        "package_manager",
+        "unknown_runtime",
+        "compose_selection"
+      ],
+      "proposal_status": "blocked",
+      "configuration_success": true,
+      "runtime_success": false,
+      "runtime_phase": "eligibility",
+      "seconds": {
+        "analyze": 0.213,
+        "dockerize": 0.41,
+        "validate": 0.617,
+        "runtime": 0.173
+      },
+      "original_checkout_clean": true,
+      "pilot_copy_unchanged": true
+    },
+    {
+      "name": "nextjs-docker-postgres-template",
+      "commit": "1b41f5b4aee4ef19621f2141feee0412b56614e6",
+      "eligibility": "needs_input",
+      "blockers": [
+        "unknown_runtime",
+        "service_dependency",
+        "environment_missing",
+        "environment_missing",
+        "environment_missing",
+        "environment_missing",
+        "environment_missing",
+        "environment_missing",
+        "compose_selection",
+        "docker_runtime_conflict"
+      ],
+      "proposal_status": "blocked",
+      "configuration_success": true,
+      "runtime_success": false,
+      "runtime_phase": "eligibility",
+      "seconds": {
+        "analyze": 0.439,
+        "dockerize": 0.447,
+        "validate": 0.519,
+        "runtime": 0.289
+      },
+      "original_checkout_clean": true,
+      "pilot_copy_unchanged": true
+    },
+    {
+      "name": "Docker-Django-Vue-Postgres",
+      "commit": "ddb006764651d1f68a59eab9056627244c0a6bea",
+      "eligibility": "needs_input",
+      "blockers": [
+        "application_selection",
+        "unsupported_framework",
+        "package_manager",
+        "missing_lockfile",
+        "unknown_runtime",
+        "startup",
+        "partial_setup"
+      ],
+      "proposal_status": "blocked",
+      "configuration_success": false,
+      "runtime_success": false,
+      "runtime_phase": "eligibility",
+      "seconds": {
+        "analyze": 0.421,
+        "dockerize": 0.417,
+        "validate": 0.49,
+        "runtime": 0.399
+      },
+      "original_checkout_clean": true,
+      "pilot_copy_unchanged": true
+    }
+  ],
+  "metrics": {
+    "repositories_screened": 4,
+    "nextjs_candidates": 3,
+    "runtime_eligible": 0,
+    "runtime_requests": 4,
+    "runtime_starts": 0,
+    "verified_startups": 0,
+    "claimed_runtime_successes": 0,
+    "false_success_rate": null,
+    "time_to_working_application": null,
+    "repair_attempts": 0,
+    "repair_success_rate": null,
+    "model_requests": 0,
+    "new_containers": 0,
+    "preexisting_container_ids_preserved": true
+  },
+  "limitations": [
+    "All runtime requests stopped at eligibility; readiness, dependency health and runtime cleanup have not been exercised.",
+    "Configuration-only success is not runtime success.",
+    "No unsupported policy checks were bypassed and no repositories were modified to fit v1.",
+    "Host free disk was approximately 6.1 GiB at start; no builds or dependency downloads were attempted."
+  ]
+}

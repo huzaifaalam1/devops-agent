@@ -1,0 +1,584 @@
+{
+  "analyze": {
+    "exit_code": 0,
+    "seconds": 0.213,
+    "result": {
+      "schema_version": 1,
+      "repository": {
+        "path": "<pilot>/repos/docker-nextjs-sample",
+        "name": "docker-nextjs-sample",
+        "role": "component",
+        "is_component": false,
+        "found_files": [
+          "package.json"
+        ],
+        "dockerfiles": [
+          "Dockerfile",
+          "Dockerfile.bun",
+          "Dockerfile.dev",
+          "Dockerfile.export",
+          "Dockerfile.nginx",
+          "Dockerfile.output",
+          "Dockerfile.serve"
+        ],
+        "compose_files": [
+          "compose.yaml"
+        ],
+        "config_files": [],
+        "workflow_files": [
+          "ci.yml"
+        ],
+        "components": []
+      },
+      "analysis": {
+        "project": {
+          "eligibility": "needs_input",
+          "findings": [
+            {
+              "name": "framework",
+              "value": "Next.js",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "package.json",
+                  "field": "dependencies.next"
+                }
+              ]
+            },
+            {
+              "name": "package_manager",
+              "value": "npm",
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "package-lock.json"
+                }
+              ]
+            },
+            {
+              "name": "package_manager",
+              "value": "pnpm",
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "pnpm-lock.yaml"
+                }
+              ]
+            },
+            {
+              "name": "lockfile",
+              "value": "Root declarations match package.json",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "package-lock.json",
+                  "field": "packages['']"
+                }
+              ]
+            },
+            {
+              "name": "startup_command",
+              "value": "npm run dev",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "package.json",
+                  "field": "scripts.dev"
+                }
+              ]
+            },
+            {
+              "name": "application_port",
+              "value": "3000",
+              "certainty": "inferred",
+              "evidence": [
+                {
+                  "path": "package.json",
+                  "field": "scripts.dev"
+                }
+              ]
+            },
+            {
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile"
+                }
+              ]
+            },
+            {
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile.bun"
+                }
+              ]
+            },
+            {
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile.dev"
+                }
+              ]
+            },
+            {
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile.export"
+                }
+              ]
+            },
+            {
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile.nginx"
+                }
+              ]
+            },
+            {
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile.output"
+                }
+              ]
+            },
+            {
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "Dockerfile.serve"
+                }
+              ]
+            },
+            {
+              "name": "existing_infrastructure",
+              "value": "Reuse candidate; compatibility unverified",
+              "certainty": "confirmed",
+              "evidence": [
+                {
+                  "path": "compose.yaml"
+                }
+              ]
+            }
+          ],
+          "blockers": [
+            {
+              "code": "package_manager",
+              "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+              "evidence": [
+                {
+                  "path": "package.json"
+                }
+              ],
+              "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+              "needs_input": true
+            },
+            {
+              "code": "unknown_runtime",
+              "message": "No Node engine requirement is declared.",
+              "evidence": [
+                {
+                  "path": "package.json"
+                }
+              ],
+              "next_action": "Declare engines.node compatible with the Node 22 image.",
+              "needs_input": true
+            },
+            {
+              "code": "compose_selection",
+              "message": "Multiple Docker/Compose variants require explicit selection.",
+              "evidence": [
+                {
+                  "path": "."
+                }
+              ],
+              "next_action": "Select a directory with one intended Dockerfile and Compose file.",
+              "needs_input": true
+            }
+          ],
+          "assumptions": [
+            "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+          ],
+          "unknowns": [
+            "Transitive lockfile integrity and installability require npm validation.",
+            "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+            "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+          ],
+          "application_candidates": [],
+          "setup": "ambiguous",
+          "startup_command": "npm run dev",
+          "services": [],
+          "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+        },
+        "detected": [
+          "Next.js app",
+          "Node.js app"
+        ],
+        "services": [],
+        "runtime": [
+          "Docker-based development",
+          "Node.js runtime"
+        ],
+        "startup_commands": [
+          "npm run dev",
+          "docker compose -f compose.yaml up"
+        ],
+        "missing": [],
+        "recommendations": [
+          "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+          "Declare engines.node compatible with the Node 22 image.",
+          "Select a directory with one intended Dockerfile and Compose file."
+        ]
+      },
+      "components": []
+    }
+  },
+  "dockerize": {
+    "exit_code": 1,
+    "seconds": 0.41,
+    "result": {
+      "schema_version": 1,
+      "path": "<pilot>/repos/docker-nextjs-sample",
+      "purpose": "local development",
+      "status": "blocked",
+      "blockers": [
+        {
+          "code": "package_manager",
+          "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+          "evidence": [
+            {
+              "path": "package.json"
+            }
+          ],
+          "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+          "needs_input": true
+        },
+        {
+          "code": "unknown_runtime",
+          "message": "No Node engine requirement is declared.",
+          "evidence": [
+            {
+              "path": "package.json"
+            }
+          ],
+          "next_action": "Declare engines.node compatible with the Node 22 image.",
+          "needs_input": true
+        },
+        {
+          "code": "compose_selection",
+          "message": "Multiple Docker/Compose variants require explicit selection.",
+          "evidence": [
+            {
+              "path": "."
+            }
+          ],
+          "next_action": "Select a directory with one intended Dockerfile and Compose file.",
+          "needs_input": true
+        }
+      ],
+      "changes": [],
+      "preserved": [],
+      "notes": [],
+      "run_command": null
+    }
+  },
+  "validate": {
+    "exit_code": 0,
+    "seconds": 0.617,
+    "result": {
+      "success": true,
+      "phase": "config",
+      "results": [
+        {
+          "command": "docker compose --project-directory <pilot>/repos/docker-nextjs-sample -p devops-validation-7c6c2da01689 -f <pilot>/repos/docker-nextjs-sample/compose.yaml config --format json",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        }
+      ],
+      "logs": "",
+      "expected_services": [],
+      "running_services": [],
+      "stopped_services": [],
+      "application_check": null,
+      "stages": [
+        {
+          "phase": "config",
+          "success": true
+        }
+      ],
+      "cleanup": {
+        "status": "not_needed"
+      },
+      "verified": [
+        "config"
+      ],
+      "unverified": [
+        "Business correctness and production readiness",
+        "Image build, services and application readiness"
+      ],
+      "environment_state": "not_started",
+      "project": "devops-validation-7c6c2da01689",
+      "repair_context": {
+        "inputs_sha256": null,
+        "compose_file": "compose.yaml",
+        "health_path": "/",
+        "service": null,
+        "container_port": null,
+        "timeout": 300.0,
+        "readiness_timeout": 90.0
+      }
+    }
+  },
+  "runtime": {
+    "exit_code": 1,
+    "seconds": 0.173,
+    "result": {
+      "success": false,
+      "phase": "eligibility",
+      "project": {
+        "eligibility": "needs_input",
+        "findings": [
+          {
+            "name": "framework",
+            "value": "Next.js",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "package.json",
+                "field": "dependencies.next"
+              }
+            ]
+          },
+          {
+            "name": "package_manager",
+            "value": "npm",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "package-lock.json"
+              }
+            ]
+          },
+          {
+            "name": "package_manager",
+            "value": "pnpm",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "pnpm-lock.yaml"
+              }
+            ]
+          },
+          {
+            "name": "lockfile",
+            "value": "Root declarations match package.json",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "package-lock.json",
+                "field": "packages['']"
+              }
+            ]
+          },
+          {
+            "name": "startup_command",
+            "value": "npm run dev",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "package.json",
+                "field": "scripts.dev"
+              }
+            ]
+          },
+          {
+            "name": "application_port",
+            "value": "3000",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "package.json",
+                "field": "scripts.dev"
+              }
+            ]
+          },
+          {
+            "name": "existing_infrastructure",
+            "value": "Reuse candidate; compatibility unverified",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "Dockerfile"
+              }
+            ]
+          },
+          {
+            "name": "existing_infrastructure",
+            "value": "Reuse candidate; compatibility unverified",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "Dockerfile.bun"
+              }
+            ]
+          },
+          {
+            "name": "existing_infrastructure",
+            "value": "Reuse candidate; compatibility unverified",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "Dockerfile.dev"
+              }
+            ]
+          },
+          {
+            "name": "existing_infrastructure",
+            "value": "Reuse candidate; compatibility unverified",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "Dockerfile.export"
+              }
+            ]
+          },
+          {
+            "name": "existing_infrastructure",
+            "value": "Reuse candidate; compatibility unverified",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "Dockerfile.nginx"
+              }
+            ]
+          },
+          {
+            "name": "existing_infrastructure",
+            "value": "Reuse candidate; compatibility unverified",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "Dockerfile.output"
+              }
+            ]
+          },
+          {
+            "name": "existing_infrastructure",
+            "value": "Reuse candidate; compatibility unverified",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "Dockerfile.serve"
+              }
+            ]
+          },
+          {
+            "name": "existing_infrastructure",
+            "value": "Reuse candidate; compatibility unverified",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "compose.yaml"
+              }
+            ]
+          }
+        ],
+        "blockers": [
+          {
+            "code": "package_manager",
+            "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+            "evidence": [
+              {
+                "path": "package.json"
+              }
+            ],
+            "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+            "needs_input": true
+          },
+          {
+            "code": "unknown_runtime",
+            "message": "No Node engine requirement is declared.",
+            "evidence": [
+              {
+                "path": "package.json"
+              }
+            ],
+            "next_action": "Declare engines.node compatible with the Node 22 image.",
+            "needs_input": true
+          },
+          {
+            "code": "compose_selection",
+            "message": "Multiple Docker/Compose variants require explicit selection.",
+            "evidence": [
+              {
+                "path": "."
+              }
+            ],
+            "next_action": "Select a directory with one intended Dockerfile and Compose file.",
+            "needs_input": true
+          }
+        ],
+        "assumptions": [
+          "Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required."
+        ],
+        "unknowns": [
+          "Transitive lockfile integrity and installability require npm validation.",
+          "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+          "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+        ],
+        "application_candidates": [],
+        "setup": "ambiguous",
+        "startup_command": "npm run dev",
+        "services": [],
+        "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."
+      },
+      "error": "Repository is not eligible for build/runtime validation.",
+      "diagnosis": {
+        "type": "unknown",
+        "phase": "eligibility",
+        "summary": "Validation failed without a supported diagnosis.",
+        "symptoms": [
+          "Repository is not eligible for build/runtime validation."
+        ],
+        "evidence": [
+          {
+            "source": "error",
+            "excerpt": "Repository is not eligible for build/runtime validation."
+          }
+        ],
+        "confidence": "low",
+        "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+        "likely_causes": [
+          "The available evidence is insufficient to identify a cause."
+        ],
+        "suggested_actions": [
+          "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+        ],
+        "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+        "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+        "automatic_repair": false,
+        "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+      }
+    }
+  }
+}

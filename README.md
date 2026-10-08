@@ -47,7 +47,8 @@ devops-agent validate /path/to/app --run --keep-running
   the application is still available after the command exits.
 
 Runtime checks discover the published port from the validation containers.
-Use `--service`, `--container-port`, and `--health-path` when selection is needed;
+Use `--compose-file FILE` to select among root Compose variants, and
+`--service`, `--container-port`, and `--health-path` when endpoint selection is needed;
 `--timeout` and `--readiness-timeout` bound execution. `--json` includes stage,
 container, HTTP, cleanup, and unverified evidence. See
 [runtime validation](docs/runtime-validation.md) for isolation requirements and limits.

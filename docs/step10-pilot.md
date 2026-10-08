@@ -56,7 +56,7 @@ of observed failures. Any false success or harmful side effect blocks expansion
 until investigated and covered by regression checks. A small pilot is directional
 product evidence, not a statistical reliability guarantee.
 
-Next input needed: the actual repositories to include, plus their expected endpoint
-and any required local configuration. No pilot repositories have been selected or
-run yet. Web UI, multi-agent orchestration, broad AWS support and additional
+The first four-repository screening is recorded in
+[the October 6 pilot report](pilots/2026-10-06/README.md). All four runtime requests
+stopped at eligibility; real startup and repair evidence remain outstanding. Web UI, multi-agent orchestration, broad AWS support and additional
 frameworks remain deferred by the original roadmap.

@@ -1,0 +1,36 @@
+{
+  "success": true,
+  "remaining_containers": "",
+  "checks": [
+    {
+      "command": [
+        "docker",
+        "compose",
+        "--project-directory",
+        "<agent-repo>/work/pilot-runtime-2026-10-07/app",
+        "-p",
+        "devops-validation-12d8db3dbae9",
+        "-f",
+        "<agent-repo>/work/pilot-runtime-2026-10-07/app/compose.pilot.yaml",
+        "down",
+        "--volumes",
+        "--timeout",
+        "5"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": " Container devops-validation-12d8db3dbae9-app-1 Stopping \n Container devops-validation-12d8db3dbae9-app-1 Stopped \n Container devops-validation-12d8db3dbae9-app-1 Removing \n Container devops-validation-12d8db3dbae9-app-1 Removed \n Network devops-validation-12d8db3dbae9_default Removing \n Network devops-validation-12d8db3dbae9_default Removed \n"
+    },
+    {
+      "command": [
+        "docker",
+        "image",
+        "rm",
+        "devops-validation-12d8db3dbae9-app:validation"
+      ],
+      "exit_code": 0,
+      "stdout": "Untagged: devops-validation-12d8db3dbae9-app:validation\nDeleted: sha256:df4a0c959fb9c3ffd3cc9c4a7b422afdc1dc718954944100421302b4267391ed\n",
+      "stderr": ""
+    }
+  ]
+}

@@ -128,7 +128,17 @@ def inspect_project(repo_info):
         deps = {}
     if "next" not in deps:
         block("unsupported_framework", "No declared Next.js dependency was found.", "package.json",
-              "Select a single Next.js application using npm; other stacks are analysis-only.")
+              "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.")
+        for framework, dependency in (("Vue", "vue"), ("React", "react")):
+            if dependency in deps:
+                fact("framework", framework, "package.json", deps[dependency][1] + "." + dependency)
+        for filename in repo_info["dockerfiles"] + repo_info["compose_files"]:
+            fact("existing_infrastructure", "Present; compatibility unverified", filename)
+        return {"eligibility": "blocked", "findings": findings, "blockers": blockers,
+                "assumptions": [], "unknowns": ["Framework-specific prerequisites and runtime readiness have not been evaluated."],
+                "application_candidates": candidates, "setup": "unverified" if repo_info["dockerfiles"] or repo_info["compose_files"] else "none",
+                "startup_command": None, "services": [],
+                "scope": "Analysis only; preserve the existing framework. Automated setup and runtime validation are unsupported."}
     else:
         fact("framework", "Next.js", "package.json", deps["next"][1] + ".next")
     if package.get("workspaces"):
@@ -300,9 +310,11 @@ def inspect_project(repo_info):
         if setup == "partial":
             block("partial_setup", "Docker setup is incomplete: both Dockerfile and Compose are required for this workflow.",
                   (dockerfiles or compose)[0], "Complete or review the existing setup; no files will be overwritten.")
-        if len(dockerfiles) > 1 or len(compose) > 1:
+        if (len(dockerfiles) > 1 or len(compose) > 1) and not repo_info.get("selected_compose_file"):
             setup = "ambiguous"
-            block("compose_selection", "Multiple Docker/Compose variants require explicit selection.", ".", "Select a directory with one intended Dockerfile and Compose file.", True)
+            block("compose_selection", "Multiple Docker/Compose variants require explicit selection.", ".", "For validation, select the intended configuration with validate --compose-file FILE; its build definitions select Dockerfiles. Generation does not overwrite existing variants.", True)
+        if repo_info.get("selected_compose_file"):
+            fact("selected_compose_file", repo_info["selected_compose_file"], repo_info["selected_compose_file"])
         for filename in dockerfiles + compose:
             fact("existing_infrastructure", "Reuse candidate; compatibility unverified", filename)
             try:

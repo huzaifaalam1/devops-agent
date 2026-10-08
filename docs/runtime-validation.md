@@ -85,3 +85,34 @@ remains unchanged. This is the pinned minimal development fixture, not a
 production `next build` or broad framework certification.
 Step 7 adds private action journals, stricter scope checks and report redaction;
 see [execution safeguards](execution-safety.md) for coverage and limits.
+
+## Explicit Compose selection
+
+Use `validate PATH --compose-file docker-compose.dev.yml --json` to select one
+discovered Compose file in the application root. Add `--run` only when the project
+is eligible for runtime validation. Multiple Compose files without a selection
+produce a `selection` failure, including configuration-only validation; a single
+file remains the default. Absolute paths, traversal, unknown files and symlinks
+are refused. This selects one standalone Compose file, not an ordered override
+merge; Compose's build definitions select the Dockerfiles.
+
+Explicit selection resolves the static variant-ambiguity blocker for validation.
+It does not modify files, change generation proposals, waive other eligibility
+checks or bypass resource isolation. Runtime requirements in all discovered
+Dockerfiles are still checked conservatively, including unused variants. A future
+change may scope those checks to resolved build definitions; this change does not.
+
+## Reviewed existing Next.js setup
+
+`validate PATH --existing-setup --compose-file compose.pilot.yaml --run` explicitly
+uses an existing Docker setup rather than the generated Node 22 template. Only
+package-manager ambiguity and static Node runtime compatibility checks are
+ deferred to the actual build/readiness result. The returned `eligibility_basis`
+records those deferred checks. Missing/malformed npm lockfiles, unsupported
+frameworks, ambiguous applications, startup restrictions, unresolved environment
+and service requirements still block execution. This mode does not enable other
+frameworks or remove the validator's isolation, ownership, deadline or cleanup
+checks. An explicit Compose file is required.
+
+It does not rewrite upstream Compose. A manually prepared isolated configuration
+must be reported as an intervention, not as automatic setup or repair success.

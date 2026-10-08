@@ -1,0 +1,13 @@
+{
+  "url": "http://127.0.0.1:53946/",
+  "status_code": 200,
+  "markers": {
+    "Next.js Resources": true,
+    "Docker Resources": true
+  },
+  "body_sha256": "eaeeec6f84c5643a3c1bbc2537407d83417c2e3df3d2646799b6f4f25bfe4dd9",
+  "bytes": 86184,
+  "container_id": "563e0ca99e902ef2696dbbd1c2e1bbda4ceb2d32b72642c6bfac5ce1bb72818a",
+  "project": "devops-validation-12d8db3dbae9",
+  "endpoint_source": "Docker inspection; agent endpoint over-redacted"
+}

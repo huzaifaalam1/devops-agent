@@ -1,0 +1,144 @@
+{
+  "success": false,
+  "phase": "build",
+  "results": [
+    {
+      "command": "docker compose --project-directory <agent-repo>/work/pilot-runtime-2026-10-07/app -p devops-validation-67b5471745fa -f <agent-repo>/work/pilot-runtime-2026-10-07/app/compose.pilot.yaml config --format json",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+      "success": true,
+      "stdout": "\"unix://<home>/.docker/run/docker.sock\"\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <agent-repo>/work/pilot-runtime-2026-10-07/app -p devops-validation-67b5471745fa -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-gconovsg/compose.json build",
+      "success": false,
+      "stdout": "",
+      "stderr": " Image devops-validation-67b5471745fa-app:validation Building \nfailed to update builder last activity time: open <home>/.docker/buildx/activity/.tmp-default2617470427: operation not permitted\n\n",
+      "returncode": 1
+    }
+  ],
+  "logs": "",
+  "expected_services": [
+    "app"
+  ],
+  "running_services": [],
+  "stopped_services": [],
+  "application_check": null,
+  "stages": [
+    {
+      "phase": "config",
+      "success": true
+    },
+    {
+      "phase": "build",
+      "success": false
+    }
+  ],
+  "cleanup": {
+    "status": "complete",
+    "results": [
+      {
+        "command": "docker image rm devops-validation-67b5471745fa-app:validation",
+        "success": true,
+        "stdout": "",
+        "stderr": "Error response from daemon: No such image: devops-validation-67b5471745fa-app:validation\n",
+        "returncode": 1
+      }
+    ]
+  },
+  "verified": [
+    "config"
+  ],
+  "unverified": [
+    "Business correctness and production readiness",
+    "Shared image/build cache is retained"
+  ],
+  "environment_state": "stopped",
+  "project": "devops-validation-67b5471745fa",
+  "application_service": "app",
+  "container_port": 3000,
+  "error": " Image devops-validation-67b5471745fa-app:validation Building \nfailed to update builder last activity time: open <home>/.docker/buildx/activity/.tmp-default2617470427: operation not permitted\n\n",
+  "next_action": "Inspect the command failure and retry after correcting it.",
+  "repair_context": {
+    "inputs_sha256": "6cc934d34bdec66e7920f7ff77d8778f3dbd1986a5385a6e2d76e71368b49bc1",
+    "compose_file": "compose.pilot.yaml",
+    "health_path": "/",
+    "service": null,
+    "container_port": null,
+    "timeout": 600.0,
+    "readiness_timeout": 90.0
+  },
+  "session_id": "af19c813ca144a07b9b3bec1380b8005",
+  "eligibility_basis": {
+    "mode": "existing_setup",
+    "compose_file": "compose.pilot.yaml",
+    "deferred_template_checks": [
+      {
+        "code": "package_manager",
+        "message": "Package-manager evidence is missing, unsupported, or conflicting.",
+        "evidence": [
+          {
+            "path": "package.json"
+          }
+        ],
+        "next_action": "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.",
+        "needs_input": true
+      },
+      {
+        "code": "unknown_runtime",
+        "message": "No Node engine requirement is declared.",
+        "evidence": [
+          {
+            "path": "package.json"
+          }
+        ],
+        "next_action": "Declare engines.node compatible with the Node 22 image.",
+        "needs_input": true
+      }
+    ],
+    "notice": "Runtime and package-manager compatibility are established by the existing build and readiness checks, not by the Node 22 generation template. Isolation checks remain mandatory."
+  },
+  "diagnosis": {
+    "type": "unknown",
+    "phase": "build",
+    "summary": "Validation failed without a supported diagnosis.",
+    "symptoms": [
+      " Image devops-validation-67b5471745fa-app:validation Building ",
+      "failed to update builder last activity time: open <home>/.docker/buildx/activity/.tmp-default2617470427: operation not permitted",
+      " Image devops-validation-67b5471745fa-app:validation Building "
+    ],
+    "evidence": [
+      {
+        "source": "error",
+        "excerpt": " Image devops-validation-67b5471745fa-app:validation Building "
+      },
+      {
+        "source": "error",
+        "excerpt": "failed to update builder last activity time: open <home>/.docker/buildx/activity/.tmp-default2617470427: operation not permitted"
+      },
+      {
+        "source": "results[2].stderr",
+        "excerpt": " Image devops-validation-67b5471745fa-app:validation Building "
+      }
+    ],
+    "confidence": "low",
+    "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+    "likely_causes": [
+      "The available evidence is insufficient to identify a cause."
+    ],
+    "suggested_actions": [
+      "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+    ],
+    "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+    "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+    "automatic_repair": false,
+    "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+  }
+}
