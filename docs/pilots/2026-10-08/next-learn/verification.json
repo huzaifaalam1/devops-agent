@@ -1,0 +1,28 @@
+{
+  "success": true,
+  "project": "devops-validation-ce2e5f8008d1",
+  "url": "http://127.0.0.1:49393",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "markers_present": true,
+      "sha256": "8e45a12e257a6149511d5af7d610e4a5ae62d79ff682bda84a0a64eb53278413"
+    },
+    {
+      "path": "/vercel.svg",
+      "status": 200,
+      "markers_present": true,
+      "sha256": "c0fbce0cd5cd0d3c7b88981acd068d13b961460bb94d3c4ba4a0ec5c28051fd1"
+    }
+  ],
+  "node_version": "v20.9.0",
+  "cleanup": {
+    "success": true,
+    "remaining": {
+      "containers": "",
+      "networks": "",
+      "volumes": ""
+    }
+  }
+}

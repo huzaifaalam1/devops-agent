@@ -89,7 +89,7 @@ def _propose_repair(path, session_id, host_port=None, health_path=None):
             match = re.search(r'127\.0\.0\.1:(\d+):3000', current)
             mounts = [name for name in ENV_FILES if (root / name).exists()]
             if (not match or current != development_compose(mounts, int(match[1]))
-                    or check_target(root, 'Dockerfile').read_text() != DOCKERFILE):
+                    or check_target(root, 'Dockerfile').read_text() != DOCKERFILE.format(node_version=analysis['project']['node_version'])):
                 raise RepairRefused('Compose/Dockerfile differs from the supported generated template; edit it manually.')
             old_port = int(match[1])
             if old_port == host_port:

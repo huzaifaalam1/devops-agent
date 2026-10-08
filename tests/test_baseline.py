@@ -93,7 +93,7 @@ class RepositoryBaseline(unittest.TestCase):
         self.assert_refused_without_changes("database")
 
     def test_gap04_incompatible_runtime_refused(self):
-        """G04 / S6: Node 18-only metadata is incompatible with Node 22 setup."""
+        """G04 / S6: Node 18-only metadata conflicts with the locked Next.js requirement."""
         self.assert_refused_without_changes("incompatible-runtime")
 
     def test_gap05_missing_lockfile_refused(self):

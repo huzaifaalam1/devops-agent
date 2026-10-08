@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "path": "<HOME>/Desktop/repos/devops-agent/work/next-learn-pilot-2026-10-08/app",
+  "purpose": "local development",
+  "status": "ready",
+  "blockers": [],
+  "changes": [
+    {
+      "path": "Dockerfile",
+      "operation": "create",
+      "before_sha256": null,
+      "content": "# Local development only; not a production deployment image.\nFROM node:20.9\nWORKDIR /app\nENV NODE_ENV=development\nENV NEXT_TELEMETRY_DISABLED=1\nCOPY package.json package-lock.json ./\nRUN npm ci --include=dev --no-audit --no-fund\nCOPY . .\nEXPOSE 3000\nCMD [\"npm\", \"run\", \"dev\"]\n",
+      "reason": "Use Node 20.9 inferred from repository requirements, install the reviewed npm lockfile with npm ci, and run the declared dev script.",
+      "diff": "--- /dev/null\n+++ b/Dockerfile\n@@ -0,0 +1,10 @@\n+# Local development only; not a production deployment image.\n+FROM node:20.9\n+WORKDIR /app\n+ENV NODE_ENV=development\n+ENV NEXT_TELEMETRY_DISABLED=1\n+COPY package.json package-lock.json ./\n+RUN npm ci --include=dev --no-audit --no-fund\n+COPY . .\n+EXPOSE 3000\n+CMD [\"npm\", \"run\", \"dev\"]\n"
+    },
+    {
+      "path": "docker-compose.yml",
+      "operation": "create",
+      "before_sha256": null,
+      "content": "# Local development only.\nservices:\n  app:\n    build: .\n    ports:\n      - \"127.0.0.1:3000:3000\"\n",
+      "reason": "Expose the single app on loopback port 3000. No environment file is required.",
+      "diff": "--- /dev/null\n+++ b/docker-compose.yml\n@@ -0,0 +1,6 @@\n+# Local development only.\n+services:\n+  app:\n+    build: .\n+    ports:\n+      - \"127.0.0.1:3000:3000\"\n"
+    },
+    {
+      "path": ".dockerignore",
+      "operation": "create",
+      "before_sha256": null,
+      "content": "# DevOps Agent: local development build exclusions\n.git\n.devops-agent\nnode_modules\n.next\n.venv\n__pycache__\n.env\n.env.*\n**/.env\n**/.env.*\n*.pem\n*.key\nnpm-debug.log*\n",
+      "reason": "Keep host dependencies and dotenv files out of the image; preserve existing rules and append exclusions last.",
+      "diff": "--- /dev/null\n+++ b/.dockerignore\n@@ -0,0 +1,14 @@\n+# DevOps Agent: local development build exclusions\n+.git\n+.devops-agent\n+node_modules\n+.next\n+.venv\n+__pycache__\n+.env\n+.env.*\n+**/.env\n+**/.env.*\n+*.pem\n+*.key\n+npm-debug.log*\n"
+    }
+  ],
+  "preserved": [],
+  "notes": [
+    "This creates development configuration only; application readiness has not been verified.",
+    "Environment values are never included in this proposal or baked into the image."
+  ],
+  "run_command": "docker compose -f docker-compose.yml up --build",
+  "inputs_sha256": "ba596f255c5f7cc40158ee64b8915fc943554babdf31a98b223f6afb582cafe6",
+  "id": "66107318345dcf700f0684251a069b8f07d39b9d086f046b6de03cd70897a0b2"
+}

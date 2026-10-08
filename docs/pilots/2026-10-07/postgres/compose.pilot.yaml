@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: pilot
+      POSTGRES_PASSWORD: ${PILOT_DB_PASSWORD:?Set the disposable pilot database password}
+      POSTGRES_DB: pilotdb
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pilot -d pilotdb"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://pilot:${PILOT_DB_PASSWORD:?Set the disposable pilot database password}@postgres:5432/pilotdb
+      NEXT_TELEMETRY_DISABLED: "1"
+    command: ["sh", "-c", "./node_modules/.bin/prisma generate && ./node_modules/.bin/prisma db push && npm run dev"]
+    ports:
+      - "127.0.0.1::3000"

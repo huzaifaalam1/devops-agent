@@ -1,0 +1,6 @@
+# Local development only.
+services:
+  app:
+    build: .
+    ports:
+      - "127.0.0.1::3000"

@@ -4,7 +4,7 @@ This describes the step-3 checkpoint. [Step 4](docker-proposals.md) adds preview
 and application controls and resolves the remaining generation gap noted below.
 
 The CLI now distinguishes a framework label from eligibility for the first
-Next.js/npm/Node 22 workflow. Inspection does not run npm, Docker, project
+Next.js/npm workflow with a repository-declared Node runtime. Inspection does not run npm, Docker, project
 scripts, or JavaScript configuration.
 
 ## Behavior
@@ -48,8 +48,8 @@ silently pick a component or run an interactive prompt that would hang scripts.
 
 Existing Docker files are preserved. One Dockerfile plus one Compose file is a
 reuse candidate, not proof of compatibility. Partial setups and multiple variants
-block generation/build/run until resolved. This intentionally defers the old
-platform-based automatic selection to configuration-only validation.
+block generation/build/run until resolved. Validation accepts explicit `--compose-file` selection; it does not guess among
+multiple files, including for configuration-only checks.
 
 ## What is checked
 
@@ -60,8 +60,9 @@ platform-based automatic selection to configuration-only validation.
 - Compare npm v2/v3 lockfile root dependencies and engine declarations with the
   manifest. Report missing, unsupported, or stale lockfiles.
 - Reconcile packageManager with npm/yarn/pnpm/bun lockfile evidence.
-- Require a declared Node engine compatible with the floating Node 22 image;
-  flag conflicting `.nvmrc`, `.node-version`, or numeric Docker Node image tags.
+- Infer Node from `package.json` engines.node, intersecting numeric runtime-file
+  requirements and the locked Next.js Node engine range. Flag conflicting numeric
+  Docker tags and declarations rather than forcing a Node 22 template.
 - Recognize a direct `next dev` script, its port/hostname options, and common
   bundler flags. Custom commands, startup hooks, unknown options, non-3000 ports,
   and loopback-only container bindings require review.
@@ -74,18 +75,37 @@ platform-based automatic selection to configuration-only validation.
   directory symlinks. Structured metadata readers reject files linked outside
   the selected app and files above 2 MiB.
 
-## Deliberately conservative runtime ranges
+## Node version inference
 
-This implementation is not a general npm semver parser. It accepts `22`, `22.x`,
-`22.*`, `^22.0.0`, `*`, and simple whitespace-separated numeric comparisons that
-cover the entire Node 22 line (for example `>=20.9.0` or `>=20 <23`). Explicitly
-outside ranges such as `18.x`, `^20.0.0`, or `>=24` are incompatible.
+`analysis.project.node_version` is the selected numeric Docker tag. The proposal
+uses it in `FROM node:<tag>` and explains the source. Selection requires
+`package.json` `engines.node`; `.nvmrc` and `.node-version` constrain it when
+present, as does `package-lock.json`'s resolved Next.js `engines.node` metadata.
+Missing or conflicting declarations block generation. Runtime files and package
+configuration are read as data, never executed.
 
-Exact minor/patch pins, partial ranges such as `>=22.1.0`, OR expressions,
-prereleases, tags, and other unsupported syntax remain unknown. The floating
-image's exact Node version has not been inspected, so the tool requests review
-rather than pretending it can honor a specific patch requirement. It never
-rewrites a project's runtime declaration to make it pass.
+The bounded parser follows stable numeric npm range semantics for exact versions,
+major/minor and x ranges, caret, tilde, comparisons, whitespace conjunctions and
+`||` alternatives. Prereleases, hyphen ranges, lifecycle aliases such as `lts/*`,
+malformed expressions and requirements with no explicit positive major lower
+bound require clarification. It is not a complete npm semver implementation.
+
+Selection chooses the lowest compatible stable line across the intersection,
+then uses the broadest major/minor/patch tag wholly contained in it. Examples:
+`24` → `node:24`; `24.14.0` → `node:24.14.0`; `^20.9.0` → `node:20.9`;
+`>=18` plus locked Next.js `>=20.9.0` → `node:20.9`. This is a deterministic
+compatibility policy, not a recommendation of the newest or currently supported
+Node release. Major/minor tags can receive newer patches. Image availability,
+transitive package requirements, installability and app readiness still require
+build/runtime verification. No implicit Node 22 fallback remains.
+
+Existing numeric Docker tags are checked against the declared requirements;
+ARG-based Docker image selection is not evaluated statically. The explicit
+existing-setup mode retains its separate reviewed-build behavior. Port repair
+recognizes the generated Dockerfile for the selected version and does not change it.
+
+Semantics references: [npm engines](https://docs.npmjs.com/cli/v11/configuring-npm/package-json/#engines)
+and [npm semver ranges](https://github.com/npm/node-semver#ranges).
 
 ## Environment evidence and its limits
 

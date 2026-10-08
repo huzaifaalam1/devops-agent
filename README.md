@@ -109,3 +109,8 @@ and follow-up guidance. 183 offline tests pass; the four-case V8 live evaluation
 passed provisional implementing-agent review. See the [retained result and
 limitations](docs/evaluations/step9-v8/review.md); this is not independent or
 production validation.
+
+Generated Dockerfiles infer Node from `package.json` `engines.node`, constrained
+by runtime files and the locked Next.js requirement. There is no fixed Node 22
+fallback. Missing/conflicting requirements stop generation with an explanation.
+See [Node inference policy](docs/repository-understanding.md#node-version-inference).

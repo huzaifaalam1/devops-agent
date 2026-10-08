@@ -1,0 +1,62 @@
+[
+  {
+    "path": "pnpm-lock.yaml",
+    "upstream_sha256": "433e50c350b5ee1da7040e47007baddc302b734ae9a9adc829e757b879aff936",
+    "copy_sha256": null
+  },
+  {
+    "path": ".npmrc",
+    "upstream_sha256": "dfba5c98cf80199e97827329286e0695a17be8bad8d6c9eeef4a8eec10e6ab2e",
+    "copy_sha256": null
+  },
+  {
+    "path": "README.md",
+    "upstream_sha256": "ab816500cd9bc0b9fab32793a89faaf55364c58827872e969fb0d09018bdd7e4",
+    "copy_sha256": "ab816500cd9bc0b9fab32793a89faaf55364c58827872e969fb0d09018bdd7e4"
+  },
+  {
+    "path": ".gitignore",
+    "upstream_sha256": "a89c1cd301a584eb6c21b73bb31c7daf4753c9c833300b70d57f57fd99fea6b7",
+    "copy_sha256": "a89c1cd301a584eb6c21b73bb31c7daf4753c9c833300b70d57f57fd99fea6b7"
+  },
+  {
+    "path": "package.json",
+    "upstream_sha256": "14d292e65b48a26c95618d4bddb206b07b91a7276662d3531796ab856b2d1482",
+    "copy_sha256": "c42ebcc61b2d48fa99cd390bbd7f00fc1b6737d0c7e13fb26458ee8cccdf3dc0"
+  },
+  {
+    "path": ".nvmrc",
+    "upstream_sha256": "7ee29791fc17e986b97128845622b077fb45e349fdb80523fac9dba879b4ad60",
+    "copy_sha256": null
+  },
+  {
+    "path": "pnpm-workspace.yaml",
+    "upstream_sha256": "48c8396017f7f42e5df9f8c6a4c62c64a2d9f4fb84fb9aa0196aacf68b731470",
+    "copy_sha256": null
+  },
+  {
+    "path": "styles/global.css",
+    "upstream_sha256": "aee35437f00cfe943dec257237767bad7faae994ab6179c1c7ed9cf89c8bd9e1",
+    "copy_sha256": "aee35437f00cfe943dec257237767bad7faae994ab6179c1c7ed9cf89c8bd9e1"
+  },
+  {
+    "path": "styles/Home.module.css",
+    "upstream_sha256": "0037d8149c30c26d8d31c80c2f6cf8024442a4085654177e9f5a39961e8a29f1",
+    "copy_sha256": "0037d8149c30c26d8d31c80c2f6cf8024442a4085654177e9f5a39961e8a29f1"
+  },
+  {
+    "path": "public/favicon.ico",
+    "upstream_sha256": "b9e0c239b57dfb2242f8a888c2702e0b121279ec88d6aef0acfb196e48adf311",
+    "copy_sha256": "b9e0c239b57dfb2242f8a888c2702e0b121279ec88d6aef0acfb196e48adf311"
+  },
+  {
+    "path": "public/vercel.svg",
+    "upstream_sha256": "c0fbce0cd5cd0d3c7b88981acd068d13b961460bb94d3c4ba4a0ec5c28051fd1",
+    "copy_sha256": "c0fbce0cd5cd0d3c7b88981acd068d13b961460bb94d3c4ba4a0ec5c28051fd1"
+  },
+  {
+    "path": "pages/index.js",
+    "upstream_sha256": "ee8195533b5dcefd676dd244eab8ceddc0aa1743a5e36d22aa01960c99cafa5b",
+    "copy_sha256": "ee8195533b5dcefd676dd244eab8ceddc0aa1743a5e36d22aa01960c99cafa5b"
+  }
+]

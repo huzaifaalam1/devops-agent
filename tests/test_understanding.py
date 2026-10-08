@@ -10,7 +10,6 @@ from unittest.mock import patch
 
 from agent.detector import detect_stack
 from agent.scanner import scan_repo
-from agent.understanding import node22_support
 from tests.fixture_support import materialize
 from tests.test_baseline import ROOT, cli, contents
 
@@ -200,18 +199,3 @@ class UnderstandingTests(unittest.TestCase):
             result = CliRunner().invoke(app, ["validate", str(self.repo)])
         self.assertEqual(result.exit_code, 0, result.output)
         execute.assert_called_once()
-
-
-class RuntimeRangeTests(unittest.TestCase):
-    def test_common_full_node22_ranges(self):
-        for spec in ("22.x", "22", "^22.0.0", ">=20.9.0", ">=20 <23", "*"):
-            with self.subTest(spec=spec):
-                self.assertEqual(node22_support(spec), "compatible")
-
-    def test_outside_or_unresolved_ranges(self):
-        for spec in ("18.x", "^20.0.0", ">=24", "<22"):
-            with self.subTest(spec=spec):
-                self.assertEqual(node22_support(spec), "incompatible")
-        for spec in ("22.14.0", "^22.1.0", "latest", "20 || 22", ">=22.1.0", None):
-            with self.subTest(spec=spec):
-                self.assertEqual(node22_support(spec), "unknown")

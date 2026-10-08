@@ -1,0 +1,11 @@
+{
+  "created": [
+    "Dockerfile",
+    "docker-compose.yml",
+    ".dockerignore"
+  ],
+  "updated": [],
+  "run_command": "docker compose -f docker-compose.yml up --build",
+  "session_id": "a9bc4f34e26746caa94c4c150c72f7d9",
+  "recovery_command": "devops-agent recover <HOME>/Desktop/repos/devops-agent/work/next-learn-pilot-2026-10-08/app a9bc4f34e26746caa94c4c150c72f7d9"
+}

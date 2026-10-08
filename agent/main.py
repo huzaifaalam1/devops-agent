@@ -218,7 +218,7 @@ def dockerize(
 def validate(
     path: Annotated[str, typer.Argument(help="Path to the repo")] = ".",
     compose_file: Annotated[str | None, typer.Option("--compose-file", help="Select one root Compose file; does not override isolation checks")] = None,
-    existing_setup: Annotated[bool, typer.Option("--existing-setup", help="Use the selected existing Next.js Docker setup to establish runtime/package-manager behavior instead of the generation template")] = False,
+    existing_setup: Annotated[bool, typer.Option("--existing-setup", help="Use the selected existing Next.js Docker setup to establish runtime, environment and service readiness instead of the generation template")] = False,
     build: Annotated[bool, typer.Option(help="Verify image builds in an isolated validation project")] = False,
     run: Annotated[bool, typer.Option(help="Start isolated services and verify application readiness")] = False,
     keep_running: Annotated[bool, typer.Option("--keep-running", help="Keep only a successfully validated environment running")] = False,
@@ -247,9 +247,14 @@ def validate(
     deferred = []
     blocking = project["blockers"]
     if existing_setup:
-        # These checks constrain our generated Node 22 template, not a reviewed
+        # These checks constrain our generated runtime template, not a reviewed
         # existing Dockerfile. Build/runtime outcomes remain independently checked.
         template_codes = {"package_manager", "unknown_runtime", "runtime", "runtime_conflict", "docker_runtime_conflict"}
+        # Package dependency hints and example dotenv entries do not establish
+        # actual runtime requirements. Only a full runtime check may defer them:
+        # resolved Compose, service health and application readiness still apply.
+        if run:
+            template_codes |= {"service_dependency", "environment_missing"}
         deferred = [item for item in blocking if item["code"] in template_codes]
         blocking = [item for item in blocking if item["code"] not in template_codes]
     if (build or run) and blocking:
@@ -265,7 +270,9 @@ def validate(
     if existing_setup:
         result["eligibility_basis"] = {"mode": "existing_setup", "compose_file": selected,
             "deferred_template_checks": deferred,
-            "notice": "Runtime and package-manager compatibility are established by the existing build and readiness checks, not by the Node 22 generation template. Isolation checks remain mandatory."}
+            "notice": "Selected Compose configuration, build and readiness checks establish only the tested runtime behavior. Dependency hints and example dotenv entries may be deferred for --run; required-variable guards and isolation checks remain mandatory."}
+        if any(item["code"] in {"service_dependency", "environment_missing"} for item in deferred):
+            result.setdefault("unverified", []).append("All environment-dependent paths and service-backed business operations; HTTP readiness alone does not verify database transactions.")
     result = Redactor(path).clean(result)
     if not result["success"]:
         result["diagnosis"] = diagnose_failure(result)

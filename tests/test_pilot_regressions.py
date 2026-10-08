@@ -107,6 +107,35 @@ class PilotRegressions(unittest.TestCase):
             self.assertFalse(report['success'])
             self.assertIn('package_manager', [b['code'] for b in report['eligibility_basis']['deferred_template_checks']])
 
+    def test_existing_service_hints_require_full_runtime_validation(self):
+        repo = self.make_variants()
+        package = json.loads((repo / 'package.json').read_text())
+        package.setdefault('dependencies', {})['@prisma/client'] = '^6.0.0'
+        (repo / 'package.json').write_text(json.dumps(package))
+        lock = json.loads((repo / 'package-lock.json').read_text())
+        lock['packages']['']['dependencies'] = package['dependencies']
+        (repo / 'package-lock.json').write_text(json.dumps(lock))
+        (repo / '.env.example').write_text('DATABASE_URL=\n')
+        args = ['validate', str(repo), '--existing-setup', '--compose-file', 'compose.dev.yaml', '--json']
+        with patch('agent.main.validate_docker') as docker:
+            result = self.runner.invoke(app, args + ['--build'])
+            self.assertEqual(json.loads(result.stdout)['phase'], 'eligibility')
+            docker.assert_not_called()
+        with patch('agent.main.validate_docker', return_value={'success': False, 'phase': 'isolation'}) as docker:
+            result = self.runner.invoke(app, args + ['--run'])
+            report = json.loads(result.stdout)
+            docker.assert_called_once()
+            self.assertFalse(report['success'])
+            self.assertEqual(report['phase'], 'isolation')
+            codes = {b['code'] for b in report['eligibility_basis']['deferred_template_checks']}
+            self.assertTrue({'service_dependency', 'environment_missing'} <= codes)
+            self.assertIn('database transactions', ' '.join(report['unverified']))
+        (repo / 'next.config.js').write_text('if (!process.env.DATABASE_URL) { throw new Error("required"); }')
+        with patch('agent.main.validate_docker') as docker:
+            result = self.runner.invoke(app, args + ['--run'])
+            self.assertEqual(json.loads(result.stdout)['phase'], 'eligibility')
+            docker.assert_not_called()
+
     def test_existing_setup_does_not_authorize_other_stacks(self):
         repo = materialize('unsupported', self.root / 'other')
         (repo / 'compose.yaml').write_text('services: {}\n')

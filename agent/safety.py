@@ -37,6 +37,21 @@ def authorize(action, explicit=False):
     return {"action": action, "category": ACTIONS[action], "authorization": "explicit_command" if explicit else "read_only"}
 
 
+def public_environment_value(key, value):
+    """Recognize only typed, non-secret runtime controls; unknown names stay private."""
+    choices = {
+        'NODE_ENV': {'development', 'production', 'test'},
+        'NEXT_TELEMETRY_DISABLED': {'0', '1'},
+        'WATCHPACK_POLLING': {'true', 'false'},
+        'CHOKIDAR_USEPOLLING': {'true', 'false'},
+    }
+    if key in choices:
+        return value in choices[key]
+    if key in {'PORT', 'APP_PORT', 'POSTGRES_PORT'}:
+        return bool(re.fullmatch(r'[0-9]{1,5}', value)) and 1 <= int(value) <= 65535
+    return False
+
+
 class Redactor:
     def __init__(self, root=None):
         self.values = set()
@@ -50,14 +65,14 @@ class Redactor:
                     continue
                 try:
                     for line in path.read_text().splitlines():
-                        match = re.match(r'\s*(?:export\s+)?[A-Za-z_][\w]*\s*=\s*(.*)', line)
+                        match = re.match(r'\s*(?:export\s+)?([A-Za-z_][\w]*)\s*=\s*(.*)', line)
                         if match:
-                            value = match[1].strip()
+                            value = match[2].strip()
                             if value[:1] in ('"', "'"):
                                 value = value[1:].split(value[0], 1)[0]
                             else:
                                 value = value.split(' #', 1)[0].strip()
-                            self.add(value)
+                            self.learn_environment(match[1], value)
                 except (OSError, UnicodeError):
                     # If source cannot be inspected, pattern redaction still applies.
                     pass
@@ -67,14 +82,18 @@ class Redactor:
             self.values.add(value)
             self.values.add(quote(value, safe=''))
 
+    def learn_environment(self, key, value):
+        if not public_environment_value(key, value):
+            self.add(value)
+
     def learn_config(self, config):
-        # All environment values, not merely names we guess are sensitive.
+        # Unknown environment values remain private regardless of their names.
         for service in config.get('services', {}).values():
             environment = service.get('environment') or {}
             if isinstance(environment, dict):
-                for value in environment.values():
+                for key, value in environment.items():
                     if value is not None:
-                        self.add(str(value))
+                        self.learn_environment(key, str(value))
             build = service.get('build')
             if isinstance(build, dict) and isinstance(build.get('args'), dict):
                 for key, value in build['args'].items():

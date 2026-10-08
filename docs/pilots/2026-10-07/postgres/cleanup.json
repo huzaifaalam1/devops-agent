@@ -1,0 +1,7 @@
+{
+  "project": "devops-validation-465578a7be67",
+  "containers_removed": true,
+  "networks_removed": true,
+  "volumes_remaining": false,
+  "owned_image_removed": true
+}

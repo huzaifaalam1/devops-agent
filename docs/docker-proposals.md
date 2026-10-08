@@ -28,7 +28,7 @@ broader execution controls remain step 7.
 
 ## Generated setup
 
-- **Dockerfile:** Node 22; explicit development environment; `npm ci --include=dev`
+- **Dockerfile:** Node version inferred from repository requirements; explicit development environment; `npm ci --include=dev`
   using package.json and package-lock.json; `npm run dev` preserves the startup
   script already checked by repository understanding. Dependency manifests are
   not modified. This is not a production image.

@@ -13,7 +13,7 @@ from agent.safety import Journal, authorize, check_target, project_lock
 import shlex
 
 DOCKERFILE = '''# Local development only; not a production deployment image.
-FROM node:22
+FROM node:{node_version}
 WORKDIR /app
 ENV NODE_ENV=development
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -88,7 +88,7 @@ def propose_docker_files(path):
             mounts.append(filename)
     compose = development_compose(mounts)
     expected = {
-        "Dockerfile": (DOCKERFILE, "Use Node 22, install the reviewed npm lockfile with npm ci, and run the declared dev script."),
+        "Dockerfile": (DOCKERFILE.format(node_version=project["node_version"]), f"Use Node {project['node_version']} inferred from repository requirements, install the reviewed npm lockfile with npm ci, and run the declared dev script."),
         "docker-compose.yml": (compose, "Expose the single app on loopback port 3000; mount existing development dotenv files read-only for Next.js to load." if mounts else "Expose the single app on loopback port 3000. No environment file is required."),
     }
     ignore = root / ".dockerignore"

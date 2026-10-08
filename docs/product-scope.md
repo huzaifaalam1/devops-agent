@@ -17,7 +17,7 @@ application, or explain the specific blocker and next action with evidence.**
 Start with one Next.js application, managed by npm, in the directory supplied
 to the command. Require `package.json`, `package-lock.json`, a `next` dependency,
 and an explicit `dev` script that starts the app. The app must be compatible
-with the generator's Node 22 image; declared incompatible runtime requirements
+with a Node image inferred from package.json engines.node and repository evidence; conflicting runtime requirements
 must become a blocker rather than being silently ignored.
 
 This choice minimizes the gap to the existing Node/Next.js template, which uses

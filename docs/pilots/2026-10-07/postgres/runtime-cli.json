@@ -1,0 +1,337 @@
+{
+  "success": true,
+  "phase": "application",
+  "results": [
+    {
+      "command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-465578a7be67 -f <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app/compose.[REDACTED].yaml config --format json",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+      "success": true,
+      "stdout": "\"unix://<HOME>/.docker/run/docker.sock\"\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-465578a7be67 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kxkfb5gj/compose.json build",
+      "success": true,
+      "stdout": "#1 [internal] load local bake definitions\n#1 reading from stdin 680B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 982B done\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/node:20-alpine\n#3 DONE 0.8s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 734B done\n#4 DONE 0.0s\n\n#5 [internal] load build context\n#5 transferring context: 902B done\n#5 DONE 0.0s\n\n#6 [base 1/3] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293\n#6 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 0.0s done\n#6 DONE 0.0s\n\n#7 [base 2/3] RUN apk add --no-cache libc6-compat\n#7 CACHED\n\n#8 [base 3/3] WORKDIR /app\n#8 CACHED\n\n#9 [deps 2/2] RUN npm ci\n#9 CACHED\n\n#10 [deps 1/2] COPY package.json package-lock.json* ./\n#10 CACHED\n\n#11 [dev 1/2] COPY --from=deps /app/node_modules ./node_modules\n#11 CACHED\n\n#12 [dev 2/2] COPY . .\n#12 DONE 0.0s\n\n#13 exporting to image\n#13 exporting layers 0.0s done\n#13 exporting manifest sha256:832cde309af7608f3042c4c636acc4951d7575d711b35238143175a7a4f2ab37 done\n#13 exporting config sha256:20b5e7b21e53eefa7162159eac6ab4ead4627762dab8890cc6cb85e9a47f126e done\n#13 exporting attestation manifest sha256:d098fa13246bd0ccad9471b528284c971b36d41b3fb349f5feb79eba096d70b8 done\n#13 exporting manifest list sha256:ae8f539c7b1e1b501166a7b53ec7420ecea23754bc1da51aa64ef74b20b4b609 done\n#13 naming to docker.io/library/devops-validation-465578a7be67-app:validation\n#13 naming to docker.io/library/devops-validation-465578a7be67-app:validation done\n#13 unpacking to docker.io/library/devops-validation-465578a7be67-app:validation\n#13 unpacking to docker.io/library/devops-validation-465578a7be67-app:validation 4.3s done\n#13 DONE 4.3s\n\n#14 resolving provenance for metadata file\n#14 DONE 0.0s\n",
+      "stderr": " Image devops-validation-465578a7be67-app:validation Building \n Image devops-validation-465578a7be67-app:validation Built \n",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-465578a7be67 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kxkfb5gj/compose.json up -d --no-build",
+      "success": true,
+      "stdout": "",
+      "stderr": " Network devops-validation-465578a7be67_default Creating \n Network devops-validation-465578a7be67_default Creating \n Network devops-validation-465578a7be67_default Created \n Network devops-validation-465578a7be67_default Created \n Container devops-validation-465578a7be67-[REDACTED]-1 Creating \n Container devops-validation-465578a7be67-[REDACTED]-1 Created \n Container devops-validation-465578a7be67-app-1 Creating \n Container devops-validation-465578a7be67-app-1 Created \n Container devops-validation-465578a7be67-[REDACTED]-1 Starting \n Container devops-validation-465578a7be67-[REDACTED]-1 Started \n Container devops-validation-465578a7be67-[REDACTED]-1 Waiting \n Container devops-validation-465578a7be67-[REDACTED]-1 Healthy \n Container devops-validation-465578a7be67-app-1 Starting \n Container devops-validation-465578a7be67-app-1 Started \n",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-465578a7be67 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kxkfb5gj/compose.json ps --all --quiet",
+      "success": true,
+      "stdout": "d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71\n875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker inspect d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71 875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-465578a7be67 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kxkfb5gj/compose.json ps --all --quiet",
+      "success": true,
+      "stdout": "d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71\n875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker inspect d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71 875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-465578a7be67 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kxkfb5gj/compose.json ps --all --quiet",
+      "success": true,
+      "stdout": "d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71\n875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker inspect d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71 875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-465578a7be67 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kxkfb5gj/compose.json ps --all --quiet",
+      "success": true,
+      "stdout": "d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71\n875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker inspect d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71 875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-465578a7be67 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kxkfb5gj/compose.json ps --all --quiet",
+      "success": true,
+      "stdout": "d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71\n875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker inspect d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71 875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-465578a7be67 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kxkfb5gj/compose.json ps --all --quiet",
+      "success": true,
+      "stdout": "d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71\n875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker inspect d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71 875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-465578a7be67 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kxkfb5gj/compose.json ps --all --quiet",
+      "success": true,
+      "stdout": "d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71\n875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18\n",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker inspect d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71 875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    }
+  ],
+  "logs": "",
+  "expected_services": [
+    "app",
+    "[REDACTED]"
+  ],
+  "running_services": [
+    "app",
+    "[REDACTED]"
+  ],
+  "stopped_services": [],
+  "application_check": {
+    "url": "http://127.0.0.1:56395/",
+    "reachable": true,
+    "healthy": true,
+    "status_code": 200,
+    "redirect_url": null,
+    "error": null,
+    "redirects": [],
+    "final_url": "http://127.0.0.1:56395/",
+    "success": true,
+    "container_id": "d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71"
+  },
+  "stages": [
+    {
+      "phase": "config",
+      "success": true
+    },
+    {
+      "phase": "build",
+      "success": true
+    },
+    {
+      "phase": "startup",
+      "success": true
+    },
+    {
+      "phase": "dependencies",
+      "success": true
+    },
+    {
+      "phase": "services",
+      "success": true
+    },
+    {
+      "phase": "application",
+      "success": true
+    }
+  ],
+  "cleanup": {
+    "status": "kept_running",
+    "project": "devops-validation-465578a7be67",
+    "stop_command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-465578a7be67 -f <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app/compose.[REDACTED].yaml down --volumes"
+  },
+  "verified": [
+    "config",
+    "build",
+    "startup",
+    "dependencies",
+    "services",
+    "application"
+  ],
+  "unverified": [
+    "Business correctness and production readiness",
+    "Application-to-dependency transactions beyond the HTTP readiness response",
+    "Future health after validation returns",
+    "All environment-dependent paths and service-backed business operations; HTTP readiness alone does not verify database transactions."
+  ],
+  "environment_state": "running",
+  "project": "devops-validation-465578a7be67",
+  "application_service": "app",
+  "container_port": 3000,
+  "service_states": {
+    "app": {
+      "id": "d9ed1dfaa197ca0e6c052c7ef077f7f1b2b9ca5f3bce9867a69e16efa9cf0f71",
+      "state": "running",
+      "health": null,
+      "ports": {
+        "3000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "56395"
+          }
+        ]
+      }
+    },
+    "postgres": {
+      "id": "875b59b31477ab0339965d8eea97cd91961eee0eb02d7e05ac99e2ae4a967f18",
+      "state": "running",
+      "health": "healthy",
+      "ports": {
+        "5432/tcp": null
+      }
+    }
+  },
+  "dependency_checks": {
+    "postgres": {
+      "state": "running",
+      "health": "healthy"
+    }
+  },
+  "repair_context": {
+    "inputs_sha256": "bea9e08f39797a4495d42badb9d69c46ef785b85f287c1825843e6cfd892c92b",
+    "compose_file": "compose.[REDACTED].yaml",
+    "health_path": "/",
+    "service": "app",
+    "container_port": 3000,
+    "timeout": 600.0,
+    "readiness_timeout": 120.0
+  },
+  "session_id": "25d5929d2813421aaa26d9e832fe06d7",
+  "eligibility_basis": {
+    "mode": "existing_setup",
+    "compose_file": "compose.pilot.yaml",
+    "deferred_template_checks": [
+      {
+        "code": "unknown_runtime",
+        "message": "No Node engine requirement is declared.",
+        "evidence": [
+          {
+            "path": "package.json"
+          }
+        ],
+        "next_action": "Declare engines.node to identify the project's supported Node versions.",
+        "needs_input": true
+      },
+      {
+        "code": "service_dependency",
+        "message": "Dependency evidence suggests Database (Prisma); it does not prove a running service is required.",
+        "evidence": [
+          {
+            "path": "package.json"
+          }
+        ],
+        "next_action": "Clarify/remove the dependency or defer this app until service-backed workflows are supported.",
+        "needs_input": true
+      },
+      {
+        "code": "environment_missing",
+        "message": "Documented variable APP_PORT has no nonempty value in inspected environment files.",
+        "evidence": [
+          {
+            "path": ".env.example"
+          }
+        ],
+        "next_action": "Provide APP_PORT locally or clarify whether it is optional; values will not be printed.",
+        "needs_input": true
+      },
+      {
+        "code": "environment_missing",
+        "message": "Documented variable DATABASE_URL has no nonempty value in inspected environment files.",
+        "evidence": [
+          {
+            "path": ".env.example"
+          }
+        ],
+        "next_action": "Provide DATABASE_URL locally or clarify whether it is optional; values will not be printed.",
+        "needs_input": true
+      },
+      {
+        "code": "environment_missing",
+        "message": "Documented variable POSTGRES_DB has no nonempty value in inspected environment files.",
+        "evidence": [
+          {
+            "path": ".env.example"
+          }
+        ],
+        "next_action": "Provide POSTGRES_DB locally or clarify whether it is optional; values will not be printed.",
+        "needs_input": true
+      },
+      {
+        "code": "environment_missing",
+        "message": "Documented variable POSTGRES_PASSWORD has no nonempty value in inspected environment files.",
+        "evidence": [
+          {
+            "path": ".env.example"
+          }
+        ],
+        "next_action": "Provide POSTGRES_PASSWORD locally or clarify whether it is optional; values will not be printed.",
+        "needs_input": true
+      },
+      {
+        "code": "environment_missing",
+        "message": "Documented variable POSTGRES_PORT has no nonempty value in inspected environment files.",
+        "evidence": [
+          {
+            "path": ".env.example"
+          }
+        ],
+        "next_action": "Provide POSTGRES_PORT locally or clarify whether it is optional; values will not be printed.",
+        "needs_input": true
+      },
+      {
+        "code": "environment_missing",
+        "message": "Documented variable POSTGRES_USER has no nonempty value in inspected environment files.",
+        "evidence": [
+          {
+            "path": ".env.example"
+          }
+        ],
+        "next_action": "Provide POSTGRES_USER locally or clarify whether it is optional; values will not be printed.",
+        "needs_input": true
+      }
+    ],
+    "notice": "Selected Compose configuration, build and readiness checks establish only the tested runtime behavior. Dependency hints and example dotenv entries may be deferred for --run; required-variable guards and isolation checks remain mandatory."
+  }
+}

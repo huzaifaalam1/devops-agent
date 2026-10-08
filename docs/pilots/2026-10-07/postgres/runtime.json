@@ -1,0 +1,58 @@
+{
+  "success": false,
+  "phase": "isolation",
+  "results": [
+    {
+      "command": "docker compose --project-directory <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app -p devops-validation-de4a297a1f67 -f <HOME>/Desktop/repos/devops-agent/work/[REDACTED]-[REDACTED]-2026-10-07/app/compose.[REDACTED].yaml config --format json",
+      "success": true,
+      "stdout": "[structured configuration omitted]",
+      "stderr": "",
+      "returncode": 0
+    },
+    {
+      "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+      "success": true,
+      "stdout": "\"unix://<HOME>/.docker/run/docker.sock\"\n",
+      "stderr": "",
+      "returncode": 0
+    }
+  ],
+  "logs": "",
+  "expected_services": [],
+  "running_services": [],
+  "stopped_services": [],
+  "application_check": null,
+  "stages": [
+    {
+      "phase": "config",
+      "success": true
+    },
+    {
+      "phase": "isolation",
+      "success": false
+    }
+  ],
+  "cleanup": {
+    "status": "not_needed"
+  },
+  "verified": [
+    "config"
+  ],
+  "unverified": [
+    "Business correctness and production readiness"
+  ],
+  "environment_state": "not_started",
+  "project": "devops-validation-de4a297a1f67",
+  "error": "Explicit/shared volumes cannot be isolated safely.",
+  "next_action": "Use a development configuration without externally named resources.",
+  "repair_context": {
+    "inputs_sha256": "a2c6ecc3b2aee5427439c54e65b51ebc49fcc0a9a4c3a91e54c29014155f431a",
+    "compose_file": "compose.[REDACTED].yaml",
+    "health_path": "/",
+    "service": "app",
+    "container_port": 3000,
+    "timeout": 600,
+    "readiness_timeout": 180
+  },
+  "session_id": "f82e141ca3c848fd9c6a6cf45dcd2d0a"
+}

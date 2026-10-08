@@ -253,3 +253,22 @@ class RepairTests(unittest.TestCase):
         self.assertEqual(result['attempts'], 0)
         self.assertEqual(self.compose.read_bytes(), self.original)
         self.assertEqual(self.plan()['status'], 'ready')
+
+    def test_port_repair_preserves_inferred_non22_runtime(self):
+        from agent.docker_generator import DOCKERFILE
+        package = json.loads((self.repo / 'package.json').read_text())
+        lock = json.loads((self.repo / 'package-lock.json').read_text())
+        package['engines']['node'] = '24.14.0'
+        lock['packages']['']['engines'] = package['engines']
+        (self.repo / 'package.json').write_text(json.dumps(package))
+        (self.repo / 'package-lock.json').write_text(json.dumps(lock))
+        dockerfile = DOCKERFILE.format(node_version='24.14.0')
+        (self.repo / 'Dockerfile').write_text(dockerfile)
+        self.session = self.record()
+        plan = self.plan()
+        self.assertEqual(plan['status'], 'ready', plan)
+        self.assertEqual([c['path'] for c in plan['changes']], ['docker-compose.yml'])
+        with patch('agent.repair._journaled_validation', side_effect=self.passed):
+            result = apply_repair(plan, plan['id'])
+        self.assertTrue(result['success'])
+        self.assertEqual((self.repo / 'Dockerfile').read_text(), dockerfile)

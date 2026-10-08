@@ -9,6 +9,8 @@ import re
 import shlex
 from pathlib import Path
 
+from agent.node_runtime import select_node, ranges, contained
+
 MAX_METADATA_BYTES = 2 * 1024 * 1024
 SERVICE_PACKAGES = {
     "pg": "PostgreSQL", "postgres": "PostgreSQL", "@prisma/client": "Database (Prisma)",
@@ -60,41 +62,6 @@ def dependencies(package):
                 raise ValueError("package.json: dependency sections contain conflicting versions")
             result[name] = (version, section)
     return result
-
-
-def node22_support(spec):
-    """Support a conservative subset of npm ranges covering the entire Node 22 line.
-
-    Partial patch/minor requirements are unknown because the generator uses a
-    floating node:22 image. This intentionally isn't a general semver evaluator.
-    """
-    if not isinstance(spec, str):
-        return "unknown"
-    spec = spec.strip()
-    if spec in ("22", "22.x", "22.*", "^22.0.0", "*", ">=22", ">=22.0.0"):
-        return "compatible"
-    if re.fullmatch(r"(?:\^)?\d+(?:\.(?:\d+|x|\*)){0,2}", spec):
-        major = int(re.match(r"\^?(\d+)", spec)[1])
-        return "incompatible" if major != 22 else "unknown"
-    terms = spec.split()
-    if not terms:
-        return "unknown"
-    matches = [re.fullmatch(r"(>=|>|<=|<)(\d+)(?:\.(\d+))?(?:\.(\d+))?", term) for term in terms]
-    if not all(matches):
-        return "unknown"
-    lower, upper = (22, 0, 0), (22, 999999, 999999)
-    def accepts(version, match):
-        bound = tuple(int(match[i] or 0) for i in (2, 3, 4))
-        return {">=": version >= bound, ">": version > bound,
-                "<=": version <= bound, "<": version < bound}[match[1]]
-    if all(accepts(lower, m) and accepts(upper, m) for m in matches):
-        return "compatible"
-    # Do not infer incompatibility from contradictory or partially understood ranges.
-    if any((m[1] in (">", ">=") and int(m[2]) > 22) or
-           (m[1] == "<" and (int(m[2]), int(m[3] or 0), int(m[4] or 0)) <= lower) or
-           (m[1] == "<=" and int(m[2]) < 22) for m in matches):
-        return "incompatible"
-    return "unknown"
 
 
 def inspect_project(repo_info):
@@ -182,25 +149,38 @@ def inspect_project(repo_info):
 
     engines = package.get("engines", {})
     engine = engines.get("node") if isinstance(engines, dict) else None
+    requirements = []
+    node_version = None
     if engine is None:
-        block("unknown_runtime", "No Node engine requirement is declared.", "package.json", "Declare engines.node compatible with the Node 22 image.", True)
+        block("unknown_runtime", "No Node engine requirement is declared.", "package.json",
+              "Declare engines.node to identify the project's supported Node versions.", True)
     else:
-        compatibility = node22_support(engine)
-        fact("runtime", "Node requirement is " + compatibility + " with the Node 22 image", "package.json", "engines.node")
-        if compatibility != "compatible":
-            block("runtime", "The Node requirement is incompatible or cannot be verified for the floating Node 22 image.",
-                  "package.json", "Resolve the runtime requirement; supported range syntax is documented in docs/repository-understanding.md.", compatibility == "unknown")
+        requirements.append(engine)
+        fact("runtime_requirement", engine, "package.json", "engines.node")
+    # The lockfile's resolved Next.js version may impose a tighter Node minimum.
+    packages = lock.get("packages", {})
+    locked_next = packages.get("node_modules/next", {}) if isinstance(packages, dict) else {}
+    next_engines = locked_next.get("engines", {}) if isinstance(locked_next, dict) else {}
+    if isinstance(next_engines, dict) and "node" in next_engines:
+        requirements.append(next_engines["node"])
+        fact("runtime_requirement", next_engines["node"], "package-lock.json", "packages['node_modules/next'].engines.node")
     for filename in (".nvmrc", ".node-version"):
         if (root / filename).exists():
             try:
-                declared_version = read_text(root, filename).strip().removeprefix("v")
-                if node22_support(declared_version) != "compatible":
-                    block("runtime_conflict", "Runtime-file evidence does not establish Node 22 compatibility.", filename,
-                          "Resolve the runtime file and engines.node requirement together.", True)
-                else:
-                    fact("runtime", "Node 22 compatible", filename)
+                declared_version = read_text(root, filename).strip()
+                ranges(declared_version)
+                requirements.append(declared_version)
+                fact("runtime_requirement", declared_version, filename)
             except (OSError, ValueError):
-                block("runtime_file", "Cannot inspect runtime file.", filename, "Make the runtime file readable.")
+                block("runtime_file", "Runtime file is unreadable or uses unsupported version syntax.", filename,
+                      "Use a numeric Node version or clarify the runtime requirement.", True)
+    if engine is not None:
+        try:
+            node_version = select_node(requirements)
+            fact("runtime", "Selected node:" + node_version, "package.json", "engines.node", "inferred")
+        except ValueError as error:
+            code = "runtime_conflict" if any((root / name).exists() for name in (".nvmrc", ".node-version")) else "runtime"
+            block(code, str(error), "package.json", "Reconcile engines.node, runtime files and the locked Next.js Node requirement.", True)
 
     scripts = package.get("scripts", {})
     dev = scripts.get("dev") if isinstance(scripts, dict) else None
@@ -324,13 +304,18 @@ def inspect_project(repo_info):
                 continue
             if filename in dockerfiles:
                 for tag in re.findall(r"^\s*FROM\s+(?:--platform=\S+\s+)?node:([^\s@]+)", text, re.MULTILINE | re.IGNORECASE):
-                    major = re.match(r"(\d+)(?:[.-]|$)", tag)
-                    if major and int(major[1]) != 22:
-                        block("docker_runtime_conflict", "Existing Dockerfile declares a Node image outside the Node 22 target.", filename,
-                              "Resolve Dockerfile and package runtime requirements together.", True)
+                    version = tag.split("-", 1)[0]
+                    if node_version and re.fullmatch(r"\d+(?:\.\d+){0,2}", version):
+                        try:
+                            compatible = all(contained(ranges(version), ranges(spec)) for spec in requirements)
+                        except ValueError:
+                            compatible = False
+                        if not compatible:
+                            block("docker_runtime_conflict", "Dockerfile Node tag is not contained in the repository's declared requirements.", filename,
+                                  "Resolve Dockerfile and package runtime requirements together.", True)
         unknowns.append("Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness.")
     status = "eligible" if not blockers else ("needs_input" if any(b["needs_input"] for b in blockers) else "blocked")
     return {"eligibility": status, "findings": findings, "blockers": blockers,
             "assumptions": assumptions, "unknowns": unknowns, "application_candidates": candidates,
-            "setup": setup, "startup_command": startup, "services": sorted(set(services)),
-            "scope": "Single Next.js application, npm, Node 22, local development; eligibility is not readiness."}
+            "setup": setup, "node_version": node_version, "startup_command": startup, "services": sorted(set(services)),
+            "scope": "Single Next.js application, npm, declared Node runtime, local development; eligibility is not readiness."}

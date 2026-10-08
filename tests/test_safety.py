@@ -28,6 +28,24 @@ class SafetyTests(unittest.TestCase):
         self.env.start()
         self.addCleanup(self.env.stop)
 
+    def test_public_runtime_controls_preserve_report_addresses(self):
+        (self.repo / '.env').write_text('NEXT_TELEMETRY_DISABLED=1\nAPP_PORT=3000\nNODE_ENV=development\n')
+        redactor = Redactor(self.repo)
+        redactor.learn_config({'services': {'app': {'environment': {
+            'NEXT_TELEMETRY_DISABLED': '1', 'PORT': '3000'}}}})
+        address = 'http://127.0.0.1:3000 development'
+        self.assertEqual(redactor.clean({'url': address}), {'url': address})
+
+    def test_public_controls_never_override_private_values(self):
+        for key, value in [('PASSWORD', '1'), ('CUSTOM_VALUE', '1'),
+                           ('APP_PORT', 'private-port'), ('NODE_ENV', 'private-mode')]:
+            with self.subTest(key=key):
+                (self.repo / '.env').write_text(f'{key}={value}\nNEXT_TELEMETRY_DISABLED=1\n')
+                redactor = Redactor(self.repo)
+                redactor.learn_config({'services': {'app': {'environment': {
+                    'NEXT_TELEMETRY_DISABLED': '1', key: value}}}})
+                self.assertEqual(redactor.text(value), '[REDACTED]')
+
     def test_policy_refuses_unapproved_or_outside_actions(self):
         self.assertEqual(authorize('inspect')['category'], 'read_only')
         for action in ('apply', 'run', 'build', 'recover', 'deploy', 'delete_all'):

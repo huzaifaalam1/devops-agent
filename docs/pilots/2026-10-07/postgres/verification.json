@@ -1,0 +1,9 @@
+{
+  "project": "devops-validation-465578a7be67",
+  "url": "http://127.0.0.1:56395/",
+  "database_healthy": true,
+  "http_status": 200,
+  "page_heading": true,
+  "database_record_rendered": true,
+  "deleted_record_absent": true
+}

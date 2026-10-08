@@ -1,0 +1,249 @@
+{
+  "kind": "generated Next.js fixture with package-declared Node 24.14.0",
+  "success": true,
+  "proposal": {
+    "schema_version": 1,
+    "path": "<agent-repo>/work/node-inference-runtime/app",
+    "purpose": "local development",
+    "status": "ready",
+    "blockers": [],
+    "changes": [
+      {
+        "path": "Dockerfile",
+        "operation": "create",
+        "before_sha256": null,
+        "content": "# Local development only; not a production deployment image.\nFROM node:24.14.0\nWORKDIR /app\nENV NODE_ENV=development\nENV NEXT_TELEMETRY_DISABLED=1\nCOPY package.json package-lock.json ./\nRUN npm ci --include=dev --no-audit --no-fund\nCOPY . .\nEXPOSE 3000\nCMD [\"npm\", \"run\", \"dev\"]\n",
+        "reason": "Use Node 24.14.0 inferred from repository requirements, install the reviewed npm lockfile with npm ci, and run the declared dev script.",
+        "diff": "--- /dev/null\n+++ b/Dockerfile\n@@ -0,0 +1,10 @@\n+# Local development only; not a production deployment image.\n+FROM node:24.14.0\n+WORKDIR /app\n+ENV NODE_ENV=development\n+ENV NEXT_TELEMETRY_DISABLED=1\n+COPY package.json package-lock.json ./\n+RUN npm ci --include=dev --no-audit --no-fund\n+COPY . .\n+EXPOSE 3000\n+CMD [\"npm\", \"run\", \"dev\"]\n"
+      },
+      {
+        "path": "docker-compose.yml",
+        "operation": "create",
+        "before_sha256": null,
+        "content": "# Local development only.\nservices:\n  app:\n    build: .\n    ports:\n      - \"127.0.0.1:3000:3000\"\n",
+        "reason": "Expose the single app on loopback port 3000. No environment file is required.",
+        "diff": "--- /dev/null\n+++ b/docker-compose.yml\n@@ -0,0 +1,6 @@\n+# Local development only.\n+services:\n+  app:\n+    build: .\n+    ports:\n+      - \"127.0.0.1:3000:3000\"\n"
+      },
+      {
+        "path": ".dockerignore",
+        "operation": "create",
+        "before_sha256": null,
+        "content": "# DevOps Agent: local development build exclusions\n.git\n.devops-agent\nnode_modules\n.next\n.venv\n__pycache__\n.env\n.env.*\n**/.env\n**/.env.*\n*.pem\n*.key\nnpm-debug.log*\n",
+        "reason": "Keep host dependencies and dotenv files out of the image; preserve existing rules and append exclusions last.",
+        "diff": "--- /dev/null\n+++ b/.dockerignore\n@@ -0,0 +1,14 @@\n+# DevOps Agent: local development build exclusions\n+.git\n+.devops-agent\n+node_modules\n+.next\n+.venv\n+__pycache__\n+.env\n+.env.*\n+**/.env\n+**/.env.*\n+*.pem\n+*.key\n+npm-debug.log*\n"
+      }
+    ],
+    "preserved": [],
+    "notes": [
+      "This creates development configuration only; application readiness has not been verified.",
+      "Environment values are never included in this proposal or baked into the image."
+    ],
+    "run_command": "docker compose -f docker-compose.yml up --build",
+    "inputs_sha256": "3eb518f3e63628784837e7e92aa4ebfe63a9be02d93604ccf07026f26def9ffa",
+    "id": "1a7c379105881c7d16e4fac9a1aac3a4db58b03b01bc4e0e44b6b5ef112cccbf"
+  },
+  "apply": {
+    "created": [
+      "Dockerfile",
+      "docker-compose.yml",
+      ".dockerignore"
+    ],
+    "updated": [],
+    "run_command": "docker compose -f docker-compose.yml up --build",
+    "session_id": "4f87af0612f440468fd7f53f4f615a5d",
+    "recovery_command": "devops-agent recover <agent-repo>/work/node-inference-runtime/app 4f87af0612f440468fd7f53f4f615a5d"
+  },
+  "validation": {
+    "success": true,
+    "phase": "application",
+    "results": [
+      {
+        "command": "docker compose --project-directory <agent-repo>/work/node-inference-runtime/app -p devops-validation-f9fdca57a60f -f <agent-repo>/work/node-inference-runtime/app/docker-compose.yml config --format json",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+        "success": true,
+        "stdout": "\"unix://<home>/.docker/run/docker.sock\"\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <agent-repo>/work/node-inference-runtime/app -p devops-validation-f9fdca57a60f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-i7zflycj/compose.json build",
+        "success": true,
+        "stdout": "642ca873a9 48.23MB / 57.88MB 2.3s\n#6 sha256:634d2d6b0bfd0e6a5ae6e9b159338ff8587882da19f414dbcdb036642ca873a9 51.38MB / 57.88MB 2.4s\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 70.25MB / 203.07MB 2.3s\n#6 sha256:634d2d6b0bfd0e6a5ae6e9b159338ff8587882da19f414dbcdb036642ca873a9 55.57MB / 57.88MB 2.6s\n#6 sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 4.19MB / 23.60MB 2.1s\n#6 sha256:634d2d6b0bfd0e6a5ae6e9b159338ff8587882da19f414dbcdb036642ca873a9 57.88MB / 57.88MB 2.6s done\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 82.84MB / 203.07MB 2.7s\n#6 sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 0B / 48.37MB 0.2s\n#6 sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 6.29MB / 23.60MB 2.7s\n#6 sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 5.24MB / 48.37MB 0.5s\n#6 sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 9.44MB / 48.37MB 0.6s\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 94.37MB / 203.07MB 3.3s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 8.39MB / 64.48MB 3.2s\n#6 sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 12.58MB / 48.37MB 0.8s\n#6 sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 18.87MB / 48.37MB 1.1s\n#6 sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 8.39MB / 23.60MB 3.5s\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 106.95MB / 203.07MB 3.9s\n#6 sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 26.21MB / 48.37MB 1.4s\n#6 sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 30.41MB / 48.37MB 1.5s\n#6 sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 10.49MB / 23.60MB 3.9s\n#6 sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 34.60MB / 48.37MB 1.7s\n#6 sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 38.80MB / 48.37MB 1.8s\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 117.44MB / 203.07MB 4.5s\n#6 sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 44.04MB / 48.37MB 2.1s\n#6 sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 12.58MB / 23.60MB 4.5s\n#6 sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 48.37MB / 48.37MB 2.3s done\n#6 extracting sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 12.58MB / 64.48MB 4.8s\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 128.97MB / 203.07MB 5.1s\n#6 sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 14.68MB / 23.60MB 4.8s\n#6 sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 16.78MB / 23.60MB 5.1s\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 141.56MB / 203.07MB 5.7s\n#6 sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 18.87MB / 23.60MB 5.4s\n#6 extracting sha256:2ea98bb5eec9d02a0d7b59638c683db4e1e749f998a317bc731e9506f8480b12 1.3s done\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 153.09MB / 203.07MB 6.2s\n#6 sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 20.97MB / 23.60MB 5.7s\n#6 sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 23.07MB / 23.60MB 5.9s\n#6 sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 23.60MB / 23.60MB 5.9s done\n#6 extracting sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 167.77MB / 203.07MB 6.6s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 16.78MB / 64.48MB 6.3s\n#6 extracting sha256:efbce225727d69d170353500d8834770da849cbdcea48de37e492fe14ef880d0 0.4s done\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 182.45MB / 203.07MB 7.1s\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 193.99MB / 203.07MB 7.4s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 20.97MB / 64.48MB 7.2s\n#6 sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 203.07MB / 203.07MB 7.7s done\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 25.17MB / 64.48MB 8.0s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 29.36MB / 64.48MB 8.6s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 33.55MB / 64.48MB 9.0s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 38.80MB / 64.48MB 9.5s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 44.04MB / 64.48MB 9.8s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 50.33MB / 64.48MB 10.1s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 54.53MB / 64.48MB 10.2s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 58.72MB / 64.48MB 10.4s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 64.48MB / 64.48MB 10.5s\n#6 sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 64.48MB / 64.48MB 10.5s done\n#6 extracting sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0\n#6 extracting sha256:bda59add442110ab916af1231a98d110e965b9b107829a3f0920d6789fa955d0 1.0s done\n#6 DONE 11.9s\n\n#6 [1/5] FROM docker.io/library/node:24.14.0@sha256:5a593d74b632d1c6f816457477b6819760e13624455d587eef0fa418c8d0777b\n#6 extracting sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c\n#6 extracting sha256:5a8feb033ce1635588aeb9a2f147293a6c61823ffee25286cf2fe9a0da9e069c 2.7s done\n#6 DONE 14.6s\n\n#6 [1/5] FROM docker.io/library/node:24.14.0@sha256:5a593d74b632d1c6f816457477b6819760e13624455d587eef0fa418c8d0777b\n#6 extracting sha256:6ecaf40b479890a318d962948519ae8fdcebf8a5b47203cc038ae79ad0a0a89f 0.0s done\n#6 extracting sha256:634d2d6b0bfd0e6a5ae6e9b159338ff8587882da19f414dbcdb036642ca873a9\n#6 extracting sha256:634d2d6b0bfd0e6a5ae6e9b159338ff8587882da19f414dbcdb036642ca873a9 1.2s done\n#6 DONE 15.8s\n\n#6 [1/5] FROM docker.io/library/node:24.14.0@sha256:5a593d74b632d1c6f816457477b6819760e13624455d587eef0fa418c8d0777b\n#6 extracting sha256:f10c6f80e149d5bf5ce8afbed0a5364807aaad6730a37a36ec69f448d0bfccaf 0.0s done\n#6 extracting sha256:3c39760ab528a6f19be2b949025ae475cddce75360ffa8468123b9e61de76db4 done\n#6 DONE 15.8s\n\n#7 [2/5] WORKDIR /app\n#7 DONE 0.8s\n\n#8 [3/5] COPY package.json package-lock.json ./\n#8 DONE 0.0s\n\n#9 [4/5] RUN npm ci --include=dev --no-audit --no-fund\n#9 6.390 \n#9 6.390 added 27 packages in 6s\n#9 6.392 npm notice\n#9 6.392 npm notice New minor version of npm available! 11.9.0 -> 11.21.0\n#9 6.392 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.21.0\n#9 6.392 npm notice To update run: npm install -g npm@11.21.0\n#9 6.392 npm notice\n#9 DONE 7.2s\n\n#10 [5/5] COPY . .\n#10 DONE 0.1s\n\n#11 exporting to image\n#11 exporting layers\n#11 exporting layers 11.1s done\n#11 exporting manifest sha256:8c2f7b4cdc46173e61410a1eaf0bd64a19baaa0ee50c30266cdb15cbe5e3f134 done\n#11 exporting config sha256:ec797d98c0346c271f1535093ca0efc73245a8e9cf2efa436c3fbc4c6d719a6e done\n#11 exporting attestation manifest sha256:bfbf8e8e654c96147b9913a576b1ce005cda039bd2de41519d4996233e808086 0.0s done\n#11 exporting manifest list sha256:69c83357ac6dac85a7ef84c820f7acb32a45b6991de354144f673cf67c07d69f done\n#11 naming to docker.io/library/devops-validation-f9fdca57a60f-app:validation done\n#11 unpacking to docker.io/library/devops-validation-f9fdca57a60f-app:validation\n#11 unpacking to docker.io/library/devops-validation-f9fdca57a60f-app:validation 2.2s done\n#11 DONE 13.4s\n\n#12 resolving provenance for metadata file\n#12 DONE 0.0s\n",
+        "stderr": " Image devops-validation-f9fdca57a60f-app:validation Building \n Image devops-validation-f9fdca57a60f-app:validation Built \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <agent-repo>/work/node-inference-runtime/app -p devops-validation-f9fdca57a60f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-i7zflycj/compose.json up -d --no-build",
+        "success": true,
+        "stdout": "",
+        "stderr": " Network devops-validation-f9fdca57a60f_default Creating \n Network devops-validation-f9fdca57a60f_default Creating \n Network devops-validation-f9fdca57a60f_default Created \n Network devops-validation-f9fdca57a60f_default Created \n Container devops-validation-f9fdca57a60f-app-1 Creating \n Container devops-validation-f9fdca57a60f-app-1 Created \n Container devops-validation-f9fdca57a60f-app-1 Starting \n Container devops-validation-f9fdca57a60f-app-1 Started \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <agent-repo>/work/node-inference-runtime/app -p devops-validation-f9fdca57a60f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-i7zflycj/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "f9c2912d6247c6a09de63dccd65d1fbe1b3771a6714e1c685843d9b2cf7a3f4b\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect f9c2912d6247c6a09de63dccd65d1fbe1b3771a6714e1c685843d9b2cf7a3f4b",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <agent-repo>/work/node-inference-runtime/app -p devops-validation-f9fdca57a60f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-i7zflycj/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "f9c2912d6247c6a09de63dccd65d1fbe1b3771a6714e1c685843d9b2cf7a3f4b\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect f9c2912d6247c6a09de63dccd65d1fbe1b3771a6714e1c685843d9b2cf7a3f4b",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <agent-repo>/work/node-inference-runtime/app -p devops-validation-f9fdca57a60f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-i7zflycj/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "f9c2912d6247c6a09de63dccd65d1fbe1b3771a6714e1c685843d9b2cf7a3f4b\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect f9c2912d6247c6a09de63dccd65d1fbe1b3771a6714e1c685843d9b2cf7a3f4b",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      }
+    ],
+    "logs": "",
+    "expected_services": [
+      "app"
+    ],
+    "running_services": [
+      "app"
+    ],
+    "stopped_services": [],
+    "application_check": {
+      "url": "http://127.0.0.1:3000/",
+      "reachable": true,
+      "healthy": true,
+      "status_code": 200,
+      "redirect_url": null,
+      "error": null,
+      "redirects": [],
+      "final_url": "http://127.0.0.1:3000/",
+      "success": true,
+      "container_id": "f9c2912d6247c6a09de63dccd65d1fbe1b3771a6714e1c685843d9b2cf7a3f4b"
+    },
+    "stages": [
+      {
+        "phase": "config",
+        "success": true
+      },
+      {
+        "phase": "build",
+        "success": true
+      },
+      {
+        "phase": "startup",
+        "success": true
+      },
+      {
+        "phase": "dependencies",
+        "success": true,
+        "status": "not_required"
+      },
+      {
+        "phase": "services",
+        "success": true
+      },
+      {
+        "phase": "application",
+        "success": true
+      }
+    ],
+    "cleanup": {
+      "status": "kept_running",
+      "project": "devops-validation-f9fdca57a60f",
+      "stop_command": "docker compose --project-directory <agent-repo>/work/node-inference-runtime/app -p devops-validation-f9fdca57a60f -f <agent-repo>/work/node-inference-runtime/app/docker-compose.yml down --volumes"
+    },
+    "verified": [
+      "config",
+      "build",
+      "startup",
+      "services",
+      "application"
+    ],
+    "unverified": [
+      "Business correctness and production readiness",
+      "Future health after validation returns"
+    ],
+    "environment_state": "running",
+    "project": "devops-validation-f9fdca57a60f",
+    "application_service": "app",
+    "container_port": 3000,
+    "service_states": {
+      "app": {
+        "id": "f9c2912d6247c6a09de63dccd65d1fbe1b3771a6714e1c685843d9b2cf7a3f4b",
+        "state": "running",
+        "health": null,
+        "ports": {
+          "3000/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "3000"
+            }
+          ]
+        }
+      }
+    },
+    "dependency_checks": {},
+    "repair_context": {
+      "inputs_sha256": "de659856521e142a1556177c19e707fb4e70490e721bbbbede5bda97a347a2ca",
+      "compose_file": "docker-compose.yml",
+      "health_path": "/",
+      "service": null,
+      "container_port": null,
+      "timeout": 600.0,
+      "readiness_timeout": 120.0
+    },
+    "session_id": "a447a468cd2d4a65be98072029daf734"
+  },
+  "independent_http": {
+    "url": "http://127.0.0.1:3000/",
+    "status": 200,
+    "marker": true,
+    "body_sha256": "9340e20fb84e26ac13fa194438e965de31c48a50ab0c3a3f063b19521e4ae6db"
+  },
+  "node_version": "v24.14.0",
+  "cleanup": {
+    "results": [
+      {
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": " Container devops-validation-f9fdca57a60f-app-1 Stopping \n Container devops-validation-f9fdca57a60f-app-1 Stopped \n Container devops-validation-f9fdca57a60f-app-1 Removing \n Container devops-validation-f9fdca57a60f-app-1 Removed \n Network devops-validation-f9fdca57a60f_default Removing \n Network devops-validation-f9fdca57a60f_default Removed \n"
+      },
+      {
+        "exit_code": 0,
+        "stdout": "Untagged: devops-validation-f9fdca57a60f-app:validation\nDeleted: sha256:69c83357ac6dac85a7ef84c820f7acb32a45b6991de354144f673cf67c07d69f\n",
+        "stderr": ""
+      }
+    ],
+    "remaining_containers": "",
+    "success": true
+  },
+  "seconds": 45.27
+}

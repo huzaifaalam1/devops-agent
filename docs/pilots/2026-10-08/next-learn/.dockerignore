@@ -1,0 +1,14 @@
+# DevOps Agent: local development build exclusions
+.git
+.devops-agent
+node_modules
+.next
+.venv
+__pycache__
+.env
+.env.*
+**/.env
+**/.env.*
+*.pem
+*.key
+npm-debug.log*

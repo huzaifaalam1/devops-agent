@@ -105,14 +105,21 @@ change may scope those checks to resolved build definitions; this change does no
 ## Reviewed existing Next.js setup
 
 `validate PATH --existing-setup --compose-file compose.pilot.yaml --run` explicitly
-uses an existing Docker setup rather than the generated Node 22 template. Only
-package-manager ambiguity and static Node runtime compatibility checks are
- deferred to the actual build/readiness result. The returned `eligibility_basis`
-records those deferred checks. Missing/malformed npm lockfiles, unsupported
-frameworks, ambiguous applications, startup restrictions, unresolved environment
-and service requirements still block execution. This mode does not enable other
-frameworks or remove the validator's isolation, ownership, deadline or cleanup
-checks. An explicit Compose file is required.
+uses an existing Docker setup instead of the generated runtime template.
+Package-manager ambiguity and static Node compatibility checks are deferred to
+the selected build. With `--run`, inferred service dependencies and missing
+values documented only in `.env.example` are also deferred to the resolved
+Compose configuration and actual readiness checks. Build-only validation still
+blocks on those requirements. Generation eligibility is unchanged.
+
+The returned `eligibility_basis` records deferred checks. This is not proof that
+every variable is optional or every database operation works: HTTP readiness
+only covers the requested path. Service-backed business operations require
+separate verification, and the report explicitly retains that limitation.
+Missing/malformed npm lockfiles, unsupported frameworks, ambiguous applications,
+startup restrictions, required-variable guards and dynamic environment access
+still block execution. Isolation, ownership, deadlines and cleanup remain
+mandatory. An explicit Compose file is required.
 
 It does not rewrite upstream Compose. A manually prepared isolated configuration
 must be reported as an intervention, not as automatic setup or repair success.

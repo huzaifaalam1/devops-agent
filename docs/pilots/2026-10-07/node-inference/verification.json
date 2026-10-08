@@ -1,0 +1,23 @@
+{
+  "tests_run": 195,
+  "unexpected_failures": [],
+  "agent_source_sha256": {
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/detector.py": "2045f808be498d245eb427195ec6de839d1393371b889e4cfce7b80a67c4fa39",
+    "agent/diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "agent/docker_generator.py": "6d7c8d281054a23559b584ab5f281b81690e53f5448abbb320aff9c2d799203a",
+    "agent/main.py": "e03330fb0fefd15ce2f34e75c79304d3034531043dbb000620de1e4f5696a6fa",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/node_runtime.py": "84e9fa821bbd1c488895d2ccdc79270e74a829e43a7a4a63bd4fc9c016238893",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/repair.py": "51ee1d1d44e08e9684abd0442497d8036bc2d7cc89038ce949526d2bad2960c3",
+    "agent/safety.py": "b53b7581a3d121bfef6c22b048b8dc509602ee0ddc17ba04bca3c31428d2e6f3",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/understanding.py": "a760cc30c1982d921bdf92ed3829a67b371e3a7f316e00e098629be471918f23",
+    "agent/validator.py": "60a3c0858583b05d4c08b556937ebc99437d1a74d435c4fd3c7268f10c1267de"
+  },
+  "npm_semver_membership_comparisons": 6650,
+  "npm_semver_mismatches": 0
+}
