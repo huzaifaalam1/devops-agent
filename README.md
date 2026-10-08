@@ -107,7 +107,9 @@ Shared base images and build cache remain. Detailed workflows:
 The [v2 scope and ten-step plan](docs/v2/plan.md) and
 [acceptance matrix](docs/v2/acceptance.md) define the next release: an interactive
 terminal agent, Django/Postgres support, and reviewable AWS preparation.
-Steps 1–2 provide the plan and read-only terminal shell; execution support remains v1.
+Steps 1–3 provide the plan, read-only terminal shell, and an internal
+[structured tool boundary](docs/v2/tools.md). Chat execution awaits step 4;
+existing CLI execution support remains v1.
 
 V2 step 2 adds a read-only interactive preview:
 

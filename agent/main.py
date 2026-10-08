@@ -226,23 +226,10 @@ def dockerize(
             console.print(message, markup=False)
         raise typer.Exit(code=1) from None
 
-@app.command()
-def validate(
-    path: Annotated[str, typer.Argument(help="Path to the repo")] = ".",
-    compose_file: Annotated[str | None, typer.Option("--compose-file", help="Select one root Compose file; does not override isolation checks")] = None,
-    existing_setup: Annotated[bool, typer.Option("--existing-setup", help="Use the selected existing Next.js Docker setup to establish runtime, environment and service readiness instead of the generation template")] = False,
-    build: Annotated[bool, typer.Option(help="Verify image builds in an isolated validation project")] = False,
-    run: Annotated[bool, typer.Option(help="Start isolated services and verify application readiness")] = False,
-    keep_running: Annotated[bool, typer.Option("--keep-running", help="Keep only a successfully validated environment running")] = False,
-    service: Annotated[str | None, typer.Option(help="Application service when more than one publishes ports")] = None,
-    container_port: Annotated[int | None, typer.Option("--container-port", min=1, max=65535)] = None,
-    health_path: Annotated[str, typer.Option("--health-path", help="Unauthenticated readiness path on the owned container")] = "/",
-    timeout: Annotated[float, typer.Option(min=1, help="Total execution deadline in seconds, excluding bounded cleanup")] = 300,
-    readiness_timeout: Annotated[float, typer.Option("--readiness-timeout", min=1)] = 90,
-    json_output: Annotated[bool, typer.Option("--json", help="Emit stage, ownership and cleanup evidence")] = False,
-    verbose: Annotated[bool, typer.Option("--verbose", help="Show redacted captured command output and service logs")] = False,
-):
-    """Validate configuration, builds, or isolated runtime readiness."""
+def validation_result(path, compose_file=None, existing_setup=False, build=False, run=False,
+                      keep_running=False, service=None, container_port=None, health_path="/",
+                      timeout=300, readiness_timeout=90):
+    """Shared CLI/tool policy path; never bypass eligibility or isolation."""
     repo_info, analysis = inspect_repo(path)
     try:
         if existing_setup and compose_file is None:
@@ -253,8 +240,7 @@ def validate(
             analysis = detect_stack(repo_info)
     except ValueError as error:
         result = {"success": False, "phase": "selection", "error": str(error)}
-        typer.echo(json.dumps(result) if json_output else result["error"])
-        raise typer.Exit(1) from None
+        return result
     project = analysis["project"]
     deferred = []
     blocking = project["blockers"]
@@ -288,6 +274,28 @@ def validate(
     result = Redactor(path).clean(result)
     if not result["success"]:
         result["diagnosis"] = diagnose_failure(result)
+    return result
+
+
+@app.command()
+def validate(
+    path: Annotated[str, typer.Argument(help="Path to the repo")] = ".",
+    compose_file: Annotated[str | None, typer.Option("--compose-file", help="Select one root Compose file; does not override isolation checks")] = None,
+    existing_setup: Annotated[bool, typer.Option("--existing-setup", help="Use the selected existing Next.js Docker setup to establish runtime, environment and service readiness instead of the generation template")] = False,
+    build: Annotated[bool, typer.Option(help="Verify image builds in an isolated validation project")] = False,
+    run: Annotated[bool, typer.Option(help="Start isolated services and verify application readiness")] = False,
+    keep_running: Annotated[bool, typer.Option("--keep-running", help="Keep only a successfully validated environment running")] = False,
+    service: Annotated[str | None, typer.Option(help="Application service when more than one publishes ports")] = None,
+    container_port: Annotated[int | None, typer.Option("--container-port", min=1, max=65535)] = None,
+    health_path: Annotated[str, typer.Option("--health-path", help="Unauthenticated readiness path on the owned container")] = "/",
+    timeout: Annotated[float, typer.Option(min=1, help="Total execution deadline in seconds, excluding bounded cleanup")] = 300,
+    readiness_timeout: Annotated[float, typer.Option("--readiness-timeout", min=1)] = 90,
+    json_output: Annotated[bool, typer.Option("--json", help="Emit stage, ownership and cleanup evidence")] = False,
+    verbose: Annotated[bool, typer.Option("--verbose", help="Show redacted captured command output and service logs")] = False,
+):
+    """Validate configuration, builds, or isolated runtime readiness."""
+    result = validation_result(path, compose_file, existing_setup, build, run, keep_running,
+                               service, container_port, health_path, timeout, readiness_timeout)
     if json_output:
         typer.echo(json.dumps(result, indent=2))
     else:

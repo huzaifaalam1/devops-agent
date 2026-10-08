@@ -1,6 +1,6 @@
 # V2 plan and scope contract
 
-Status: steps 1–2 complete. Step 2 delivers the read-only [terminal preview](terminal.md); execution tools and model-loop acceptance remain pending.
+Status: steps 1–3 complete. The [terminal preview](terminal.md) remains read-only; the [structured tool boundary](tools.md) is ready for step 4 integration. Model-loop acceptance remains pending.
 Baseline: v1 commit `4a5afdb` (`Finalize v1 support contract and verify end-to-end startup`).
 This document records the agreed v2 direction and concrete implementation defaults;
 it does not expand the current [v1 support contract](../product-scope.md).
