@@ -132,11 +132,11 @@ def inspect_project(repo_info):
             fact("package_manager", manager, "package.json", "packageManager")
     if managers != {"npm"}:
         block("package_manager", "Package-manager evidence is missing, unsupported, or conflicting.", "package.json",
-              "Use npm with package-lock.json; resolve conflicting manager declarations/lockfiles.", len(managers) > 1)
+              "Generation supports npm only. Confirm the intended manager; preserve existing lockfiles. If migrating to npm, do so explicitly in a copy and review dependency changes before retrying.", len(managers) > 1)
 
     lock = load("package-lock.json") if (root / "package-lock.json").exists() else {}
     if not lock:
-        block("missing_lockfile", "A readable package-lock.json is required.", "package-lock.json", "Generate and review an npm lockfile before dockerizing.")
+        block("missing_lockfile", "A readable package-lock.json is required.", "package-lock.json", "For an npm project, generate and review package-lock.json with the project's npm version. Do not replace a pnpm/yarn lockfile merely to clear this blocker.")
     else:
         lock_root = lock.get("packages", {}).get("") if isinstance(lock.get("packages"), dict) else None
         if lock.get("lockfileVersion") not in (2, 3) or not isinstance(lock_root, dict):
@@ -180,7 +180,7 @@ def inspect_project(repo_info):
             fact("runtime", "Selected node:" + node_version, "package.json", "engines.node", "inferred")
         except ValueError as error:
             code = "runtime_conflict" if any((root / name).exists() for name in (".nvmrc", ".node-version")) else "runtime"
-            block(code, str(error), "package.json", "Reconcile engines.node, runtime files and the locked Next.js Node requirement.", True)
+            block(code, str(error), "package.json", "Compare engines.node, .nvmrc/.node-version and the locked Next.js Node requirement. Resolve stale or incompatible declarations deliberately; keep the manifest and npm lockfile synchronized.", True)
 
     scripts = package.get("scripts", {})
     dev = scripts.get("dev") if isinstance(scripts, dict) else None
@@ -225,7 +225,7 @@ def inspect_project(repo_info):
             services.append(service)
             fact("service_dependency", service, "package.json", section + "." + name, "inferred")
             block("service_dependency", f"Dependency evidence suggests {service}; it does not prove a running service is required.",
-                  "package.json", "Clarify/remove the dependency or defer this app until service-backed workflows are supported.", True)
+                  "package.json", "Generation does not provision this dependency. Review an existing isolated Compose setup, then use validate --existing-setup --compose-file FILE --run; separately verify a real dependency-backed operation.", True)
 
     # Blank example entries mean unresolved documented configuration, not proven
     # mandatory runtime variables. Do not read or return their literal values.

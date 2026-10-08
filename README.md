@@ -1,116 +1,103 @@
 # DevOps Agent
 
-A local command-line assistant for understanding a repository, preparing Docker
-development setup, and diagnosing startup failures.
+A bounded local development assistant for **single-app Next.js projects using
+npm**, on macOS with Docker Desktop. Inspect a repository, review Docker setup,
+run it in isolation, and get evidence of readiness or a concrete blocker.
 
-## First product promise
+v1 uses deterministic rules for execution. Optional model explanations do not
+execute commands. It does not automatically fix arbitrary application code or
+support every repository. See the [support contract](docs/product-scope.md) and
+[v1 verification record](docs/releases/v1.md).
 
-Help a developer run an unfamiliar, single-application **Next.js project using
-npm** locally with Docker, and report evidence that the intended app is ready.
-The initial target is macOS with Docker Desktop and Docker Compose v2.
+## Install
 
-This is the first release **target**, not a claim of verified support today.
-The implementation is experimental. Deterministic rules and templates control
-execution; optional model advice proposes evidence-linked plans without executing
-them. There is no general autonomous repair loop. Framework detection
-does not imply that generation or runtime validation works for that framework.
+From this repository, with Python 3.10+ (Python 3.12 is the tested environment):
 
-See the [product scope and acceptance criteria](docs/product-scope.md) for the
-supported scenarios, capability matrix, exclusions, and definition of success.
+```sh
+python3 -m venv .venv
+.venv/bin/python -m pip install -c requirements-baseline.txt -e .
+source .venv/bin/activate
+docker version
+docker compose version
+```
 
-## Current commands
+Start Docker Desktop if the server is unavailable. Installation and builds need
+network access; real acceptance tests require at least 8 GiB free host storage.
 
-After installing this package in a Python 3.10+ environment, the entry point is
-`devops-agent`. Docker operations require an available Docker engine and Compose.
+## Run a supported app
+
+Supply the application directory, not its parent monorepo. It needs a matching
+npm lockfile, an explicit Node engine requirement, and a supported `next dev`
+script. Resolve analysis blockers before generation.
 
 ```sh
 devops-agent analyze /path/to/app
-devops-agent analyze /path/to/app --json
-devops-agent dockerize /path/to/app
-devops-agent dockerize /path/to/app --apply
-devops-agent validate /path/to/app
-devops-agent validate /path/to/app --build
-devops-agent validate /path/to/app --run
+devops-agent dockerize /path/to/app --json
+# Review the proposed changes and copy their ID:
+devops-agent dockerize /path/to/app --apply --expect REVIEWED_ID
 devops-agent validate /path/to/app --run --keep-running
 ```
 
-- `analyze` inspects files and reports detected stacks, services, and recommendations.
-- `dockerize` previews file changes and their reasons. `--apply` writes the
-  proposal; `--expect <proposal-id>` requires a previously reviewed version.
-  See [Docker proposals](docs/docker-proposals.md) for environment handling and limits.
-- `validate` checks Compose configuration; `--build` also builds images.
-  Building and starting services require eligibility; configuration-only checks
-  remain available for other stacks.
-- `--run` builds and starts services and attempts an HTTP readiness check.
-  It uses a unique validation project and removes it afterward; `--keep-running`
-  preserves only a successful run and prints its scoped stop command. A successful check without `--keep-running` does not mean
-  the application is still available after the command exits.
+Success prints the owned URL and a scoped stop command. Run that stop command
+when finished. Omit `--keep-running` to verify and clean up immediately: the app
+will no longer be running after the command returns. `validate` alone checks
+configuration; `--build` checks the build; only `--run` tests readiness.
 
-Runtime checks discover the published port from the validation containers.
-Use `--compose-file FILE` to select among root Compose variants, and
-`--service`, `--container-port`, and `--health-path` when endpoint selection is needed;
-`--timeout` and `--readiness-timeout` bound execution. `--json` includes stage,
-container, HTTP, cleanup, and unverified evidence. See
-[runtime validation](docs/runtime-validation.md) for isolation requirements and limits.
-
-Current limitations include conservative Next.js startup requirements. Review generated files before running them. The release criteria
-in the scope document remain work to implement and verify.
-
-Failed validation includes an evidence-backed diagnosis, recommended action,
-expected impact, and verification instructions. Use `--verbose` for captured logs
-or `--json` for structured details. See [troubleshooting](docs/troubleshooting.md).
-
-Applied edits now have private recovery records; `history` lists actions and
-`recover PATH SESSION_ID` previews guarded recovery (`--apply` restores it).
-Reports are redacted, and runtime operations enforce project scope. See
-[execution safeguards](docs/execution-safety.md) for approvals, storage, and limits.
-
-A small [bounded repair workflow](docs/bounded-repair.md) can propose an available
-host port for generated Compose files or retry a supplied readiness route.
-`repair --apply --expect ID` authorizes one verification attempt; unsuccessful
-file edits receive guarded rollback and repeated attempts are refused.
-
-## Reproduce the baseline
-
-The [step-2 baseline](docs/baseline.md) records the checkpoint, environment,
-scenario results, known gaps, and Docker execution limits. Fixture sources and
-repeatable commands are documented in [tests/README.md](tests/README.md).
-
-Use a Python 3.10+ interpreter (the recorded run used Python 3.12.14):
+Existing setups are preserved. Select among Compose variants explicitly:
 
 ```sh
-python3.12 -m venv .venv
-.venv/bin/python -m pip install -c requirements-baseline.txt -e .
-.venv/bin/python -m tests.run_baseline --output work/baseline/offline.json
+devops-agent validate /path/to/app --existing-setup \
+  --compose-file compose.dev.yaml --run --keep-running
 ```
 
-The historical step-2 baseline has **14 passing checks and 8 known acceptance gaps**.
-After [step 8](docs/bounded-repair.md), the expanded suite has **138 passing
-checks and zero expected failures**; G01–G08 are now passing regression checks.
-An expected failure documents missing product behavior; it is not a release
-pass. Docker evidence is separately opt-in. The historical storage-blocked result
-is preserved. Step 7 now also passes the real generated Next.js development
-workflow: image build, startup, HTTP 200 with the fixture page marker, and cleanup.
-This verifies the pinned minimal fixture, not production builds or every Next.js app.
+This mode still enforces isolation and supported framework checks. It does not
+rewrite unsafe/shared configurations or initialize databases for you. Service
+health and HTTP readiness do not prove database business operations.
 
-## Model planning (step 9)
+## Configuration and troubleshooting
 
-`python -m agent.main advise /path/to/app --json` previews
-the sanitized outbound evidence. Sending requires `--send --expect REVIEWED_ID`
-and `GROQ_API_KEY` pasted into this repository’s Git-ignored `.env` file.
-The provider defaults to Groq with `openai/gpt-oss-120b`; no environment exports are needed. Suggestions remain unverified and
-require the normal commands and approvals to act on them.
-No automatic paid-provider fallback is enabled.
-See [model planning and evaluation](docs/model-planning.md) for limits, costs,
-validation-session context, and the live quality acceptance gate.
+No model key is needed to analyze, generate, validate or use bounded repairs.
+Place **application** variables in the app's documented local dotenv files.
+Review [environment handling](docs/docker-proposals.md) before using secrets;
+never commit them. Missing example values are uncertain requirements, not proof
+that every variable is mandatory.
 
-The current model contract is explanation-only: local policy supplies the action
-and follow-up guidance. 183 offline tests pass; the four-case V8 live evaluation
-passed provisional implementing-agent review. See the [retained result and
-limitations](docs/evaluations/step9-v8/review.md); this is not independent or
-production validation.
+For optional advice, copy `.env.example` to `.env` in the **agent repository**
+only if `.env` does not already exist. Paste `GROQ_API_KEY` there. Groq is the
+default provider; no automatic paid fallback is enabled. Rate limits still apply.
+Preview sanitized evidence before authorizing a request:
 
-Generated Dockerfiles infer Node from `package.json` `engines.node`, constrained
-by runtime files and the locked Next.js requirement. There is no fixed Node 22
-fallback. Missing/conflicting requirements stop generation with an explanation.
-See [Node inference policy](docs/repository-understanding.md#node-version-inference).
+```sh
+devops-agent advise /path/to/app --json
+devops-agent advise /path/to/app --send --expect REVIEWED_ID --json
+```
+
+Use `validate ... --json` for structured results or `--verbose` for redacted
+captured logs. `--health-path`, `--service` and `--container-port` select a probe;
+`--timeout` and `--readiness-timeout` bound execution. On a port conflict, change
+only this project's binding or use the [bounded repair](docs/bounded-repair.md).
+Do not stop the port owner. See [troubleshooting](docs/troubleshooting.md).
+
+`history` lists private action records; `recover PATH SESSION_ID` previews guarded
+recovery and `--apply` authorizes restoration. See [execution safeguards](docs/execution-safety.md).
+
+## Verification and limits
+
+Three external repositories passed assisted runtime checks, with manual setup
+recorded for each. This is not a claim of autonomous support for arbitrary repos.
+The [v1 record](docs/releases/v1.md) links the final offline suite, fresh generated
+workflow, pilot evidence, and remaining limitations. Optional model quality is
+only provisionally reviewed; see [model evaluation](docs/evaluations/step9-v8/review.md).
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m tests.run_baseline --output work/offline.json
+# Opt-in real build; choose a free host port on shared development machines:
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m tests.docker_nextjs_acceptance \
+  --host-port 43187 --output work/runtime.json
+```
+
+The runtime runner uses a fresh pinned fixture and verifies its page content and
+scoped cleanup. A nondefault host port is recorded as an explicit test adjustment.
+Shared base images and build cache remain. Detailed workflows:
+[Docker proposals](docs/docker-proposals.md), [runtime validation](docs/runtime-validation.md),
+[test guide](tests/README.md), [model configuration](docs/model-planning.md).

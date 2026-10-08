@@ -1,0 +1,249 @@
+{
+  "recorded_at": "2026-10-08T17:01:58.973731+00:00",
+  "success": true,
+  "scope": "Generated single-app Next.js/npm development image, real npm ci, startup, HTTP marker and scoped cleanup; not a production next build.",
+  "host_free_bytes": 28415127552,
+  "docker": {
+    "command": "docker version --format {{json .}}",
+    "success": true,
+    "stdout": "{\"Client\":{\"Version\":\"29.8.0\",\"ApiVersion\":\"1.56\",\"DefaultAPIVersion\":\"1.56\",\"GitCommit\":\"88096ef\",\"GoVersion\":\"go1.26.8\",\"Os\":\"darwin\",\"Arch\":\"arm64\",\"BuildTime\":\"Thu Sep  3 21:49:43 2026\",\"Context\":\"desktop-linux\"},\"Server\":{\"Platform\":{\"Name\":\"Docker Desktop 4.92.0 (240144)\"},\"Version\":\"29.8.0\",\"ApiVersion\":\"1.56\",\"MinAPIVersion\":\"1.40\",\"Os\":\"linux\",\"Arch\":\"arm64\",\"Components\":[{\"Name\":\"Engine\",\"Version\":\"29.8.0\",\"Details\":{\"ApiVersion\":\"1.56\",\"Arch\":\"arm64\",\"BuildTime\":\"Thu Sep  3 21:49:37 2026\",\"Experimental\":\"false\",\"GitCommit\":\"3ce5872\",\"GoVersion\":\"go1.26.8\",\"KernelVersion\":\"7.0.12-linuxkit\",\"MinAPIVersion\":\"1.40\",\"Module\":\"github.com/moby/moby/v2\",\"ModuleVersion\":\"v2.0.0+unknown\",\"Os\":\"linux\"}},{\"Name\":\"containerd\",\"Version\":\"v2.3.5\",\"Details\":{\"GitCommit\":\"1294c24a7da8e5a793ed378161673abe94118892\"}},{\"Name\":\"runc\",\"Version\":\"1.5.1\",\"Details\":{\"GitCommit\":\"v1.5.1-0-g8f2685a4\"}},{\"Name\":\"docker-init\",\"Version\":\"0.19.0\",\"Details\":{\"GitCommit\":\"de40ad0\"}}],\"GitCommit\":\"3ce5872\",\"GoVersion\":\"go1.26.8\",\"KernelVersion\":\"7.0.12-linuxkit\",\"BuildTime\":\"2026-09-03T21:49:37.000000000+00:00\"}}\n",
+    "stderr": "",
+    "returncode": 0
+  },
+  "analysis": {
+    "command": "<HOME>/Desktop/repos/devops-agent/.venv/bin/python -m agent.main analyze <temporary-fixture>/app --json",
+    "success": true,
+    "stdout": "{\n  \"schema_version\": 1,\n  \"repository\": {\n    \"path\": \"<temporary-fixture>/app\",\n    \"name\": \"app\",\n    \"role\": \"component\",\n    \"is_component\": false,\n    \"found_files\": [\n      \"package.json\"\n    ],\n    \"dockerfiles\": [],\n    \"compose_files\": [],\n    \"config_files\": [],\n    \"workflow_files\": [],\n    \"components\": []\n  },\n  \"analysis\": {\n    \"project\": {\n      \"eligibility\": \"eligible\",\n      \"findings\": [\n        {\n          \"name\": \"framework\",\n          \"value\": \"Next.js\",\n          \"certainty\": \"confirmed\",\n          \"evidence\": [\n            {\n              \"path\": \"package.json\",\n              \"field\": \"dependencies.next\"\n            }\n          ]\n        },\n        {\n          \"name\": \"package_manager\",\n          \"value\": \"npm\",\n          \"certainty\": \"inferred\",\n          \"evidence\": [\n            {\n              \"path\": \"package-lock.json\"\n            }\n          ]\n        },\n        {\n          \"name\": \"lockfile\",\n          \"value\": \"Root declarations match package.json\",\n          \"certainty\": \"confirmed\",\n          \"evidence\": [\n            {\n              \"path\": \"package-lock.json\",\n              \"field\": \"packages['']\"\n            }\n          ]\n        },\n        {\n          \"name\": \"runtime_requirement\",\n          \"value\": \"22.x\",\n          \"certainty\": \"confirmed\",\n          \"evidence\": [\n            {\n              \"path\": \"package.json\",\n              \"field\": \"engines.node\"\n            }\n          ]\n        },\n        {\n          \"name\": \"runtime_requirement\",\n          \"value\": \">=20.9.0\",\n          \"certainty\": \"confirmed\",\n          \"evidence\": [\n            {\n              \"path\": \"package-lock.json\",\n              \"field\": \"packages['node_modules/next'].engines.node\"\n            }\n          ]\n        },\n        {\n          \"name\": \"runtime\",\n          \"value\": \"Selected node:22\",\n          \"certainty\": \"inferred\",\n          \"evidence\": [\n            {\n              \"path\": \"package.json\",\n              \"field\": \"engines.node\"\n            }\n          ]\n        },\n        {\n          \"name\": \"startup_command\",\n          \"value\": \"npm run dev\",\n          \"certainty\": \"confirmed\",\n          \"evidence\": [\n            {\n              \"path\": \"package.json\",\n              \"field\": \"scripts.dev\"\n            }\n          ]\n        },\n        {\n          \"name\": \"application_port\",\n          \"value\": \"3000\",\n          \"certainty\": \"inferred\",\n          \"evidence\": [\n            {\n              \"path\": \"package.json\",\n              \"field\": \"scripts.dev\"\n            }\n          ]\n        }\n      ],\n      \"blockers\": [],\n      \"assumptions\": [\n        \"Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required.\"\n      ],\n      \"unknowns\": [\n        \"Transitive lockfile integrity and installability require npm validation.\",\n        \"Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.\"\n      ],\n      \"application_candidates\": [],\n      \"setup\": \"none\",\n      \"node_version\": \"22\",\n      \"startup_command\": \"npm run dev\",\n      \"services\": [],\n      \"scope\": \"Single Next.js application, npm, declared Node runtime, local development; eligibility is not readiness.\"\n    },\n    \"detected\": [\n      \"Next.js app\",\n      \"Node.js app\"\n    ],\n    \"services\": [],\n    \"runtime\": [\n      \"Node.js runtime\"\n    ],\n    \"startup_commands\": [\n      \"npm run dev\"\n    ],\n    \"missing\": [\n      \"Dockerfile\",\n      \"docker-compose.yml\",\n      \"GitHub Actions workflow\"\n    ],\n    \"recommendations\": []\n  },\n  \"components\": []\n}\n",
+    "stderr": "",
+    "returncode": 0
+  },
+  "proposal": {
+    "command": "<HOME>/Desktop/repos/devops-agent/.venv/bin/python -m agent.main dockerize <temporary-fixture>/app --json",
+    "success": true,
+    "stdout": "{\n  \"schema_version\": 1,\n  \"path\": \"<temporary-fixture>/app\",\n  \"purpose\": \"local development\",\n  \"status\": \"ready\",\n  \"blockers\": [],\n  \"changes\": [\n    {\n      \"path\": \"Dockerfile\",\n      \"operation\": \"create\",\n      \"before_sha256\": null,\n      \"content\": \"# Local development only; not a production deployment image.\\nFROM node:22\\nWORKDIR /app\\nENV NODE_ENV=development\\nENV NEXT_TELEMETRY_DISABLED=1\\nCOPY package.json package-lock.json ./\\nRUN npm ci --include=dev --no-audit --no-fund\\nCOPY . .\\nEXPOSE 3000\\nCMD [\\\"npm\\\", \\\"run\\\", \\\"dev\\\"]\\n\",\n      \"reason\": \"Use Node 22 inferred from repository requirements, install the reviewed npm lockfile with npm ci, and run the declared dev script.\",\n      \"diff\": \"--- /dev/null\\n+++ b/Dockerfile\\n@@ -0,0 +1,10 @@\\n+# Local development only; not a production deployment image.\\n+FROM node:22\\n+WORKDIR /app\\n+ENV NODE_ENV=development\\n+ENV NEXT_TELEMETRY_DISABLED=1\\n+COPY package.json package-lock.json ./\\n+RUN npm ci --include=dev --no-audit --no-fund\\n+COPY . .\\n+EXPOSE 3000\\n+CMD [\\\"npm\\\", \\\"run\\\", \\\"dev\\\"]\\n\"\n    },\n    {\n      \"path\": \"docker-compose.yml\",\n      \"operation\": \"create\",\n      \"before_sha256\": null,\n      \"content\": \"# Local development only.\\nservices:\\n  app:\\n    build: .\\n    ports:\\n      - \\\"127.0.0.1:3000:3000\\\"\\n\",\n      \"reason\": \"Expose the single app on loopback port 3000. No environment file is required.\",\n      \"diff\": \"--- /dev/null\\n+++ b/docker-compose.yml\\n@@ -0,0 +1,6 @@\\n+# Local development only.\\n+services:\\n+  app:\\n+    build: .\\n+    ports:\\n+      - \\\"127.0.0.1:3000:3000\\\"\\n\"\n    },\n    {\n      \"path\": \".dockerignore\",\n      \"operation\": \"create\",\n      \"before_sha256\": null,\n      \"content\": \"# DevOps Agent: local development build exclusions\\n.git\\n.devops-agent\\nnode_modules\\n.next\\n.venv\\n__pycache__\\n.env\\n.env.*\\n**/.env\\n**/.env.*\\n*.pem\\n*.key\\nnpm-debug.log*\\n\",\n      \"reason\": \"Keep host dependencies and dotenv files out of the image; preserve existing rules and append exclusions last.\",\n      \"diff\": \"--- /dev/null\\n+++ b/.dockerignore\\n@@ -0,0 +1,14 @@\\n+# DevOps Agent: local development build exclusions\\n+.git\\n+.devops-agent\\n+node_modules\\n+.next\\n+.venv\\n+__pycache__\\n+.env\\n+.env.*\\n+**/.env\\n+**/.env.*\\n+*.pem\\n+*.key\\n+npm-debug.log*\\n\"\n    }\n  ],\n  \"preserved\": [],\n  \"notes\": [\n    \"This creates development configuration only; application readiness has not been verified.\",\n    \"Environment values are never included in this proposal or baked into the image.\"\n  ],\n  \"run_command\": \"docker compose -f docker-compose.yml up --build\",\n  \"inputs_sha256\": \"db0d412c67e5f3b635a4a224e02f031ea52abebbc707f0675f5688433c018e1c\",\n  \"id\": \"ca5b9b417d91e456eadebea0c4520a1d6540fef62e14e440a112d60b420fe016\"\n}\n",
+    "stderr": "",
+    "returncode": 0
+  },
+  "apply": {
+    "command": "<HOME>/Desktop/repos/devops-agent/.venv/bin/python -m agent.main dockerize <temporary-fixture>/app --apply --expect ca5b9b417d91e456eadebea0c4520a1d6540fef62e14e440a112d60b420fe016 --json",
+    "success": true,
+    "stdout": "{\n  \"schema_version\": 1,\n  \"path\": \"<temporary-fixture>/app\",\n  \"purpose\": \"local development\",\n  \"status\": \"ready\",\n  \"blockers\": [],\n  \"changes\": [\n    {\n      \"path\": \"Dockerfile\",\n      \"operation\": \"create\",\n      \"before_sha256\": null,\n      \"content\": \"# Local development only; not a production deployment image.\\nFROM node:22\\nWORKDIR /app\\nENV NODE_ENV=development\\nENV NEXT_TELEMETRY_DISABLED=1\\nCOPY package.json package-lock.json ./\\nRUN npm ci --include=dev --no-audit --no-fund\\nCOPY . .\\nEXPOSE 3000\\nCMD [\\\"npm\\\", \\\"run\\\", \\\"dev\\\"]\\n\",\n      \"reason\": \"Use Node 22 inferred from repository requirements, install the reviewed npm lockfile with npm ci, and run the declared dev script.\",\n      \"diff\": \"--- /dev/null\\n+++ b/Dockerfile\\n@@ -0,0 +1,10 @@\\n+# Local development only; not a production deployment image.\\n+FROM node:22\\n+WORKDIR /app\\n+ENV NODE_ENV=development\\n+ENV NEXT_TELEMETRY_DISABLED=1\\n+COPY package.json package-lock.json ./\\n+RUN npm ci --include=dev --no-audit --no-fund\\n+COPY . .\\n+EXPOSE 3000\\n+CMD [\\\"npm\\\", \\\"run\\\", \\\"dev\\\"]\\n\"\n    },\n    {\n      \"path\": \"docker-compose.yml\",\n      \"operation\": \"create\",\n      \"before_sha256\": null,\n      \"content\": \"# Local development only.\\nservices:\\n  app:\\n    build: .\\n    ports:\\n      - \\\"127.0.0.1:3000:3000\\\"\\n\",\n      \"reason\": \"Expose the single app on loopback port 3000. No environment file is required.\",\n      \"diff\": \"--- /dev/null\\n+++ b/docker-compose.yml\\n@@ -0,0 +1,6 @@\\n+# Local development only.\\n+services:\\n+  app:\\n+    build: .\\n+    ports:\\n+      - \\\"127.0.0.1:3000:3000\\\"\\n\"\n    },\n    {\n      \"path\": \".dockerignore\",\n      \"operation\": \"create\",\n      \"before_sha256\": null,\n      \"content\": \"# DevOps Agent: local development build exclusions\\n.git\\n.devops-agent\\nnode_modules\\n.next\\n.venv\\n__pycache__\\n.env\\n.env.*\\n**/.env\\n**/.env.*\\n*.pem\\n*.key\\nnpm-debug.log*\\n\",\n      \"reason\": \"Keep host dependencies and dotenv files out of the image; preserve existing rules and append exclusions last.\",\n      \"diff\": \"--- /dev/null\\n+++ b/.dockerignore\\n@@ -0,0 +1,14 @@\\n+# DevOps Agent: local development build exclusions\\n+.git\\n+.devops-agent\\n+node_modules\\n+.next\\n+.venv\\n+__pycache__\\n+.env\\n+.env.*\\n+**/.env\\n+**/.env.*\\n+*.pem\\n+*.key\\n+npm-debug.log*\\n\"\n    }\n  ],\n  \"preserved\": [],\n  \"notes\": [\n    \"This creates development configuration only; application readiness has not been verified.\",\n    \"Environment values are never included in this proposal or baked into the image.\"\n  ],\n  \"run_command\": \"docker compose -f docker-compose.yml up --build\",\n  \"inputs_sha256\": \"db0d412c67e5f3b635a4a224e02f031ea52abebbc707f0675f5688433c018e1c\",\n  \"id\": \"ca5b9b417d91e456eadebea0c4520a1d6540fef62e14e440a112d60b420fe016\",\n  \"applied\": {\n    \"created\": [\n      \"Dockerfile\",\n      \"docker-compose.yml\",\n      \".dockerignore\"\n    ],\n    \"updated\": [],\n    \"run_command\": \"docker compose -f docker-compose.yml up --build\",\n    \"session_id\": \"f10201ae191f47dab036aa8196d0a169\",\n    \"recovery_command\": \"devops-agent recover <temporary-fixture>/app f10201ae191f47dab036aa8196d0a169\"\n  }\n}\n",
+    "stderr": "",
+    "returncode": 0
+  },
+  "manual_intervention": "Reviewed host-port override to 43187; generated container port unchanged.",
+  "generated_sha256": {
+    "Dockerfile": "1cd6a110e12cafae9ba271682912002124895c33b083b8af440efe0986b8a455",
+    "docker-compose.yml": "6cf9024a91217b9c672a0acc546336cf5118c5792824817efaaedde97d304319",
+    ".dockerignore": "73e7395479e967fb1c17fd919ca9c0eb557f5277334e6e764c7d966d7076c268"
+  },
+  "dependencies": {
+    "next": "16.3.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "runtime_command": {
+    "command": "<HOME>/Desktop/repos/devops-agent/.venv/bin/python -m agent.main validate <temporary-fixture>/app --run --keep-running --timeout 600 --readiness-timeout 120 --json",
+    "success": true,
+    "stdout": "{\n  \"success\": true,\n  \"phase\": \"application\",\n  \"results\": [\n    {\n      \"command\": \"docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f <temporary-fixture>/app/docker-compose.yml config --format json\",\n      \"success\": true,\n      \"stdout\": \"[structured configuration omitted]\",\n      \"stderr\": \"\",\n      \"returncode\": 0\n    },\n    {\n      \"command\": \"docker context inspect --format {{json .Endpoints.docker.Host}}\",\n      \"success\": true,\n      \"stdout\": \"\\\"unix://<HOME>/.docker/run/docker.sock\\\"\\n\",\n      \"stderr\": \"\",\n      \"returncode\": 0\n    },\n    {\n      \"command\": \"docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kwl8tq5a/compose.json build\",\n      \"success\": true,\n      \"stdout\": \"#1 [internal] load local bake definitions\\n#1 reading from stdin 685B done\\n#1 DONE 0.0s\\n\\n#2 [internal] load build definition from Dockerfile\\n#2 transferring dockerfile: 313B done\\n#2 DONE 0.0s\\n\\n#3 [internal] load metadata for docker.io/library/node:22\\n#3 DONE 0.1s\\n\\n#4 [internal] load .dockerignore\\n#4 transferring context: 206B done\\n#4 DONE 0.0s\\n\\n#5 [internal] load build context\\n#5 transferring context: 32.37kB 0.0s done\\n#5 DONE 0.0s\\n\\n#6 [1/5] FROM docker.io/library/node:22@sha256:8a34c4ab3ea2c5cd194f07e317b2a8f09461d3c8b05c4e34c8ccd56d56024c4d\\n#6 resolve docker.io/library/node:22@sha256:8a34c4ab3ea2c5cd194f07e317b2a8f09461d3c8b05c4e34c8ccd56d56024c4d 0.0s done\\n#6 DONE 0.0s\\n\\n#7 [2/5] WORKDIR /app\\n#7 DONE 0.0s\\n\\n#8 [3/5] COPY package.json package-lock.json ./\\n#8 DONE 0.0s\\n\\n#9 [4/5] RUN npm ci --include=dev --no-audit --no-fund\\n#9 7.676 \\n#9 7.676 added 27 packages in 7s\\n#9 7.678 npm notice\\n#9 7.678 npm notice New major version of npm available! 10.9.8 -> 12.2.0\\n#9 7.678 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0\\n#9 7.678 npm notice To update run: npm install -g npm@12.2.0\\n#9 7.678 npm notice\\n#9 DONE 8.5s\\n\\n#10 [5/5] COPY . .\\n#10 DONE 0.1s\\n\\n#11 exporting to image\\n#11 exporting layers\\n#11 exporting layers 12.0s done\\n#11 exporting manifest sha256:bde763e867562805f46d616f2162b02bfa73ae51860a836841c38b62fddccf42 done\\n#11 exporting config sha256:70bdc633d167efb5e67d48c23d7efa84e14a32fbf4f4c3969664b734d94b9ead done\\n#11 exporting attestation manifest sha256:9110a38a8377c1b00a9fe1209341e02fc493e7b99779aab43009a2dfe8d21aa6 done\\n#11 exporting manifest list sha256:ba1a4877a4b1f9f87065285962fc08d09cee64fca1961e542e497573062575cf done\\n#11 naming to docker.io/library/devops-validation-19fcc3ec953d-app:validation done\\n#11 unpacking to docker.io/library/devops-validation-19fcc3ec953d-app:validation\\n#11 unpacking to docker.io/library/devops-validation-19fcc3ec953d-app:validation 2.5s done\\n#11 DONE 14.5s\\n\\n#12 resolving provenance for metadata file\\n#12 DONE 0.0s\\n\",\n      \"stderr\": \" Image devops-validation-19fcc3ec953d-app:validation Building \\n Image devops-validation-19fcc3ec953d-app:validation Built \\n\",\n      \"returncode\": 0\n    },\n    {\n      \"command\": \"docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kwl8tq5a/compose.json up -d --no-build\",\n      \"success\": true,\n      \"stdout\": \"\",\n      \"stderr\": \" Network devops-validation-19fcc3ec953d_default Creating \\n Network devops-validation-19fcc3ec953d_default Creating \\n Network devops-validation-19fcc3ec953d_default Created \\n Network devops-validation-19fcc3ec953d_default Created \\n Container devops-validation-19fcc3ec953d-app-1 Creating \\n Container devops-validation-19fcc3ec953d-app-1 Created \\n Container devops-validation-19fcc3ec953d-app-1 Starting \\n Container devops-validation-19fcc3ec953d-app-1 Started \\n\",\n      \"returncode\": 0\n    },\n    {\n      \"command\": \"docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kwl8tq5a/compose.json ps --all --quiet\",\n      \"success\": true,\n      \"stdout\": \"4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60\\n\",\n      \"stderr\": \"\",\n      \"returncode\": 0\n    },\n    {\n      \"command\": \"docker inspect 4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60\",\n      \"success\": true,\n      \"stdout\": \"[structured configuration omitted]\",\n      \"stderr\": \"\",\n      \"returncode\": 0\n    },\n    {\n      \"command\": \"docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kwl8tq5a/compose.json ps --all --quiet\",\n      \"success\": true,\n      \"stdout\": \"4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60\\n\",\n      \"stderr\": \"\",\n      \"returncode\": 0\n    },\n    {\n      \"command\": \"docker inspect 4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60\",\n      \"success\": true,\n      \"stdout\": \"[structured configuration omitted]\",\n      \"stderr\": \"\",\n      \"returncode\": 0\n    },\n    {\n      \"command\": \"docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kwl8tq5a/compose.json ps --all --quiet\",\n      \"success\": true,\n      \"stdout\": \"4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60\\n\",\n      \"stderr\": \"\",\n      \"returncode\": 0\n    },\n    {\n      \"command\": \"docker inspect 4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60\",\n      \"success\": true,\n      \"stdout\": \"[structured configuration omitted]\",\n      \"stderr\": \"\",\n      \"returncode\": 0\n    }\n  ],\n  \"logs\": \"\",\n  \"expected_services\": [\n    \"app\"\n  ],\n  \"running_services\": [\n    \"app\"\n  ],\n  \"stopped_services\": [],\n  \"application_check\": {\n    \"url\": \"http://127.0.0.1:43187/\",\n    \"reachable\": true,\n    \"healthy\": true,\n    \"status_code\": 200,\n    \"redirect_url\": null,\n    \"error\": null,\n    \"redirects\": [],\n    \"final_url\": \"http://127.0.0.1:43187/\",\n    \"success\": true,\n    \"container_id\": \"4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60\"\n  },\n  \"stages\": [\n    {\n      \"phase\": \"config\",\n      \"success\": true\n    },\n    {\n      \"phase\": \"build\",\n      \"success\": true\n    },\n    {\n      \"phase\": \"startup\",\n      \"success\": true\n    },\n    {\n      \"phase\": \"dependencies\",\n      \"success\": true,\n      \"status\": \"not_required\"\n    },\n    {\n      \"phase\": \"services\",\n      \"success\": true\n    },\n    {\n      \"phase\": \"application\",\n      \"success\": true\n    }\n  ],\n  \"cleanup\": {\n    \"status\": \"kept_running\",\n    \"project\": \"devops-validation-19fcc3ec953d\",\n    \"stop_command\": \"docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f <temporary-fixture>/app/docker-compose.yml down --volumes\"\n  },\n  \"verified\": [\n    \"config\",\n    \"build\",\n    \"startup\",\n    \"services\",\n    \"application\"\n  ],\n  \"unverified\": [\n    \"Business correctness and production readiness\",\n    \"Future health after validation returns\"\n  ],\n  \"environment_state\": \"running\",\n  \"project\": \"devops-validation-19fcc3ec953d\",\n  \"application_service\": \"app\",\n  \"container_port\": 3000,\n  \"service_states\": {\n    \"app\": {\n      \"id\": \"4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60\",\n      \"state\": \"running\",\n      \"health\": null,\n      \"ports\": {\n        \"3000/tcp\": [\n          {\n            \"HostIp\": \"127.0.0.1\",\n            \"HostPort\": \"43187\"\n          }\n        ]\n      }\n    }\n  },\n  \"dependency_checks\": {},\n  \"repair_context\": {\n    \"inputs_sha256\": \"82ef333fe600bbb8531c914bc90ff005d9b69e2155f362e933e02e489c000097\",\n    \"compose_file\": \"docker-compose.yml\",\n    \"health_path\": \"/\",\n    \"service\": null,\n    \"container_port\": null,\n    \"timeout\": 600.0,\n    \"readiness_timeout\": 120.0\n  },\n  \"session_id\": \"e33949c6fabe4bbca1a986fc39ab80f2\"\n}\n",
+    "stderr": "",
+    "returncode": 0
+  },
+  "validation": {
+    "success": true,
+    "phase": "application",
+    "results": [
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f <temporary-fixture>/app/docker-compose.yml config --format json",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+        "success": true,
+        "stdout": "\"unix://<HOME>/.docker/run/docker.sock\"\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kwl8tq5a/compose.json build",
+        "success": true,
+        "stdout": "#1 [internal] load local bake definitions\n#1 reading from stdin 685B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 313B done\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/node:22\n#3 DONE 0.1s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 206B done\n#4 DONE 0.0s\n\n#5 [internal] load build context\n#5 transferring context: 32.37kB 0.0s done\n#5 DONE 0.0s\n\n#6 [1/5] FROM docker.io/library/node:22@sha256:8a34c4ab3ea2c5cd194f07e317b2a8f09461d3c8b05c4e34c8ccd56d56024c4d\n#6 resolve docker.io/library/node:22@sha256:8a34c4ab3ea2c5cd194f07e317b2a8f09461d3c8b05c4e34c8ccd56d56024c4d 0.0s done\n#6 DONE 0.0s\n\n#7 [2/5] WORKDIR /app\n#7 DONE 0.0s\n\n#8 [3/5] COPY package.json package-lock.json ./\n#8 DONE 0.0s\n\n#9 [4/5] RUN npm ci --include=dev --no-audit --no-fund\n#9 7.676 \n#9 7.676 added 27 packages in 7s\n#9 7.678 npm notice\n#9 7.678 npm notice New major version of npm available! 10.9.8 -> 12.2.0\n#9 7.678 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0\n#9 7.678 npm notice To update run: npm install -g npm@12.2.0\n#9 7.678 npm notice\n#9 DONE 8.5s\n\n#10 [5/5] COPY . .\n#10 DONE 0.1s\n\n#11 exporting to image\n#11 exporting layers\n#11 exporting layers 12.0s done\n#11 exporting manifest sha256:bde763e867562805f46d616f2162b02bfa73ae51860a836841c38b62fddccf42 done\n#11 exporting config sha256:70bdc633d167efb5e67d48c23d7efa84e14a32fbf4f4c3969664b734d94b9ead done\n#11 exporting attestation manifest sha256:9110a38a8377c1b00a9fe1209341e02fc493e7b99779aab43009a2dfe8d21aa6 done\n#11 exporting manifest list sha256:ba1a4877a4b1f9f87065285962fc08d09cee64fca1961e542e497573062575cf done\n#11 naming to docker.io/library/devops-validation-19fcc3ec953d-app:validation done\n#11 unpacking to docker.io/library/devops-validation-19fcc3ec953d-app:validation\n#11 unpacking to docker.io/library/devops-validation-19fcc3ec953d-app:validation 2.5s done\n#11 DONE 14.5s\n\n#12 resolving provenance for metadata file\n#12 DONE 0.0s\n",
+        "stderr": " Image devops-validation-19fcc3ec953d-app:validation Building \n Image devops-validation-19fcc3ec953d-app:validation Built \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kwl8tq5a/compose.json up -d --no-build",
+        "success": true,
+        "stdout": "",
+        "stderr": " Network devops-validation-19fcc3ec953d_default Creating \n Network devops-validation-19fcc3ec953d_default Creating \n Network devops-validation-19fcc3ec953d_default Created \n Network devops-validation-19fcc3ec953d_default Created \n Container devops-validation-19fcc3ec953d-app-1 Creating \n Container devops-validation-19fcc3ec953d-app-1 Created \n Container devops-validation-19fcc3ec953d-app-1 Starting \n Container devops-validation-19fcc3ec953d-app-1 Started \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kwl8tq5a/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kwl8tq5a/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-kwl8tq5a/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      }
+    ],
+    "logs": "",
+    "expected_services": [
+      "app"
+    ],
+    "running_services": [
+      "app"
+    ],
+    "stopped_services": [],
+    "application_check": {
+      "url": "http://127.0.0.1:43187/",
+      "reachable": true,
+      "healthy": true,
+      "status_code": 200,
+      "redirect_url": null,
+      "error": null,
+      "redirects": [],
+      "final_url": "http://127.0.0.1:43187/",
+      "success": true,
+      "container_id": "4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60"
+    },
+    "stages": [
+      {
+        "phase": "config",
+        "success": true
+      },
+      {
+        "phase": "build",
+        "success": true
+      },
+      {
+        "phase": "startup",
+        "success": true
+      },
+      {
+        "phase": "dependencies",
+        "success": true,
+        "status": "not_required"
+      },
+      {
+        "phase": "services",
+        "success": true
+      },
+      {
+        "phase": "application",
+        "success": true
+      }
+    ],
+    "cleanup": {
+      "status": "kept_running",
+      "project": "devops-validation-19fcc3ec953d",
+      "stop_command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f <temporary-fixture>/app/docker-compose.yml down --volumes"
+    },
+    "verified": [
+      "config",
+      "build",
+      "startup",
+      "services",
+      "application"
+    ],
+    "unverified": [
+      "Business correctness and production readiness",
+      "Future health after validation returns"
+    ],
+    "environment_state": "running",
+    "project": "devops-validation-19fcc3ec953d",
+    "application_service": "app",
+    "container_port": 3000,
+    "service_states": {
+      "app": {
+        "id": "4d618acc5a7ff33d3ec3ae9190ad77f7a9104fee6f46bb854917e2523964cb60",
+        "state": "running",
+        "health": null,
+        "ports": {
+          "3000/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "43187"
+            }
+          ]
+        }
+      }
+    },
+    "dependency_checks": {},
+    "repair_context": {
+      "inputs_sha256": "82ef333fe600bbb8531c914bc90ff005d9b69e2155f362e933e02e489c000097",
+      "compose_file": "docker-compose.yml",
+      "health_path": "/",
+      "service": null,
+      "container_port": null,
+      "timeout": 600.0,
+      "readiness_timeout": 120.0
+    },
+    "session_id": "e33949c6fabe4bbca1a986fc39ab80f2"
+  },
+  "page": {
+    "url": "http://127.0.0.1:43187/",
+    "status": 200,
+    "fixture_marker": true
+  },
+  "shutdown": {
+    "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-19fcc3ec953d -f <temporary-fixture>/app/docker-compose.yml down --volumes",
+    "success": true,
+    "stdout": "",
+    "stderr": " Container devops-validation-19fcc3ec953d-app-1 Stopping \n Container devops-validation-19fcc3ec953d-app-1 Stopped \n Container devops-validation-19fcc3ec953d-app-1 Removing \n Container devops-validation-19fcc3ec953d-app-1 Removed \n Network devops-validation-19fcc3ec953d_default Removing \n Network devops-validation-19fcc3ec953d_default Removed \n",
+    "returncode": 0
+  },
+  "remaining": {
+    "command": "docker ps -aq --filter label=com.docker.compose.project=devops-validation-19fcc3ec953d",
+    "success": true,
+    "stdout": "",
+    "stderr": "",
+    "returncode": 0
+  },
+  "image_cleanup": {
+    "command": "docker image rm devops-validation-19fcc3ec953d-app:validation",
+    "success": true,
+    "stdout": "Untagged: devops-validation-19fcc3ec953d-app:validation\nDeleted: sha256:ba1a4877a4b1f9f87065285962fc08d09cee64fca1961e542e497573062575cf\n",
+    "stderr": "",
+    "returncode": 0
+  },
+  "host_free_bytes_after": 26959044608,
+  "retained": "Shared base images and BuildKit cache; no global prune performed."
+}

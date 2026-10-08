@@ -54,3 +54,22 @@ and missing-variable preflight without Docker. The complete offline suite has
 96 passing checks. No new Docker build is needed for this advice-only change;
 step 5's real runtime evidence remains separate. Historical baseline files are
 unchanged.
+
+## v1 repository preparation guide
+
+| Blocker / symptom | What to do next |
+| --- | --- |
+| pnpm/yarn/bun or conflicting lockfiles | Confirm the repository's intended package manager. v1 generation is npm-only. Preserve its lockfile; an explicit migration in a copy is manual preparation and may change transitive versions. Do not delete evidence merely to pass eligibility. |
+| Missing or mismatched npm lockfile | For an actual npm app, regenerate/reconcile with its npm version and review changes. `npm ci` during the Docker build is the installability check. |
+| Node engine / runtime conflict | Compare package engines, `.nvmrc`/`.node-version`, and the locked Next.js engine. Resolve stale declarations deliberately and synchronize root lock metadata. The agent does not choose a current LTS release for you. |
+| Multiple application directories | Select the concrete standalone app path. v1 does not orchestrate a monorepo or multiple frameworks. |
+| Multiple Compose files | Select a root file with `--compose-file FILE`. Selection does not waive resource isolation. |
+| Service dependency hint | A package name alone does not prove a service is required. Generation stays blocked; a reviewed existing isolated setup can use `--existing-setup --compose-file FILE --run`. Separately test a database write/read or other representative operation. |
+| Example-only environment variable | Determine whether it is required and how the app consumes it. Supply real local values for generation, or test the reviewed existing setup. Required-variable guards still block; never manufacture real service credentials. |
+| Named/shared volume, fixed container name or writable bind | Prepare a disposable isolated Compose variant without shared resources. The Postgres pilot used temporary data; that is inappropriate when persistence is required. Preserve the upstream configuration. |
+| HTTP 500 despite running containers | Inspect the earliest application error with `--verbose`. One pilot had a malformed favicon; manually fixing that asset was not an agent repair capability. Do not treat healthy containers as a working page. |
+| Model 429 / TPM rate limit | Follow the provider's retry delay. Core local commands do not need the model or a key; no paid fallback is automatic. |
+
+The three external pilot reports distinguish manual preparation from runtime
+verification. See the [v1 release evidence](releases/v1.md). Earlier test counts
+on this page describe historical checkpoints; the release record is current.

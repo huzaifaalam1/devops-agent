@@ -232,3 +232,14 @@ rubric, source hashes, live report and attributed semantic review. The full suit
 has 183 passing tests. Retained V7 checks/uncertainties are replayed to prove
 rejection and fallback; these mocked tests do not prove live explanation quality.
 The V8 held-out cases have now been used; further runs are regression evidence.
+
+## v1 final acceptance
+
+Current evidence is in [the v1 release record](../docs/releases/v1.md). Earlier
+counts above are historical. The Next.js acceptance runner now invokes CLI
+analysis, proposal, ID-bound apply and runtime validation on a fresh fixture.
+`--host-port PORT` permits a free host port on shared hosts and records this as
+an explicit reviewed adjustment after generation; the default remains 3000.
+It never stops an existing port owner. Independent response-body verification and
+scoped cleanup follow the CLI result. Do not interpret its success as production
+build coverage or general repository compatibility.
