@@ -21,6 +21,18 @@ from agent.planning import advise as model_advice
 app = typer.Typer()
 console = Console()
 
+@app.command()
+def chat(path: Annotated[str | None, typer.Argument(help="Application directory; prompts when omitted")] = None):
+    """Start the read-only interactive terminal preview (v2 step 2)."""
+    from agent.session import run_session
+
+    def read(prompt):
+        # input preserves EOF/Ctrl-C so the session can report cancellation.
+        return input(prompt + "> ")
+
+    run_session(path, read, lambda message: console.print(message, markup=False, highlight=False))
+
+
 def inspect_repo(path):
     try:
         repo_info = scan_repo(path)

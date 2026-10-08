@@ -107,4 +107,15 @@ Shared base images and build cache remain. Detailed workflows:
 The [v2 scope and ten-step plan](docs/v2/plan.md) and
 [acceptance matrix](docs/v2/acceptance.md) define the next release: an interactive
 terminal agent, Django/Postgres support, and reviewable AWS preparation.
-Step 1 is planning only; the current supported behavior remains v1.
+Steps 1–2 provide the plan and read-only terminal shell; execution support remains v1.
+
+V2 step 2 adds a read-only interactive preview:
+
+```sh
+devops-agent chat /path/to/app
+```
+
+Omit the path to be prompted. Ask to inspect the repo or explain blockers; use
+`/status`, `/cancel`, `/repo PATH` and `/exit`. Setup requests explain next steps
+but do not execute yet. No model key is needed. See the
+[terminal preview guide](docs/v2/terminal.md).

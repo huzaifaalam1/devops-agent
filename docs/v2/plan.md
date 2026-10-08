@@ -1,6 +1,6 @@
 # V2 plan and scope contract
 
-Status: step 1 complete; implementation and acceptance results pending.
+Status: steps 1–2 complete. Step 2 delivers the read-only [terminal preview](terminal.md); execution tools and model-loop acceptance remain pending.
 Baseline: v1 commit `4a5afdb` (`Finalize v1 support contract and verify end-to-end startup`).
 This document records the agreed v2 direction and concrete implementation defaults;
 it does not expand the current [v1 support contract](../product-scope.md).
@@ -124,7 +124,8 @@ its exit criterion requires a real model, Docker or application run.
 
 ## Decisions deferred to their implementation checkpoints
 
-- Step 2: exact conversational command name and terminal rendering choices.
+- Step 2 decision: `devops-agent chat [PATH]`, plain-text rendering and explicit
+  commands alongside limited deterministic routing. See [terminal guide](terminal.md).
 - Steps 3–4: internal adapter/state format; adding an orchestration library needs
   a concrete benefit over the existing executor, not a framework requirement.
 - Step 5: supported Python/Django version combinations from repository evidence
