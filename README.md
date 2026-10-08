@@ -101,3 +101,10 @@ scoped cleanup. A nondefault host port is recorded as an explicit test adjustmen
 Shared base images and build cache remain. Detailed workflows:
 [Docker proposals](docs/docker-proposals.md), [runtime validation](docs/runtime-validation.md),
 [test guide](tests/README.md), [model configuration](docs/model-planning.md).
+
+## V2 roadmap
+
+The [v2 scope and ten-step plan](docs/v2/plan.md) and
+[acceptance matrix](docs/v2/acceptance.md) define the next release: an interactive
+terminal agent, Django/Postgres support, and reviewable AWS preparation.
+Step 1 is planning only; the current supported behavior remains v1.
