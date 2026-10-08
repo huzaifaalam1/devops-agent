@@ -22,15 +22,23 @@ app = typer.Typer()
 console = Console()
 
 @app.command()
-def chat(path: Annotated[str | None, typer.Argument(help="Application directory; prompts when omitted")] = None):
-    """Start the read-only interactive terminal preview (v2 step 2)."""
-    from agent.session import run_session
-
+def chat(
+    path: Annotated[str | None, typer.Argument(help="Application directory; prompts when omitted")] = None,
+    offline: Annotated[bool, typer.Option("--offline", help="Use the read-only shell without model or persistence")] = False,
+    resume: Annotated[str | None, typer.Option("--resume", help="Resume a conversation belonging to this repository")] = None,
+):
+    """Start an interactive agent session, or the offline inspection shell."""
     def read(prompt):
-        # input preserves EOF/Ctrl-C so the session can report cancellation.
         return input(prompt + "> ")
-
-    run_session(path, read, lambda message: console.print(message, markup=False, highlight=False))
+    emit = lambda message: console.print(message, markup=False, highlight=False)
+    if offline:
+        if resume:
+            raise typer.BadParameter("--resume requires the persistent session, not --offline.")
+        from agent.session import run_session
+        run_session(path, read, emit)
+    else:
+        from agent.conversation import run_chat
+        run_chat(path, read, emit, resume=resume)
 
 
 def inspect_repo(path):

@@ -1,0 +1,35 @@
+{
+  "prompt_version": "loop-action-v2",
+  "langgraph": "1.2.14",
+  "langgraph-checkpoint-sqlite": "3.1.1",
+  "offline_passed": 242,
+  "live_passed": [
+    "fresh Next.js startup with restart at review",
+    "unsupported stack stop"
+  ],
+  "approval_source": "Explicit automated acceptance harness; not independent human UX review",
+  "source_sha256": {
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/conversation.py": "64c5d25e8f71b0c79a9406664d5297e762695fac6d7601820e54b4fb0d0793a5",
+    "agent/detector.py": "2045f808be498d245eb427195ec6de839d1393371b889e4cfce7b80a67c4fa39",
+    "agent/diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "agent/docker_generator.py": "6d7c8d281054a23559b584ab5f281b81690e53f5448abbb320aff9c2d799203a",
+    "agent/loop.py": "910399df33666c9455177087a11b8484ecdbe370bcb9b6f17c39135877b75a10",
+    "agent/loop_model.py": "650ff60357a34532c67f9100a8eda4d468db18ee95e2ce54d8cdf0ec666e5829",
+    "agent/main.py": "56f31eea5850f9a54605716d72b352e4b5870d2274085d6c6124ac90c1b67abb",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/node_runtime.py": "84e9fa821bbd1c488895d2ccdc79270e74a829e43a7a4a63bd4fc9c016238893",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/repair.py": "51ee1d1d44e08e9684abd0442497d8036bc2d7cc89038ce949526d2bad2960c3",
+    "agent/safety.py": "df35e59a58ef22a5a2cee5bf905fd95ac2f0e26f5b8c1bdf7528280e5a307926",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/session.py": "d661b52c218750d04b1e577c02325daeff28201d7d3969e1421ed4b2ab486ae3",
+    "agent/tools.py": "82b9d2b1c9420e577b04e9603d9aed0984ba22d8843bf46cc08738450a1550e4",
+    "agent/understanding.py": "52b7b7ea20a02e6cec75332737e8f4a30a7de745369a7721f10835c42208a4c4",
+    "agent/validator.py": "60a3c0858583b05d4c08b556937ebc99437d1a74d435c4fd3c7268f10c1267de",
+    "pyproject.toml": "7415a85ffcd22cde9af043b53abc8dd5bd740297eea7434014b0f7381eea24f3",
+    "requirements-baseline.txt": "495a99b8a7d20c3281f3f873340b6ea35e46ca09281c8ebeee02723c26584d47"
+  }
+}

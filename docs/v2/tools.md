@@ -2,7 +2,7 @@
 
 `agent.tools.ToolRegistry` is the internal adapter for step 4. It is bound to one
 canonical repository directory and exposes JSON-schema-shaped parameter metadata.
-The terminal remains read-only until the action UI and loop are connected.
+The [step-4 loop](agent-loop.md) now connects this boundary to terminal reviews.
 
 | Tool | Effect | Authorization |
 | --- | --- | --- |

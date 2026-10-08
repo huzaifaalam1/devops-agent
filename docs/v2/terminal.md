@@ -1,9 +1,12 @@
 # Interactive terminal preview — step 2
 
+Historical checkpoint: this shell is now selected with `chat --offline`. The
+default chat uses the [step-4 persistent agent loop](agent-loop.md).
+
 ```sh
-devops-agent chat
+devops-agent chat --offline
 # Or select the application directory upfront:
-devops-agent chat /path/to/app
+devops-agent chat --offline /path/to/app
 ```
 
 With no path, enter an explicit application directory. Empty or invalid paths do

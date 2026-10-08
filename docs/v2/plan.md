@@ -1,6 +1,6 @@
 # V2 plan and scope contract
 
-Status: steps 1–3 complete. The [terminal preview](terminal.md) remains read-only; the [structured tool boundary](tools.md) is ready for step 4 integration. Model-loop acceptance remains pending.
+Status: steps 1–4 complete. The [persistent agent loop](agent-loop.md) connects terminal requests to the [structured tool boundary](tools.md). Broader model-quality evaluation remains step 8; Django and AWS are not yet implemented.
 Baseline: v1 commit `4a5afdb` (`Finalize v1 support contract and verify end-to-end startup`).
 This document records the agreed v2 direction and concrete implementation defaults;
 it does not expand the current [v1 support contract](../product-scope.md).
@@ -126,8 +126,8 @@ its exit criterion requires a real model, Docker or application run.
 
 - Step 2 decision: `devops-agent chat [PATH]`, plain-text rendering and explicit
   commands alongside limited deterministic routing. See [terminal guide](terminal.md).
-- Steps 3–4: internal adapter/state format; adding an orchestration library needs
-  a concrete benefit over the existing executor, not a framework requirement.
+- Steps 3–4 decision: structured tools plus LangGraph with private SQLite
+  checkpoints and a separate operation ledger; approval grants remain ephemeral.
 - Step 5: supported Python/Django version combinations from repository evidence
   and verified fixtures; no blanket version-range certification now.
 - Step 7: database probe contract and disposable secret lifecycle.

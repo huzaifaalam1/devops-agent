@@ -107,17 +107,17 @@ Shared base images and build cache remain. Detailed workflows:
 The [v2 scope and ten-step plan](docs/v2/plan.md) and
 [acceptance matrix](docs/v2/acceptance.md) define the next release: an interactive
 terminal agent, Django/Postgres support, and reviewable AWS preparation.
-Steps 1–3 provide the plan, read-only terminal shell, and an internal
-[structured tool boundary](docs/v2/tools.md). Chat execution awaits step 4;
-existing CLI execution support remains v1.
-
-V2 step 2 adds a read-only interactive preview:
+Steps 1–4 now provide the plan, structured tools and a persistent LangGraph loop:
 
 ```sh
+.venv/bin/python -m pip install -c requirements-baseline.txt -e .
 devops-agent chat /path/to/app
+# Local-only inspection shell:
+devops-agent chat --offline /path/to/app
 ```
 
-Omit the path to be prompted. Ask to inspect the repo or explain blockers; use
-`/status`, `/cancel`, `/repo PATH` and `/exit`. Setup requests explain next steps
-but do not execute yet. No model key is needed. See the
-[terminal preview guide](docs/v2/terminal.md).
+Describe the task in plain English. The terminal previews model data and proposed
+mutations before approval. `/status`, `/cancel`, `/repo PATH`, `/resume ID` and
+`/exit` manage the session. Provider configuration uses the existing agent `.env`.
+Chat supports only the current Next.js/npm execution tools; Django and AWS are
+later checkpoints. See the [agent-loop guide](docs/v2/agent-loop.md).

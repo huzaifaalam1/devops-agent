@@ -1,0 +1,218 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tool": {
+              "type": "string",
+              "enum": [
+                "inspect_repository"
+              ]
+            },
+            "parameters": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {}
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tool",
+            "parameters",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tool": {
+              "type": "string",
+              "enum": [
+                "propose_docker"
+              ]
+            },
+            "parameters": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {}
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tool",
+            "parameters",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tool": {
+              "type": "string",
+              "enum": [
+                "apply_docker"
+              ]
+            },
+            "parameters": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "proposal_id": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "proposal_id"
+              ]
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tool",
+            "parameters",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tool": {
+              "type": "string",
+              "enum": [
+                "validate_runtime"
+              ]
+            },
+            "parameters": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "compose_file": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "existing_setup": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "build": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "run": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "keep_running": {
+                  "type": [
+                    "boolean",
+                    "null"
+                  ]
+                },
+                "service": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "container_port": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "health_path": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "timeout": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "readiness_timeout": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "compose_file",
+                "existing_setup",
+                "build",
+                "run",
+                "keep_running",
+                "service",
+                "container_port",
+                "health_path",
+                "timeout",
+                "readiness_timeout"
+              ]
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tool",
+            "parameters",
+            "reason"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tool": {
+              "type": "string",
+              "enum": [
+                "finish"
+              ]
+            },
+            "parameters": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {}
+            },
+            "reason": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "tool",
+            "parameters",
+            "reason"
+          ]
+        }
+      ]
+    }
+  },
+  "required": [
+    "action"
+  ]
+}

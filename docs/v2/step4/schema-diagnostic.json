@@ -1,0 +1,19 @@
+{
+  "status": 400,
+  "error": {
+    "message": "invalid JSON schema for response_format: 'next_action': /properties/action/anyOf/0/properties/parameters: 'required' present but 'properties' is missing",
+    "type": "invalid_request_error",
+    "param": "response_format",
+    "schema_path": "/properties/action/anyOf/0/properties/parameters",
+    "schema_path_segments": [
+      "$",
+      "properties",
+      "action",
+      "anyOf",
+      "0",
+      "properties",
+      "parameters"
+    ],
+    "schema_kind": "required"
+  }
+}

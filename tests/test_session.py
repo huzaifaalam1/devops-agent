@@ -24,7 +24,7 @@ class SessionTests(unittest.TestCase):
 
     def test_cli_prompts_and_inspects_without_flags(self):
         before = {p.relative_to(self.repo): p.read_bytes() for p in self.repo.rglob('*') if p.is_file()}
-        result = CliRunner().invoke(app, ['chat'], input=f'{self.repo}\ninspect this repo\n/status\n/exit\n')
+        result = CliRunner().invoke(app, ['chat', '--offline'], input=f'{self.repo}\ninspect this repo\n/status\n/exit\n')
         self.assertEqual(result.exit_code, 0, result.stdout)
         self.assertIn('Generation eligibility: eligible', result.stdout)
         self.assertIn('Runtime readiness has not been tested', result.stdout)
