@@ -202,3 +202,45 @@ class LoopTests(unittest.TestCase):
         loop.start('inspect');result=loop.answer(True)
         self.assertEqual(result['state']['status'],'blocked')
         self.assertEqual(result['state']['count'],1)
+
+
+    def test_large_installed_dependencies_do_not_block_inspection(self):
+        dependencies=self.repo/'node_modules'
+        dependencies.mkdir()
+        with (dependencies/'large.bin').open('wb') as stream:
+            stream.truncate(101*1024*1024)
+        loop=self.loop([action('finish')])
+        result=loop.start('can I run this locally?')
+        self.assertEqual(result['pending']['kind'],'provider')
+        self.assertTrue(result['state']['observations'])
+        result=loop.answer(True)
+        self.assertEqual(result['state']['status'],'finished')
+
+    def test_large_repository_still_cannot_authorize_mutation(self):
+        with (self.repo/'large.bin').open('wb') as stream:
+            stream.truncate(2*1024*1024*1024+1)
+        loop=self.loop([action('validate_runtime',{'run':True})])
+        loop.start('run this')
+        result=loop.answer(True)
+        self.assertEqual(result['state']['status'],'blocked')
+        self.assertIn('Repository exceeds bounded review size',result['state']['message'])
+        self.assertNotIn('Model selection unavailable',result['state']['message'])
+        self.assertIsNone(result.get('pending'))
+
+
+    def test_read_patch_review_restart_and_followup(self):
+        before=(self.repo/'package.json').read_text()
+        params={'path':'package.json','old_text':before,'new_text':before.replace('{','{\n  "description": "reviewed change",',1)}
+        loop=self.loop([action('read_file',{'path':'package.json'}),action('patch_file',params)])
+        result=loop.start('edit configuration',history=[{'role':'user','content':'Add a description'}])
+        result=loop.answer(True)
+        self.assertEqual(result['pending']['kind'],'action')
+        self.assertEqual((self.repo/'package.json').read_text(),before)
+        resumed=self.loop([action('finish')])
+        result=resumed.resume(result['id'])
+        self.assertIn('diff',result['pending']['review']['preview'])
+        result=resumed.answer(True)
+        self.assertIn('reviewed change',(self.repo/'package.json').read_text())
+        self.assertEqual(result['state']['history'][0]['content'],'Add a description')
+        result=resumed.answer(True)
+        self.assertEqual(result['state']['status'],'finished')

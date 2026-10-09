@@ -17,12 +17,13 @@ from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.checkpoint.serde.jsonplus import JsonPlusSerializer
 from langsmith import tracing_context
 
-from agent.tools import ToolRegistry, MUTATIONS, inputs
+from agent.tools import ToolRegistry, ToolRefused, MUTATIONS, inputs
 from agent.safety import Redactor, state_directory
 from agent.loop_model import NextActionModel, ModelUnavailable
 
 
 class State(TypedDict, total=False):
+    history: list
     request: str
     observations: list
     action: dict
@@ -37,6 +38,8 @@ class State(TypedDict, total=False):
 
 def compact(tool, result):
     """Only bounded facts and result summaries go to the planner, never raw logs."""
+    if tool=='read_file':
+        return result
     if tool=='inspect_repository':
         project=result.get('project',{})
         return {k:project.get(k) for k in ['eligibility','setup','findings','blockers']}
@@ -97,12 +100,20 @@ class AgentLoop:
     def _stop(self,message,status='blocked'):
         return {'status':status,'message':self._clean(message)}
 
+    def _signature(self, tool, parameters, result=None):
+        # Read-only actions depend on their bounded evidence, not every file in
+        # the Docker build context. Mutations still require the full fingerprint.
+        if tool in MUTATIONS:
+            evidence=self.registry.action_fingerprint(tool, parameters)
+        else:
+            evidence=result if result is not None else self.registry.execute(tool,parameters)["result"]
+        return hashlib.sha256(json.dumps([tool,parameters,evidence],sort_keys=True).encode()).hexdigest()
+
     def _observe(self,state):
         self.emit('Inspecting repository evidence...')
         try:
             result=self.registry.execute('inspect_repository',{})['result']
-            fingerprint=self.registry._fingerprint()
-            signature=hashlib.sha256(json.dumps(['inspect_repository',{},fingerprint],sort_keys=True).encode()).hexdigest()
+            signature=self._signature('inspect_repository',{},result)
             seen=list(state.get('seen',[]))
             if signature not in seen:seen.append(signature)
             return {'observations':[{'tool':'inspect_repository','result':self._clean(compact('inspect_repository',result))}],
@@ -114,7 +125,7 @@ class AgentLoop:
         calls=self.conn.execute('SELECT count(*) FROM model_requests WHERE session=?',(self.thread,)).fetchone()[0]
         if state['count']>=12 or calls>=12 or state['failures']>=2:
             return self._stop('Action/request or failed-action limit reached. Review the evidence before a new request.')
-        context=self._clean({'request':state['request'],'observations':state['observations'][-6:],
+        context=self._clean({'request':state['request'],'history':state.get('history',[]),'observations':state['observations'][-6:],
                             'remaining_actions':12-state['count']})
         if len(json.dumps(context))>24000:
             return self._stop('Evidence exceeds the bounded model context; select a smaller application or use the CLI.')
@@ -134,18 +145,19 @@ class AgentLoop:
                 raise ValueError()
             if action['tool']=='finish':
                 if action['parameters'] != {}: raise ValueError()
-                return {**self._stop('Model stopped: '+action['reason']+' No additional runtime success is claimed.','finished'),
+                return {**self._stop(action['reason'],'finished'),
                         'model_calls':calls+1}
             inputs(action['tool'],action['parameters'])
             if action!=self._clean(action):
                 return self._stop('Model action contains sensitive values; no execution performed.')
-            fingerprint=self.registry._fingerprint()
-            signature=hashlib.sha256(json.dumps([action['tool'],action['parameters'],fingerprint],sort_keys=True).encode()).hexdigest()
+            signature=self._signature(action['tool'],action['parameters'])
             if signature in state['seen']:
                 return self._stop('Repeated action on unchanged inputs refused; no redundant inspection or retry performed.')
             self.emit('Next: '+action['tool']+' — '+action['reason'])
             return {'action':action,'operation':uuid.uuid4().hex,'seen':state['seen']+[signature],
                     'model_calls':calls+1,'status':'active'}
+        except ToolRefused as error:
+            return {**self._stop('Action refused: '+str(error)+' Read-only inspection remains available with /inspect. For setup, use a clean application copy without installed dependencies or build output; preserve required configuration.'), 'model_calls':calls+1}
         except ModelUnavailable as error:
             return {**self._stop(str(error)), 'model_calls':calls+1}
         except (OSError,ValueError,TypeError):
@@ -222,7 +234,7 @@ class AgentLoop:
         with self._locked():
             return self._invoke_unlocked(value)
 
-    def start(self,request):
+    def start(self,request,history=None):
         if not isinstance(request,str) or not request.strip() or len(request)>4000:
             raise ValueError('Provide a request between 1 and 4000 characters.')
         self.thread=uuid.uuid4().hex
@@ -230,7 +242,7 @@ class AgentLoop:
         self.provider_allowed=False
         self.conn.execute('INSERT INTO sessions VALUES (?,?,?)',(self.thread,str(self.root),json.dumps(self.registry.identity)))
         self.conn.commit()
-        return self._invoke({'request':self._clean(request),'observations':[],'seen':[],'count':0,
+        return self._invoke({'request':self._clean(request),'history':self._clean((history or [])[-6:]),'observations':[],'seen':[],'count':0,
                              'failures':0,'model_calls':0,'status':'active','message':''})
 
     def resume(self,thread):

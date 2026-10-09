@@ -7,6 +7,8 @@ The [step-4 loop](agent-loop.md) now connects this boundary to terminal reviews.
 | Tool | Effect | Authorization |
 | --- | --- | --- |
 | inspect_repository | Static repository findings | Automatic within selected root |
+| read_file | Read supported root configuration text | Automatic within selected root |
+| patch_file | Apply one exact text replacement | Trusted UI approval of displayed diff |
 | propose_docker | Docker diffs and eligibility | Automatic within selected root |
 | apply_docker | Apply a ready exact Docker proposal | Trusted UI approval of review |
 | validate_runtime | Compose resolution; optional build/run | Trusted UI approval, even for config-only Docker invocation |
@@ -40,12 +42,13 @@ Reviews expire after ten minutes. Up to 32 reviews and 32 grants can be pending;
 a new registry clears them. Grants do not transfer between registries or persist
 across restart. Future resume must obtain fresh approval after reconciling state.
 
-Fingerprints bind root identity, file paths/content/modes and the process
-environment (Compose can interpolate host variables). Only `.git` directories are
-excluded. Symlinks, nonregular files and repositories exceeding 5,000 entries or
-100 MiB of file data are refused for mutation review. This conservative limit can
-reject repositories with installed dependency trees; do not delete user files to
-clear it. Use a reviewed clean copy or a future validated build-input strategy.
+Docker fingerprints bind root identity, file paths/content/modes and process
+environment. Only `.git` directories are excluded. The bound is 250,000 entries
+and 2 GiB, read in chunks. Internal symlinks are recorded and their targets remain
+covered by traversal; external, broken or Git-metadata links are refused.
+Configuration patches instead fingerprint their selected file and root identity;
+installed dependencies do not affect approval of that edit. See the
+[configuration editing contract](agent-loop.md#conversational-configuration-editing).
 No plaintext secret values are returned from fingerprints.
 
 This is an application authorization boundary, not a Python sandbox: trusted

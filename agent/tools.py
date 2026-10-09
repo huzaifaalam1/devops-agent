@@ -15,6 +15,8 @@ from agent.safety import Redactor
 
 SCHEMAS = {
     'inspect_repository': {},
+    'read_file': {'path':'string'},
+    'patch_file': {'path':'string','old_text':'string','new_text':'string'},
     'propose_docker': {},
     'apply_docker': {'proposal_id': 'string'},
     'validate_runtime': {'compose_file': 'string', 'existing_setup': 'boolean',
@@ -22,7 +24,7 @@ SCHEMAS = {
                          'service': 'string', 'container_port': 'integer',
                          'health_path': 'string', 'timeout': 'integer', 'readiness_timeout': 'integer'},
 }
-MUTATIONS = {'apply_docker', 'validate_runtime'}
+MUTATIONS = {'apply_docker', 'validate_runtime', 'patch_file'}
 IGNORED = {'.git'}
 
 
@@ -40,8 +42,14 @@ def inputs(name, params):
     for key, value in params.items():
         if type(value) is not types[schema[key]]:
             raise ToolRefused('Parameter type does not match the tool schema.')
-        if isinstance(value, str) and (not value or len(value) > 512 or any(ord(c) < 32 for c in value)):
+        if isinstance(value, str) and key not in {'old_text','new_text'} and (not value or len(value) > 512 or any(ord(c) < 32 for c in value)):
             raise ToolRefused('Invalid string parameter.')
+    if name in {'read_file','patch_file'}:
+        from agent.file_edits import ALLOWED
+        if set(params)!=set(schema) or params['path'] not in ALLOWED:
+            raise ToolRefused('Select a supported root configuration file and supply all fields.')
+        if any(len(params.get(k,''))>16000 for k in ['old_text','new_text']):
+            raise ToolRefused('Patch text exceeds 16,000 characters.')
     if name == 'apply_docker' and 'proposal_id' not in params:
         raise ToolRefused('A reviewed proposal ID is required.')
     if 'compose_file' in params:
@@ -75,7 +83,7 @@ class ToolRegistry:
 
     def schemas(self):
         return {name: {'type': 'object', 'properties': {key: {'type': kind} for key, kind in props.items()},
-                       'additionalProperties': False, 'required': ['proposal_id'] if name == 'apply_docker' else [],
+                       'additionalProperties': False, 'required': list(props) if name in {'apply_docker','read_file','patch_file'} else [],
                        'requires_review': name in MUTATIONS}
                 for name, props in SCHEMAS.items()}
 
@@ -97,33 +105,57 @@ class ToolRegistry:
             for name in dirs + sorted(files):
                 path = Path(parent) / name
                 if path.is_symlink():
-                    raise ToolRefused('Symlinked inputs require a separately reviewed setup.')
+                    try:
+                        target=path.resolve(strict=True).relative_to(self.root)
+                        if any(part in IGNORED for part in target.parts):raise ValueError()
+                    except (OSError,ValueError,RuntimeError):
+                        raise ToolRefused('Symlink target must be an existing reviewed input inside this repository.') from None
+                    count += 1
+                    if count > 250000:raise ToolRefused('Repository exceeds bounded review size.')
+                    digest.update(str(path.relative_to(self.root)).encode()+b'\0link\0'+os.readlink(path).encode())
+                    continue
                 if path.is_dir():
                     count += 1
-                    if count > 5000:
+                    if count > 250000:
                         raise ToolRefused('Repository exceeds bounded review size.')
                     continue
                 if not path.is_file():
                     raise ToolRefused('Only regular input files can be approved.')
                 count += 1
                 size += path.stat().st_size
-                if count > 5000 or size > 100 * 1024 * 1024:
+                if count > 250000 or size > 2 * 1024 * 1024 * 1024:
                     raise ToolRefused('Repository exceeds bounded review size.')
                 digest.update(str(path.relative_to(self.root)).encode() + b'\0')
                 digest.update(str(path.stat().st_mode).encode())
-                digest.update(hashlib.sha256(path.read_bytes()).digest())
+                file_hash=hashlib.sha256()
+                with path.open('rb') as stream:
+                    for chunk in iter(lambda:stream.read(1024*1024),b''):
+                        file_hash.update(chunk)
+                digest.update(file_hash.digest())
         return digest.hexdigest()
+
+    def action_fingerprint(self, name, params):
+        if name=='patch_file':
+            from agent.file_edits import read_config
+            self._scope()
+            path=self.root/params['path']
+            content=read_config(self.root,params['path'])
+            return hashlib.sha256((str(self.identity)+str(path.stat().st_mode)+content).encode()).hexdigest()
+        return self._fingerprint()
 
     def review(self, name, params):
         params = inputs(name, params)
         if name not in MUTATIONS:
             raise ToolRefused('Read-only inspection does not require approval.')
-        fingerprint = self._fingerprint()
+        fingerprint = self.action_fingerprint(name, params)
         preview = None
         if name == 'apply_docker':
             preview = propose_docker_files(self.root)
             if preview.get('status') != 'ready' or preview.get('id') != params['proposal_id']:
                 raise ToolRefused('Proposal is stale or not ready; review a fresh proposal.')
+        if name == 'patch_file':
+            from agent.file_edits import preview as edit_preview
+            preview=edit_preview(self.root,params)
         configuration = {}
         if name == 'validate_runtime':
             from agent.main import choose_compose_file
@@ -135,7 +167,7 @@ class ToolRegistry:
                     configuration[filename] = read_text(self.root, filename)
         if len(self._reviews) >= 32:
             raise ToolRefused('Too many pending reviews; start a new session.')
-        if self._fingerprint() != fingerprint:
+        if self.action_fingerprint(name, params) != fingerprint:
             raise ToolRefused('Inputs changed while preparing the review.')
         record = {'tool': name, 'parameters': params, 'repository': str(self.root),
                   'inputs': fingerprint, 'preview': preview, 'created': time.monotonic()}
@@ -143,7 +175,7 @@ class ToolRegistry:
         self._reviews[review_id] = record
         return Redactor(self.root).clean({'review_id': review_id, 'tool': name, 'parameters': params,
             'repository': str(self.root), 'preview': preview, 'configuration': configuration,
-            'effect': 'Apply the displayed Docker file changes.' if name == 'apply_docker' else
+            'effect': 'Apply the displayed file diff.' if name in {'apply_docker','patch_file'} else
                       'Resolve Compose; requested builds/run may execute repository code and use network. Cleanup is scoped; keep_running retains successful services.'})
 
     def approve(self, review_id):
@@ -153,7 +185,7 @@ class ToolRegistry:
         record = self._reviews.pop(review_id, None)
         if not record or time.monotonic() - record['created'] > 600:
             raise ToolRefused('Review missing or expired.')
-        if self._fingerprint() != record['inputs']:
+        if self.action_fingerprint(record['tool'],record['parameters']) != record['inputs']:
             raise ToolRefused('Inputs changed since review.')
         token = secrets.token_hex(32)
         self._grants[token] = record
@@ -167,11 +199,17 @@ class ToolRegistry:
             record = self._grants.pop(approval, None) if isinstance(approval, str) else None
             if not record or record['tool'] != name or record['parameters'] != params:
                 raise ToolRefused('A matching trusted approval is required.')
-            if time.monotonic() - record['created'] > 600 or self._fingerprint() != record['inputs']:
+            if time.monotonic() - record['created'] > 600 or self.action_fingerprint(record['tool'],record['parameters']) != record['inputs']:
                 raise ToolRefused('Approval expired or repository inputs changed.')
         redactor = Redactor(self.root)
         if name == 'inspect_repository':
             result = detect_stack(scan_repo(str(self.root)))
+        elif name == 'read_file':
+            from agent.file_edits import read_config
+            result={'path':params['path'],'content':read_config(self.root,params['path'])}
+        elif name == 'patch_file':
+            from agent.file_edits import apply as edit_apply
+            result=edit_apply(self.root,params,record["preview"])
         elif name == 'propose_docker':
             result = propose_docker_files(self.root)
         elif name == 'apply_docker':

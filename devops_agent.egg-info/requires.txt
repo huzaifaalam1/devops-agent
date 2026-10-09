@@ -1,2 +1,5 @@
 typer[all]
 rich
+langgraph==1.2.14
+langgraph-checkpoint-sqlite==3.1.1
+requests<3.0.0,>=2.34.2

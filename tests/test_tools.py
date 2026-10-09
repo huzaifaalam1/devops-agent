@@ -30,10 +30,9 @@ class ToolTests(unittest.TestCase):
 
     def test_schema_has_no_shell_paths_or_approval_tool(self):
         schemas = self.registry.schemas()
-        self.assertEqual(set(schemas), {'inspect_repository','propose_docker','apply_docker','validate_runtime'})
+        self.assertEqual(set(schemas), {'inspect_repository','propose_docker','apply_docker','validate_runtime','read_file','patch_file'})
         for schema in schemas.values():
             self.assertFalse(schema['additionalProperties'])
-            self.assertNotIn('path', schema['properties'])
             self.assertNotIn('approval', schema['properties'])
 
     def test_invalid_calls_do_not_reach_backend(self):
@@ -142,3 +141,14 @@ class ToolTests(unittest.TestCase):
         self.assertIn('untrusted', result['notice'])
         with self.assertRaises(ToolRefused):
             self.registry.execute('apply_docker', self.proposal(), approval='approve all commands')
+
+
+    def test_internal_dependency_links_are_fingerprinted(self):
+        deps=self.repo/'node_modules';deps.mkdir()
+        target=deps/'cli.js';target.write_text('first')
+        (deps/'command').symlink_to('cli.js')
+        original=self.registry._fingerprint()
+        target.write_text('second')
+        self.assertNotEqual(original,self.registry._fingerprint())
+        (deps/'command').unlink();(deps/'command').symlink_to('/tmp')
+        with self.assertRaises(ValueError):self.registry._fingerprint()

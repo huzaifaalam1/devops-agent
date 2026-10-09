@@ -40,3 +40,20 @@ class ConversationTests(unittest.TestCase):
             run_chat(str(self.repo),lambda _:next(entries),output.append)
         self.assertIn('Paused','\n'.join(output))
         self.assertIn('Model request declined','\n'.join(output))
+
+
+    def test_followup_has_context_and_readable_reviews(self):
+        seen=[]
+        def choose(context):
+            seen.append(context)
+            return {'tool':'finish','parameters':{},'reason':'The app needs a Node version declaration.'}
+        entries=iter(['can this run?','yes','do it yourself','yes','/exit']);output=[]
+        planner=Planner([choose,choose])
+        with patch('agent.conversation.AgentLoop',side_effect=lambda root,emit:AgentLoop(root,planner,emit)):
+            run_chat(str(self.repo),lambda _:next(entries),output.append)
+        self.assertEqual(seen[1]['history'][0]['content'],'can this run?')
+        self.assertIn('Node version',seen[1]['history'][1]['content'])
+        transcript='\n'.join(output)
+        self.assertNotIn('"kind":',transcript)
+        self.assertNotIn('"observations":',transcript)
+        self.assertIn('May I use',transcript)

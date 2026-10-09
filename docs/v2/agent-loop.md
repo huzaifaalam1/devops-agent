@@ -52,8 +52,15 @@ Limits per request: 12 tool actions (including initial inspection), 12 provider
 requests, two failed tool outcomes, bounded 24,000-character planner context,
 1,400 output tokens per model response and a 60-second provider transport deadline.
 Tool timeouts and cleanup bounds remain enforced by the existing executor.
-Identical actions on unchanged repository inputs are refused, including redundant
-initial inspection. There is no automatic provider retry: a 429 reports an
+Repeated read-only actions are compared using their returned evidence; mutation
+actions use the full repository fingerprint. Checking for repeated read-only
+evidence can rescan local files. Installed dependencies and build output therefore
+do not prevent initial inspection. Docker approval fingerprints up to 250,000 entries /
+2 GiB using streaming reads, including installed dependencies and generated files.
+Internal symlinks are fingerprinted along with their in-repository targets; external,
+broken, and Git-metadata links are refused. File patch approval fingerprints only
+the selected file and repository identity; a refusal now displays its specific
+reason instead of reporting a model configuration failure. There is no automatic provider retry: a 429 reports an
 available retry delay, stops, and requires a new request after waiting.
 
 This checkpoint can replan by selecting a different supported validation action,
@@ -113,3 +120,43 @@ Dependency versions are retained in `requirements-baseline.txt`.
 Design references: [LangGraph interrupts](https://docs.langchain.com/oss/python/langgraph/interrupts),
 [LangGraph persistence](https://docs.langchain.com/oss/python/langgraph/persistence),
 and [Groq structured outputs](https://console.groq.com/docs/structured-outputs).
+
+
+## Conversational configuration editing
+
+Chat renders readable consent prompts, findings and file diffs. `/debug` exposes
+raw state on demand. The last three user/assistant exchanges accompany follow-ups;
+`/resume ID` restores that request's saved context. Changing repositories clears
+conversation context. History is never an execution approval.
+
+`read_file` and `patch_file` support existing root configuration files: package.json,
+package-lock.json, Dockerfile, Compose YAML files, .dockerignore, .nvmrc,
+.node-version, requirements.txt and pyproject.toml. This is configuration editing,
+not arbitrary source editing or a shell. Files must be regular text under 256 KiB;
+each old/new fragment is at most 16,000 characters. A patch replaces one exact
+match, validates JSON syntax for JSON files and requires a displayed diff approval.
+Symlinked targets, hard-linked writes and detected secrets are refused. Writes use
+a project lock, a fresh content check and atomic replacement. Other editors are
+not locked. Changes remain uncommitted. Larger file content can exceed the model
+context bound; this version does not provide paginated file reading.
+
+A missing engines.node declaration is a setup-policy limitation, not proof that
+an application cannot run. Dependency engine constraints do not establish the
+project's intended support policy. Edits should explain the distinction and keep
+root package-lock metadata consistent. Each file is reviewed independently;
+multi-file edits are not an atomic transaction.
+
+Verification: offline regression coverage includes conversation follow-ups,
+readable reviews, patch approval/decline/staleness/restart and internal dependency
+symlinks. Two Groq action-selection checks verified read_file and a contextual
+patch_file selection. These do not establish end-to-end application runtime success.
+
+
+Current verification: 252 offline tests passed (`work/chat-edit/offline.json`);
+two live Groq selections passed (`work/chat-edit/live.json`). An initial test
+harness invocation from stdin failed before transport startup; the corrected
+file-backed harness performed the two live checks. The actual AgenticMarketplace
+application fingerprint passed with installed dependencies and build output
+present, taking 149.4 seconds. Full Docker reviews repeat fingerprint checks and
+can therefore be slow on large trees; scoped file edits do not scan that tree.
+No changes or Docker runtime tests were performed on that application in this pass.
