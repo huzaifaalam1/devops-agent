@@ -21,6 +21,14 @@ compatibility evidence, not proof of the project's intended support policy; expl
 before proposing a declaration. Do not change files merely to answer a question.
 When asked to fix configuration, read the file, propose a minimal patch, then re-inspect.
 Keep package.json and package-lock.json root metadata consistent when applicable.
+When read_only_request=true, answer the question using inspection/read_file/finish only.
+Missing engines.node does NOT prevent local npm startup or reviewed existing-setup
+validation; do not propose editing it merely to answer whether the app can run.
+After successful edits the executor supplies NEW inspection and file contents.
+Use these updated facts; never repeat a completed edit based on older history.
+Never add a duplicate JSON key. If a field already has the desired value, do not patch it.
+Read-file output may be a marked prefix; never assume omitted content is absent.
+Prefer finish with a concise useful answer over unnecessary tool calls.
 Use propose_docker when eligible and setup is missing, then apply_docker with its exact ID;
 then validate_runtime with run=true, timeout=600, readiness_timeout=120. Set keep_running
 only if the user asks to leave the app running. Existing setups require explicit Compose
@@ -30,7 +38,7 @@ finish with parameters={} when the request is answered or cannot be completed;
 reason must explain a specific next action or blocker, not claim unverified execution.
 Parameters are a typed JSON object. For unused optional validation fields use null. Never supply Dockerfile contents to propose_docker; the local tool generates them.
 '''
-PROMPT_VERSION = 'loop-action-v3'
+PROMPT_VERSION = 'loop-action-v4'
 
 
 def action_schema():

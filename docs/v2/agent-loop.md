@@ -160,3 +160,36 @@ application fingerprint passed with installed dependencies and build output
 present, taking 149.4 seconds. Full Docker reviews repeat fingerprint checks and
 can therefore be slow on large trees; scoped file edits do not scan that tree.
 No changes or Docker runtime tests were performed on that application in this pass.
+
+
+## Follow-up correction: repeated edits and stale findings
+
+JSON patches now reject duplicate keys (including nested keys) and non-finite
+values before approval, using the same strict parser as planning. A patch may
+repair pre-existing duplicate keys only if the complete resulting file is valid.
+After applying configuration or Docker edits, the executor refreshes repository
+findings; a configuration patch also supplies the current file text. Old inspection
+and read-file observations are removed from the next planning context. These
+refreshes count toward the action budget and are recorded with the mutation's
+ledger outcome. Failure to refresh stops the request without replaying the edit.
+
+Redundant actions receive bounded feedback to use current observations instead
+of dispatching the same action. Each such request consumes the existing failed-
+action allowance; two failures stop the request. No provider retry is introduced.
+Eligibility failure reports the actual non-deferred blockers and stops without
+spending further model calls on a generic failure. Missing engines.node remains
+a generation policy concern, not proof local startup is impossible.
+
+Common advisory openings such as "can I start" and "how do I" are guarded as
+read-only requests. This is a conservative phrase rule, not a general intent
+classifier. Direct requests such as "start the app" or "make the changes" still
+use reviewed execution. File reads show at most an explicitly marked 8,000-character
+prefix so a large npm lockfile does not consume the entire planning context;
+patch validation still checks the complete file.
+
+Retained local evidence: `work/chat-edit-followup/offline.json` and `live.json`.
+The first live attempt applied one patch but stopped on a redundant inspection;
+`live-before-recovery.json` retains that failed result. The final live run used
+three Groq calls, applied exactly one approved engine-declaration patch to a
+throwaway fixture, refreshed evidence and finished. This is not a Docker runtime
+verification or a claim of reliable behavior on all prompts.

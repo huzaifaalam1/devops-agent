@@ -265,7 +265,7 @@ def validation_result(path, compose_file=None, existing_setup=False, build=False
         blocking = [item for item in blocking if item["code"] not in template_codes]
     if (build or run) and blocking:
         result = {"success": False, "phase": "eligibility", "project": analysis["project"],
-                  "error": "Repository is not eligible for build/runtime validation."}
+                  "error": "Repository is not eligible for build/runtime validation.", "blockers": blocking}
     elif not repo_info["compose_files"]:
         result = {"success": False, "phase": "config", "error": "No Docker Compose file was found."}
     else:

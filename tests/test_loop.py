@@ -68,10 +68,10 @@ class LoopTests(unittest.TestCase):
         self.assertFalse((self.repo/'Dockerfile').exists())
 
     def test_repeated_action_stops(self):
-        loop=self.loop([action('propose_docker'),action('propose_docker')])
+        loop=self.loop([action('propose_docker'),action('propose_docker'),action('propose_docker')])
         loop.start('setup');result=loop.answer(True)
         self.assertEqual(result['state']['status'],'blocked')
-        self.assertIn('Repeated action',result['state']['message'])
+        self.assertIn('limit reached',result['state']['message'])
 
     def test_invalid_tool_never_executes(self):
         loop=self.loop([action('shell',{'command':'anything'})])
@@ -198,7 +198,7 @@ class LoopTests(unittest.TestCase):
         self.assertEqual(loop.snapshot()['state'],result['state'])
 
     def test_initial_inspection_is_not_repeated(self):
-        loop=self.loop([action('inspect_repository')])
+        loop=self.loop([action('inspect_repository'),action('inspect_repository')])
         loop.start('inspect');result=loop.answer(True)
         self.assertEqual(result['state']['status'],'blocked')
         self.assertEqual(result['state']['count'],1)
@@ -244,3 +244,57 @@ class LoopTests(unittest.TestCase):
         self.assertEqual(result['state']['history'][0]['content'],'Add a description')
         result=resumed.answer(True)
         self.assertEqual(result['state']['status'],'finished')
+
+    def test_patch_refreshes_evidence_before_next_model_call(self):
+        manifest=json.loads((self.repo/'package.json').read_text())
+        manifest.pop('engines',None)
+        before=json.dumps(manifest,indent=2)+'\n'
+        (self.repo/'package.json').write_text(before)
+        params={'path':'package.json','old_text':'{','new_text':'{\n  "engines": {"node": ">=20.9.0"},'}
+        def check(context):
+            inspections=[o for o in context['observations'] if o['tool']=='inspect_repository']
+            self.assertEqual(len(inspections),1)
+            self.assertNotIn('unknown_runtime',[b['code'] for b in inspections[0]['result']['blockers']])
+            file=[o for o in context['observations'] if o['tool']=='read_file'][-1]
+            self.assertIn('engines',file['result']['content'])
+            return action('finish')
+        # Use a unique prefix even if the fixture has nested objects.
+        params['old_text']=before
+        params['new_text']=before.replace('{','{\n  "engines": {"node": ">=20.9.0"},',1)
+        loop=self.loop([action('read_file',{'path':'package.json'}),action('patch_file',params),check])
+        loop.start('Add a Node engine declaration');loop.answer(True)
+        result=loop.answer(True)
+        self.assertEqual(result['state']['status'],'finished')
+        self.assertEqual((self.repo/'package.json').read_text().count('"engines"'),1)
+
+    def test_advice_question_cannot_mutate_even_if_model_requests_it(self):
+        loop=self.loop([action('validate_runtime',{'run':True})])
+        loop.start('can i start this repo locally?')
+        result=loop.answer(True)
+        self.assertEqual(result['state']['status'],'blocked')
+        self.assertIn('asked for advice',result['state']['message'])
+        self.assertIsNone(result.get('pending'))
+
+    def test_eligibility_failure_preserves_specific_blocker(self):
+        loop=self.loop([action('validate_runtime',{'run':True})])
+        loop.start('start the app');loop.answer(True)
+        failure={'success':False,'phase':'eligibility','error':'Not eligible',
+                 'blockers':[{'code':'lockfile_mismatch','message':'Manifest and lockfile disagree.',
+                              'next_action':'Synchronize root metadata.'}]}
+        with patch.object(loop.registry,'execute',return_value={'result':failure}):
+            result=loop.answer(True)
+        self.assertEqual(result['state']['status'],'blocked')
+        self.assertIn('Manifest and lockfile disagree',result['state']['message'])
+        self.assertEqual(result['state']['observations'][-1]['result']['blockers'],failure['blockers'])
+        self.assertEqual(result['state']['model_calls'],1)
+
+
+    def test_redundant_inspection_can_recover_without_tool_execution(self):
+        loop=self.loop([action('inspect_repository'),action('finish')])
+        loop.start('inspect')
+        with patch.object(loop.registry,'execute',wraps=loop.registry.execute) as execute:
+            result=loop.answer(True)
+        self.assertEqual(result['state']['status'],'finished')
+        self.assertEqual(result['state']['count'],1)
+        # One bounded evidence comparison; no dispatched inspection ledger entry.
+        self.assertEqual(loop.conn.execute('SELECT count(*) FROM operations').fetchone()[0],0)

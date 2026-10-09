@@ -53,3 +53,23 @@ class FileEditTests(unittest.TestCase):
     def test_invalid_or_ambiguous_patch(self):
         for old,new in [('missing','x'),('','x'),('"demo"','invalid-json')]:
             with self.assertRaises(ValueError):self.registry.review('patch_file',{**self.params,'old_text':old,'new_text':new})
+
+    def test_duplicate_json_keys_and_nonfinite_values_are_refused(self):
+        for new in ['"demo", "name":"duplicate"','NaN','{"nested":1,"nested":2}']:
+            with self.subTest(new=new),self.assertRaises(ValueError):
+                self.registry.review('patch_file',{**self.params,'new_text':new})
+        self.assertEqual(self.file.read_text(),'{"name":"demo"}\n')
+
+    def test_duplicate_repair_is_allowed_only_if_result_is_strict_json(self):
+        self.file.write_text('{"name":"demo","name":"demo"}')
+        params={'path':'package.json','old_text':',"name":"demo"','new_text':''}
+        review=self.registry.review('patch_file',params)
+        token=self.registry.approve(review['review_id'])
+        self.registry.execute('patch_file',params,approval=token)
+        self.assertEqual(self.file.read_text(),'{"name":"demo"}')
+
+    def test_large_read_is_explicitly_truncated(self):
+        self.file.write_text('{"description":"'+'a'*9000+'"}')
+        result=self.registry.execute('read_file',{'path':'package.json'})['result']
+        self.assertTrue(result['truncated'])
+        self.assertEqual(len(result['content']),8000)

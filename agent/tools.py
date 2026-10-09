@@ -205,8 +205,8 @@ class ToolRegistry:
         if name == 'inspect_repository':
             result = detect_stack(scan_repo(str(self.root)))
         elif name == 'read_file':
-            from agent.file_edits import read_config
-            result={'path':params['path'],'content':read_config(self.root,params['path'])}
+            from agent.file_edits import read_result
+            result=read_result(self.root,params['path'])
         elif name == 'patch_file':
             from agent.file_edits import apply as edit_apply
             result=edit_apply(self.root,params,record["preview"])

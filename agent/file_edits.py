@@ -20,6 +20,14 @@ def read_config(root, name):
     return text
 
 
+def read_result(root, name):
+    text=read_config(root,name)
+    # Return an explicit prefix rather than overflowing the planning context on
+    # npm lockfiles. Patches still validate the complete file on disk.
+    return {'path':name,'content':text[:8000],'truncated':len(text)>8000,
+            'notice':'Only the first 8000 characters are shown; do not infer omitted content.' if len(text)>8000 else 'Complete file.'}
+
+
 def preview(root, params):
     before=read_config(root,params['path'])
     old,new=params['old_text'],params['new_text']
@@ -29,8 +37,8 @@ def preview(root, params):
     if len(after.encode())>256*1024 or '\x00' in after or Redactor(root).clean(after)!=after:
         raise ValueError('Replacement is too large or contains sensitive or binary content.')
     if params['path'].endswith('.json'):
-        import json
-        json.loads(after)
+        from agent.planning import strict_json
+        strict_json(after)
     return {'path':params['path'],'before_sha256':hashlib.sha256(before.encode()).hexdigest(),
             'diff':''.join(difflib.unified_diff(before.splitlines(True),after.splitlines(True),
                                               fromfile=params['path'],tofile=params['path']))}

@@ -23,6 +23,7 @@ from agent.loop_model import NextActionModel, ModelUnavailable
 
 
 class State(TypedDict, total=False):
+    read_only_request: bool
     history: list
     request: str
     observations: list
@@ -49,7 +50,7 @@ def compact(tool, result):
     if isinstance(result.get('cleanup'),dict):
         result['cleanup']={k:result['cleanup'][k] for k in ['status','project','stop_command'] if k in result['cleanup']}
     return {k:result.get(k) for k in ['success','phase','error','created','updated','session_id',
-                                     'application_check','environment_state','cleanup','unverified'] if k in result}
+                                     'application_check','environment_state','cleanup','unverified','blockers'] if k in result}
 
 
 class AgentLoop:
@@ -81,7 +82,7 @@ class AgentLoop:
             graph.add_node(name,fn)
         graph.add_edge(START,'observe')
         graph.add_conditional_edges('observe',lambda s: END if s['status']!='active' else 'decide')
-        graph.add_conditional_edges('decide',lambda s: END if s['status']!='active' else ('review' if s['action']['tool'] in MUTATIONS else 'execute'))
+        graph.add_conditional_edges('decide',lambda s: 'decide' if s['status']=='retry' else (END if s['status']!='active' else ('review' if s['action']['tool'] in MUTATIONS else 'execute')))
         graph.add_conditional_edges('review',lambda s: END if s['status']!='active' else 'execute')
         graph.add_conditional_edges('execute',lambda s: END if s['status']!='active' else 'decide')
         self.graph=graph.compile(checkpointer=self.saver)
@@ -125,7 +126,7 @@ class AgentLoop:
         calls=self.conn.execute('SELECT count(*) FROM model_requests WHERE session=?',(self.thread,)).fetchone()[0]
         if state['count']>=12 or calls>=12 or state['failures']>=2:
             return self._stop('Action/request or failed-action limit reached. Review the evidence before a new request.')
-        context=self._clean({'request':state['request'],'history':state.get('history',[]),'observations':state['observations'][-6:],
+        context=self._clean({'request':state['request'],'history':state.get('history',[]),'read_only_request':state.get('read_only_request',False),'observations':state['observations'][-6:],
                             'remaining_actions':12-state['count']})
         if len(json.dumps(context))>24000:
             return self._stop('Evidence exceeds the bounded model context; select a smaller application or use the CLI.')
@@ -150,9 +151,14 @@ class AgentLoop:
             inputs(action['tool'],action['parameters'])
             if action!=self._clean(action):
                 return self._stop('Model action contains sensitive values; no execution performed.')
+            if state.get('read_only_request') and action['tool'] in MUTATIONS:
+                return self._stop('This request asked for advice, so I have not changed or run anything. Ask me to make the changes or start the app if that is what you want.')
+            if action['tool'] in {'patch_file','apply_docker'} and state['count']+3>12:
+                return self._stop('Not enough actions remain to edit and verify the updated evidence. Start a fresh request.')
             signature=self._signature(action['tool'],action['parameters'])
             if signature in state['seen']:
-                return self._stop('Repeated action on unchanged inputs refused; no redundant inspection or retry performed.')
+                return {'status':'retry','model_calls':calls+1,'failures':state['failures']+1,
+                        'observations':state['observations']+[{'tool':'agent_feedback','result':{'message':'This action already has current evidence in the observations. Do not repeat it. Use those findings to choose a different necessary action, or finish with your answer if the task is complete.'}}]}
             self.emit('Next: '+action['tool']+' — '+action['reason'])
             return {'action':action,'operation':uuid.uuid4().hex,'seen':state['seen']+[signature],
                     'model_calls':calls+1,'status':'active'}
@@ -169,8 +175,10 @@ class AgentLoop:
             if not self.pending or self.pending.get('operation')!=state['operation']:
                 review=self.registry.review(state['action']['tool'],state['action']['parameters'])
                 self.pending={'kind':'action','operation':state['operation'],'review':review}
-        except (OSError,ValueError):
-            return self._stop('Action review failed or inputs changed. Inspect the repository before requesting a fresh action.')
+        except ValueError as error:
+            return self._stop('Proposed change was refused before execution: '+str(error))
+        except OSError:
+            return self._stop('Action review could not read its inputs. No change was applied.')
         # File previews remain ephemeral; checkpoints carry only the action ID.
         interrupt({'kind':'action','tool':state['action']['tool'],'operation':state['operation']})
         if not self.grant:
@@ -196,6 +204,31 @@ class AgentLoop:
             failed=result.get('success') is False or result.get('status')=='blocked'
             update={'observations':state['observations']+[{'tool':action['tool'],'result':summary}],
                     'count':state['count']+1,'failures':state['failures']+int(failed),'status':'active'}
+            if action['tool'] in {'patch_file','apply_docker'} and not failed:
+                # Old blockers and file text must not remain in the next planning
+                # context after an edit. Verification is part of this ledger entry.
+                try:
+                    fresh=self.registry.execute('inspect_repository',{})['result']
+                    observations=[item for item in state['observations'] if item['tool'] not in {'inspect_repository','read_file'}]
+                    observations.extend([{'tool':action['tool'],'result':summary},
+                        {'tool':'inspect_repository','result':self._clean(compact('inspect_repository',fresh))}])
+                    update.update(observations=observations,count=state['count']+2)
+                    seen=list(state['seen'])
+                    seen.append(self._signature('inspect_repository',{},fresh))
+                    if action['tool']=='patch_file':
+                        params={'path':action['parameters']['path']}
+                        current=self.registry.execute('read_file',params)['result']
+                        observations.append({'tool':'read_file','result':self._clean(current)})
+                        update['count']+=1
+                        seen.append(self._signature('read_file',params,current))
+                    update['seen']=seen
+                    self.emit('Change applied. Refreshed repository findings'+(' and file contents.' if action['tool']=='patch_file' else '.'))
+                except (OSError,ValueError,TypeError):
+                    update.update(self._stop('Change applied, but refreshing the evidence failed. Inspect the file before continuing; the edit will not be replayed.'))
+            if action['tool']=='validate_runtime' and result.get('phase')=='eligibility':
+                blockers=result.get('blockers',result.get('project',{}).get('blockers',[]))
+                details=' '.join(item.get('message','')+' '+item.get('next_action','') for item in blockers)
+                update.update(self._stop('Runtime validation did not start. '+(details or result.get('error','Eligibility checks failed.'))))
             if action['tool']=='validate_runtime' and action['parameters'].get('run') and result.get('success'):
                 update.update(status='verified',message='Runtime readiness verified. Environment: '+result.get('environment_state','unknown')+'. See retained validation evidence and cleanup status.')
             if result.get('phase')=='cancelled':
@@ -242,7 +275,7 @@ class AgentLoop:
         self.provider_allowed=False
         self.conn.execute('INSERT INTO sessions VALUES (?,?,?)',(self.thread,str(self.root),json.dumps(self.registry.identity)))
         self.conn.commit()
-        return self._invoke({'request':self._clean(request),'history':self._clean((history or [])[-6:]),'observations':[],'seen':[],'count':0,
+        return self._invoke({'request':self._clean(request),'read_only_request':bool(re.match(r'^\s*(can (?:i|we|this)|how (?:do|can|would) (?:i|we)|is (?:this|it)|does (?:this|it)|would (?:this|it))\b',request,re.I)),'history':self._clean((history or [])[-6:]),'observations':[],'seen':[],'count':0,
                              'failures':0,'model_calls':0,'status':'active','message':''})
 
     def resume(self,thread):

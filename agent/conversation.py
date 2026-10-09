@@ -41,7 +41,7 @@ def run_chat(path, read, emit, resume=None):
             local.say(item['effect'])
             local.say('Repository: '+item['repository'])
             if item.get('parameters'):
-                show({k:v for k,v in item['parameters'].items() if k not in {'old_text','new_text','proposal_id'}})
+                show({k:v for k,v in item['parameters'].items() if k not in {'old_text','new_text','proposal_id','path'}})
             if item.get('preview'):show(item['preview'])
             if item.get('configuration'):show(item['configuration'])
 
