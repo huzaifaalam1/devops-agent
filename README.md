@@ -123,9 +123,11 @@ Chat supports only the current Next.js/npm execution tools; Django and AWS are
 later checkpoints. See the [agent-loop guide](docs/v2/agent-loop.md).
 
 
-### V2 Django inspection
+### V2 Django development
 
 `devops-agent analyze /path/to/django-app` and chat can now inspect a single
 Django/pip app, including Python requirements, settings candidates and database
-hints. This is inspection support; Django generation and execution remain step 6.
-See [step-5 scope and evidence](docs/v2/step5/README.md).
+hints. Eligible single Django/pip apps with disposable SQLite can now receive
+reviewed Docker setup and runtime verification on loopback port 8000. PostgreSQL
+initialization and migrations remain step 7.
+See [step-6 scope, usage and verification](docs/v2/step6/README.md).

@@ -1,0 +1,39 @@
+{
+  "checkpoint": "V2 step 6 \u2014 Django development Docker workflow",
+  "date": "2026-10-09",
+  "tests": 302,
+  "source_sha256": {
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/conversation.py": "044deeb1fd8c653e9c576f4fe1859051c0b4d6540f996e0ff15af4f60aec8a48",
+    "agent/detector.py": "56a7a1fd243b50f9955fe5aba7dc1d13212b57ef0c13357a84d68f3e4f4def96",
+    "agent/diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "agent/django_inspection.py": "69f1aba8976762cafdbdf8c934e5e4c450ffafe8b18d7531f3bedcae5df3060b",
+    "agent/django_runtime.py": "ae310fec37bba924a9e7a581a83cea61e1f43efc581f35e3c1c278b10f8fd825",
+    "agent/docker_generator.py": "a3e4faad0be9da92fdf7aadc22388cf3fac890109366cb98f952c31c4402a9d8",
+    "agent/file_edits.py": "cc061e038463a96f424e08f1da45d3a9c829a949255fa6d58830458c74ac1ffd",
+    "agent/loop.py": "645e28d0289c26f9ab5547482ee68da9b09aa567574c2d9a0496e5494231c549",
+    "agent/loop_model.py": "c87214e8019236c665c004c2c4b5b2bd414dfb9ac83ac2d98943c5ee4d4c243a",
+    "agent/main.py": "72403e3114b98bd99c784cc04c5f42c1c2490f8d61e214b3491d46474f8f545f",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/node_runtime.py": "84e9fa821bbd1c488895d2ccdc79270e74a829e43a7a4a63bd4fc9c016238893",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/repair.py": "51ee1d1d44e08e9684abd0442497d8036bc2d7cc89038ce949526d2bad2960c3",
+    "agent/runtime_control.py": "5edb2978e702972704794ab962b74d5392082fe588c03b0e1e016a419e0a936b",
+    "agent/safety.py": "df35e59a58ef22a5a2cee5bf905fd95ac2f0e26f5b8c1bdf7528280e5a307926",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/session.py": "d661b52c218750d04b1e577c02325daeff28201d7d3969e1421ed4b2ab486ae3",
+    "agent/tools.py": "969b294750aaa2a65b7e9aed1d0d233cd91b5ace0b6d4fcb9d316e2b5b010034",
+    "agent/understanding.py": "c94fe3252d0f2af3a4ec08d05615331dcac1573f9db0e44ca9e6883e26f63d89",
+    "agent/validator.py": "60a3c0858583b05d4c08b556937ebc99437d1a74d435c4fd3c7268f10c1267de"
+  },
+  "live_success": true,
+  "model_requests_final_run": 4,
+  "model_requests_first_attempt": 3,
+  "runtime_scope": "One Django/pip app; disposable default SQLite; no migrations or PostgreSQL initialization.",
+  "retained_limitations": [
+    "One extra selection attempt in final live run: existing_setup omitted compose_file; corrected after deterministic error.",
+    "First harness cleanup failed on /var versus /private/var identity; only owned test resources were subsequently removed."
+  ]
+}

@@ -1,0 +1,306 @@
+{
+  "success": true,
+  "prompt_version": "loop-action-v8",
+  "scope": "Fresh Django SQLite app; live planner, trusted test-harness reviews, generated Docker files, real build/page and scoped stop/cleanup.",
+  "source_sha256": {
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/conversation.py": "044deeb1fd8c653e9c576f4fe1859051c0b4d6540f996e0ff15af4f60aec8a48",
+    "agent/detector.py": "56a7a1fd243b50f9955fe5aba7dc1d13212b57ef0c13357a84d68f3e4f4def96",
+    "agent/diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "agent/django_inspection.py": "69f1aba8976762cafdbdf8c934e5e4c450ffafe8b18d7531f3bedcae5df3060b",
+    "agent/django_runtime.py": "ae310fec37bba924a9e7a581a83cea61e1f43efc581f35e3c1c278b10f8fd825",
+    "agent/docker_generator.py": "a3e4faad0be9da92fdf7aadc22388cf3fac890109366cb98f952c31c4402a9d8",
+    "agent/file_edits.py": "cc061e038463a96f424e08f1da45d3a9c829a949255fa6d58830458c74ac1ffd",
+    "agent/loop.py": "645e28d0289c26f9ab5547482ee68da9b09aa567574c2d9a0496e5494231c549",
+    "agent/loop_model.py": "c87214e8019236c665c004c2c4b5b2bd414dfb9ac83ac2d98943c5ee4d4c243a",
+    "agent/main.py": "72403e3114b98bd99c784cc04c5f42c1c2490f8d61e214b3491d46474f8f545f",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/node_runtime.py": "84e9fa821bbd1c488895d2ccdc79270e74a829e43a7a4a63bd4fc9c016238893",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/repair.py": "51ee1d1d44e08e9684abd0442497d8036bc2d7cc89038ce949526d2bad2960c3",
+    "agent/runtime_control.py": "5edb2978e702972704794ab962b74d5392082fe588c03b0e1e016a419e0a936b",
+    "agent/safety.py": "df35e59a58ef22a5a2cee5bf905fd95ac2f0e26f5b8c1bdf7528280e5a307926",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/session.py": "d661b52c218750d04b1e577c02325daeff28201d7d3969e1421ed4b2ab486ae3",
+    "agent/tools.py": "969b294750aaa2a65b7e9aed1d0d233cd91b5ace0b6d4fcb9d316e2b5b010034",
+    "agent/understanding.py": "c94fe3252d0f2af3a4ec08d05615331dcac1573f9db0e44ca9e6883e26f63d89",
+    "agent/validator.py": "60a3c0858583b05d4c08b556937ebc99437d1a74d435c4fd3c7268f10c1267de"
+  },
+  "approvals": [
+    {
+      "tool": "apply_docker",
+      "parameters": {
+        "proposal_id": "223e851f66a75fa10d46ebb49757ca8b05b7a88bca080e07879c271112d3b76d"
+      }
+    },
+    {
+      "tool": "validate_runtime",
+      "parameters": {
+        "existing_setup": true,
+        "build": true,
+        "run": true,
+        "keep_running": true,
+        "container_port": 8000,
+        "health_path": "/",
+        "timeout": 600,
+        "readiness_timeout": 120
+      }
+    },
+    {
+      "tool": "validate_runtime",
+      "parameters": {
+        "compose_file": "docker-compose.yml",
+        "existing_setup": true,
+        "build": true,
+        "run": true,
+        "keep_running": true,
+        "container_port": 8000,
+        "health_path": "/",
+        "timeout": 600,
+        "readiness_timeout": 120
+      }
+    }
+  ],
+  "conversation": {
+    "id": "642447aba59c437fbc8e2247e2a1a4ff",
+    "state": {
+      "read_only_request": false,
+      "history": [],
+      "request": "Set up this Django app with Docker, build it, verify its unauthenticated root page, and keep it running. Do not run migrations. Use its declared Python version and default SQLite configuration.",
+      "observations": [
+        {
+          "tool": "propose_docker",
+          "result": {
+            "status": "ready",
+            "id": "223e851f66a75fa10d46ebb49757ca8b05b7a88bca080e07879c271112d3b76d",
+            "blockers": [],
+            "preserved": []
+          }
+        },
+        {
+          "tool": "apply_docker",
+          "result": {
+            "created": [
+              "Dockerfile",
+              "docker-compose.yml",
+              ".dockerignore"
+            ],
+            "updated": [],
+            "session_id": "a4382a0707c14414babb171024d0b4dc"
+          }
+        },
+        {
+          "tool": "inspect_repository",
+          "result": {
+            "eligibility": "eligible",
+            "discovery_status": "understood",
+            "setup": "existing",
+            "findings": [
+              {
+                "name": "framework",
+                "value": "Django",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "manage.py"
+                  }
+                ]
+              },
+              {
+                "name": "django_version",
+                "value": "5.2.8",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "requirements.txt",
+                    "line": 1
+                  }
+                ]
+              },
+              {
+                "name": "dependency_manifest",
+                "value": "pip requirements.txt",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "requirements.txt"
+                  }
+                ]
+              },
+              {
+                "name": "dependency_count",
+                "value": 1,
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "requirements.txt"
+                  }
+                ]
+              },
+              {
+                "name": "python_requirement",
+                "value": "3.12",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": ".python-version"
+                  }
+                ]
+              },
+              {
+                "name": "python_django_compatibility",
+                "value": "Version combination is documented; dependency installability is unverified.",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": ".python-version"
+                  }
+                ]
+              },
+              {
+                "name": "settings_module_candidate",
+                "value": "config.settings",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "manage.py",
+                    "line": 5
+                  }
+                ]
+              },
+              {
+                "name": "settings_file",
+                "value": "config/settings.py",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "config/settings.py"
+                  }
+                ]
+              },
+              {
+                "name": "database_backend",
+                "value": "SQLite",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "config/settings.py",
+                    "line": 10
+                  }
+                ]
+              },
+              {
+                "name": "environment_variable_reference",
+                "value": "DJANGO_SECRET_KEY",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "config/settings.py",
+                    "line": 4
+                  }
+                ]
+              }
+            ],
+            "blockers": [],
+            "unknowns": [
+              "Static settings evidence does not prove effective runtime configuration; environment overrides and arbitrary Python effects are not executed.",
+              "Dependency installability, migrations, service connectivity and application health are unverified.",
+              "Compatibility is version compatibility only, not a security or lifecycle certification."
+            ]
+          }
+        },
+        {
+          "tool": "validate_runtime",
+          "result": {
+            "success": false,
+            "phase": "selection",
+            "error": "--existing-setup requires an explicit --compose-file selection."
+          }
+        },
+        {
+          "tool": "validate_runtime",
+          "result": {
+            "success": true,
+            "phase": "application",
+            "session_id": "896e67dcbd36406c97e4d02b1eaf2f69",
+            "application_check": {
+              "url": "http://127.0.0.1:8000/",
+              "reachable": true,
+              "healthy": true,
+              "status_code": 200,
+              "redirect_url": null,
+              "error": null,
+              "redirects": [],
+              "final_url": "http://127.0.0.1:8000/",
+              "success": true,
+              "container_id": "35450be693dec8f6ff8f08a1b4726aab8288fda759767702b7cb7594793d24e0"
+            },
+            "environment_state": "running",
+            "cleanup": {
+              "status": "kept_running",
+              "project": "devops-validation-6952d57d35f5",
+              "stop_command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-6952d57d35f5 -f <temporary-fixture>/app/docker-compose.yml down --volumes"
+            },
+            "unverified": [
+              "Business correctness and production readiness",
+              "Future health after validation returns"
+            ]
+          }
+        }
+      ],
+      "action": {
+        "tool": "validate_runtime",
+        "parameters": {
+          "compose_file": "docker-compose.yml",
+          "existing_setup": true,
+          "build": true,
+          "run": true,
+          "keep_running": true,
+          "container_port": 8000,
+          "health_path": "/",
+          "timeout": 600,
+          "readiness_timeout": 120
+        },
+        "reason": "Run Docker build and start the Django container using the generated compose file, verify the unauthenticated root page, and keep the container running as requested."
+      },
+      "operation": "38707c14d9484ea6ac04fda3c8d5d0cc",
+      "seen": [
+        "9ec87cbf0dd46630a0b5d03a79cfd7399a1de85c86a356616800803c5b91e3b9",
+        "5c320dda0744c7724cfa2e7052767b995977766441dda5477d4d48d235b654af",
+        "293a396c02b4097ddf23edcbfc791559299c1c803b22d65dc6b236abd69b97e2",
+        "b21d383036602985198cfe2626b67e90f5cea787d22747a918d573a23a64053a",
+        "16ebd2ef8e011c12bfe5f4804f3d6151af44d64aa2c9218c8a1638fd8caee69e",
+        "180a3632ec21bc66e0ab25edd7fe7fd5759849e2bb89f67d5e48ba7db15d6776"
+      ],
+      "count": 6,
+      "failures": 1,
+      "model_calls": 4,
+      "status": "verified",
+      "message": "Runtime readiness verified. Environment: running. See retained validation evidence and cleanup status."
+    },
+    "pending": null
+  },
+  "independent_http": {
+    "status": 200,
+    "marker": true
+  },
+  "isolation": {
+    "host_table_absent": true,
+    "dotenv_absent": true,
+    "runtime_secret_present": true,
+    "settings": "config.settings"
+  },
+  "stop": {
+    "success": true,
+    "phase": "stop",
+    "session_id": "896e67dcbd36406c97e4d02b1eaf2f69",
+    "environment_state": "stopped",
+    "notice": "Container data, volumes, networks and images are preserved."
+  },
+  "host_database_unchanged": true,
+  "resume_before_apply": true,
+  "cleanup_verified": true,
+  "unrelated_containers_preserved": true
+}

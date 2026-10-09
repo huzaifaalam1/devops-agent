@@ -17,7 +17,7 @@ BACKENDS={'django.db.backends.sqlite3':'SQLite','django.db.backends.postgresql':
 
 
 def inspect_django_project(info):
-    root=Path(info['path']).resolve();findings=[];issues=[];unknowns=[];requirements={}
+    root=Path(info['path']).resolve();findings=[];issues=[];unknowns=[];requirements={};inspected=set()
     candidates=[str(Path(c['path']).relative_to(root)) for c in info.get('components',[])]
     def fact(name,value,path,line=None,certainty='confirmed'):
         source={'path':path}
@@ -27,6 +27,7 @@ def inspect_django_project(info):
         issues.append({'code':code,'message':message,'evidence':[{'path':path}],
                        'next_action':message,'needs_input':needs_input})
     def read(name):
+        inspected.add(name)
         try:
             target=root/name
             if not target.is_file() or target.is_symlink() or any(p.is_symlink() for p in target.parents if p!=root and p.is_relative_to(root)):
@@ -197,13 +198,17 @@ def inspect_django_project(info):
                     if isinstance(node,ast.Subscript) and ast.unparse(node.value)=='os.environ' and isinstance(node.slice,ast.Constant) and isinstance(node.slice.value,str) and re.fullmatch('[A-Z_][A-Z0-9_]*',node.slice.value):
                         fact('environment_variable_reference',node.slice.value,filename,node.lineno,'inferred')
     discovery='understood' if not issues else 'needs_input'
-    blockers=issues+[{'code':'django_execution_not_enabled','message':'Django inspection is available; setup and execution are step 6.',
-                     'evidence':[{'path':'.'}],'next_action':'Review these findings; Django generation and runtime execution remain disabled.', 'needs_input':False}]
+    blockers=list(issues)
     unknowns.extend(['Static settings evidence does not prove effective runtime configuration; environment overrides and arbitrary Python effects are not executed.',
                      'Dependency installability, migrations, service connectivity and application health are unverified.',
                      'Compatibility is version compatibility only, not a security or lifecycle certification.'])
-    return {'framework':'Django','eligibility':'blocked','discovery_status':discovery,'findings':findings,'blockers':blockers,
+    result={'framework':'Django','eligibility':'blocked','discovery_status':discovery,'findings':findings,'blockers':blockers,
             'assumptions':[],'unknowns':unknowns,'application_candidates':candidates,
-            'setup':'existing' if info['dockerfiles'] or info['compose_files'] else 'none','startup_command':None,
+            'setup':('ambiguous' if (len(info['dockerfiles'])>1 or len(info['compose_files'])>1) and not info.get('selected_compose_file') else 'existing' if info['dockerfiles'] and info['compose_files'] else 'partial' if info['dockerfiles'] or info['compose_files'] else 'none'),'startup_command':'python manage.py runserver 0.0.0.0:8000 --noreload',
             'startup_candidate':'python manage.py runserver','python_version':selected,'settings_module':module,
-            'services':sorted(set(services)),'scope':'Static Django/pip inspection only; execution is disabled.'}
+            'services':sorted(set(services)),'scope':'Reviewed local Django/pip development with disposable SQLite; no migrations or production support.',
+            'inspected_files':sorted(inspected)}
+    from agent.django_runtime import runtime_policy
+    result['blockers'].extend(runtime_policy(root,result,info))
+    result['eligibility']='eligible' if not result['blockers'] else 'blocked'
+    return result

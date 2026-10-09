@@ -77,25 +77,35 @@ def propose_docker_files(path):
                         notes=["Existing setup is preserved. Configuration and runtime compatibility remain unverified."])
         return proposal
 
-    if (root / ".npmrc").exists():
-        proposal["blockers"].append({"code": "npm_configuration", "message": "Custom .npmrc configuration needs review before generating an npm ci image.", "next_action": "Resolve custom registry/install requirements; .npmrc will not be copied automatically."})
-        return proposal
-    mounts = []
-    for filename in ENV_FILES:
-        if (root / filename).exists():
-            # Inspection verifies readability and containment. Never embed values.
-            read_text(root, filename)
-            mounts.append(filename)
-    compose = development_compose(mounts)
-    expected = {
-        "Dockerfile": (DOCKERFILE.format(node_version=project["node_version"]), f"Use Node {project['node_version']} inferred from repository requirements, install the reviewed npm lockfile with npm ci, and run the declared dev script."),
-        "docker-compose.yml": (compose, "Expose the single app on loopback port 3000; mount existing development dotenv files read-only for Next.js to load." if mounts else "Expose the single app on loopback port 3000. No environment file is required."),
-    }
+    django = project.get('framework') == 'Django'
+    if django:
+        from agent.django_runtime import files
+        if (root/'.env').exists():read_text(root,'.env')
+        expected=files(project,env_file=(root/'.env').exists())
+    else:
+        if (root / ".npmrc").exists():
+            proposal["blockers"].append({"code": "npm_configuration", "message": "Custom .npmrc configuration needs review before generating an npm ci image.", "next_action": "Resolve custom registry/install requirements; .npmrc will not be copied automatically."})
+            return proposal
+        mounts = []
+        for filename in ENV_FILES:
+            if (root / filename).exists():
+                # Inspection verifies readability and containment. Never embed values.
+                read_text(root, filename)
+                mounts.append(filename)
+        compose = development_compose(mounts)
+        expected = {
+            "Dockerfile": (DOCKERFILE.format(node_version=project["node_version"]), f"Use Node {project['node_version']} inferred from repository requirements, install the reviewed npm lockfile with npm ci, and run the declared dev script."),
+            "docker-compose.yml": (compose, "Expose the single app on loopback port 3000; mount existing development dotenv files read-only for Next.js to load." if mounts else "Expose the single app on loopback port 3000. No environment file is required."),
+        }
     ignore = root / ".dockerignore"
     before_ignore = read_text(root, ".dockerignore") if ignore.exists() else ""
+    rules=IGNORE_RULES
+    if django:
+        from agent.django_runtime import IGNORE
+        rules += IGNORE
     ignore_content = before_ignore
-    if not before_ignore.endswith(IGNORE_RULES):
-        ignore_content = before_ignore + ("\n" if before_ignore and not before_ignore.endswith("\n") else "") + IGNORE_RULES
+    if not before_ignore.endswith(rules):
+        ignore_content = before_ignore + ("\n" if before_ignore and not before_ignore.endswith("\n") else "") + rules
     expected[".dockerignore"] = (ignore_content, "Keep host dependencies and dotenv files out of the image; preserve existing rules and append exclusions last.")
 
     for filename, (content, reason) in expected.items():
@@ -120,6 +130,10 @@ def propose_docker_files(path):
                            "Environment values are never included in this proposal or baked into the image."])
     inputs = ("package.json", "package-lock.json", ".nvmrc", ".node-version",
               "next.config.js", "next.config.mjs", "next.config.ts", ".env.example", *ENV_FILES)
+    if django:
+        inputs=tuple(sorted(set(project['inspected_files']) | {'.env','.python-version','runtime.txt','pyproject.toml'}))
+        proposal['notes'].extend(['SQLite files and dotenv files are excluded from the image. No host database is mounted.',
+                                  'No migrations are run. Select an unauthenticated readiness path; page readiness does not verify database business operations.'])
     combined = hashlib.sha256()
     for filename in inputs:
         file = root / filename

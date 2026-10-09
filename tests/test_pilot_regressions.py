@@ -31,7 +31,7 @@ class PilotRegressions(unittest.TestCase):
             self.assertEqual(result['project']['eligibility'], 'blocked')
             codes=[b['code'] for b in result['project']['blockers']]
             if name=='django':
-                self.assertIn('django_execution_not_enabled',codes)
+                self.assertIn('django_database_scope',codes)
                 self.assertIn('python_selection',codes)
             else:self.assertEqual(codes,['unsupported_framework'])
             guidance = ' '.join(result['recommendations'])

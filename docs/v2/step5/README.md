@@ -1,5 +1,8 @@
 # V2 step 5: Django repository understanding
 
+Historical checkpoint: current Django execution support is documented in
+[step 6](../step6/README.md). The disabled execution gate below describes step 5.
+
 Complete for the bounded Django/pip inspection contract. CLI `analyze`, offline
 chat `/inspect`, and the model's inspection tool now return Django-specific facts,
 source locations and blockers. A clear discovery has `discovery_status: understood`

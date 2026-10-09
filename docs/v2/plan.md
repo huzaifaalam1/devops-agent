@@ -1,6 +1,6 @@
 # V2 plan and scope contract
 
-Status: steps 1–5 complete. [Django discovery evidence](step5/README.md) is retained. The [persistent agent loop](agent-loop.md) connects terminal requests to the [structured tool boundary](tools.md). Broader model-quality evaluation remains step 8; Django execution and AWS are not yet implemented.
+Status: steps 1–6 complete. [Django runtime evidence](step6/README.md) is retained. [Django discovery evidence](step5/README.md) is retained. The [persistent agent loop](agent-loop.md) connects terminal requests to the [structured tool boundary](tools.md). Broader model-quality evaluation remains step 8; PostgreSQL initialization/migrations and AWS remain later steps.
 Baseline: v1 commit `4a5afdb` (`Finalize v1 support contract and verify end-to-end startup`).
 This document records the agreed v2 direction and concrete implementation defaults;
 it does not expand the current [v1 support contract](../product-scope.md).
@@ -146,4 +146,13 @@ Django discovery is integrated into CLI and chat inspection. See the
 live model cases and a disposable real Docker fixture whose effective runtime
 matched static findings. The earlier prototype was consolidated into the bounded
 production inspector. Source-code inspection never executes repository code.
-Django generation and execution remain explicitly gated for step 6.
+At step 5 Django generation/execution remained gated. Step 6 now enables the bounded SQLite workflow; see its verification report.
+
+
+### Step 6 complete
+
+Reviewed Django/Python Docker generation and runtime validation are available for
+single pip apps with disposable SQLite. 302 offline tests and the live generated
+Docker workflow passed, including pause/resume, independent HTTP content, host
+SQLite/dotenv exclusion, reviewed stop and scoped cleanup. PostgreSQL and migrations
+remain step 7. See [step-6 scope and retained evidence](step6/README.md).

@@ -219,3 +219,12 @@ Verification evidence is in `work/runtime-stop/`: offline regression coverage,
 a real Docker start/review/stop test with unrelated-container preservation, and
 a single live Groq stop-action selection check. The real test uses a disposable
 Node container and cleans up only its own resources afterward.
+
+
+## Step 6: Django execution
+
+The same propose/apply/validate tools now support eligible Django/pip applications
+with a declared compatible Python version, explicit settings and disposable
+SQLite. Python templates use port 8000; no Node migration is proposed. See the
+[step-6 contract and verification](step6/README.md). Postgres and migrations remain
+outside this checkpoint. Earlier checkpoint descriptions above are historical.

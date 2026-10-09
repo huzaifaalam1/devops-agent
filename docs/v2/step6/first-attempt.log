@@ -1,0 +1,26 @@
+Inspecting repository evidence...
+Selecting the next action...
+Next: propose_docker — Generate a Docker setup for the inspected Django project (Python 3.12, default SQLite) using the built-in Python/Django template. This will create the necessary Dockerfile and optional compose configuration to later build, run, and keep the app running.
+Executing propose_docker...
+Selecting the next action...
+Next: apply_docker — Apply the generated Docker configuration so we can build and run the Django app before validating its root page.
+Executing apply_docker...
+Change applied. Refreshed repository findings.
+Selecting the next action...
+Next: validate_runtime — Validate the Docker setup by building and running the Django app, checking the root page, and keeping the container running as requested.
+Executing validate_runtime...
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "<repo>/tests/django_step6_smoke.py", line 91, in <module>
+    if __name__=='__main__':raise SystemExit(main())
+                                             ^^^^^^
+  File "<repo>/tests/django_step6_smoke.py", line 80, in main
+    owned=snapshot(repo,runtime['session_id']);project=owned['project']
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<repo>/agent/runtime_control.py", line 38, in snapshot
+    record=evidence(root,session)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "<repo>/agent/runtime_control.py", line 19, in evidence
+    raise ValueError('Select a successful run for this repository.')
+ValueError: Select a successful run for this repository.

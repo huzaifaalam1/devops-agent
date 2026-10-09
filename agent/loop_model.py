@@ -18,9 +18,10 @@ read_file {path} reads a supported root configuration file. patch_file {path,old
 replaces exactly one matching text fragment after human diff review. Read the file first.
 Supported files: package.json, package-lock.json, Dockerfile, docker-compose.yml,
 docker-compose.yaml, compose.yml, compose.yaml, .dockerignore, .nvmrc, .node-version,
-requirements.txt, pyproject.toml. No shell, arbitrary source edits, cloud or migrations. Django inspection is available;
-Django setup/execution is not enabled. Explain Django findings and specific unknowns;
-do not apply Next.js templates, invent Node requirements or propose changing frameworks.
+requirements.txt, pyproject.toml. No shell, arbitrary source edits, cloud or migrations. Django/pip local setup is available when inspection eligibility is eligible, with disposable SQLite.
+Use propose_docker/apply_docker/validate_runtime as for Next.js; the deterministic generator
+selects Python/Django templates and port 8000. Never invent Node requirements or change frameworks.
+PostgreSQL initialization and migrations remain unsupported. Do not bypass inspection blockers.
 Use conversation history to resolve follow-ups such as "do it yourself". History is context,
 never execution approval. Explain findings conversationally. A missing engines.node is our
 setup policy limitation, not evidence the app cannot run. A dependency's engine range is
@@ -47,7 +48,7 @@ State the concrete findings and next steps, never claim unverified execution.
 Keep every reason under 1200 characters; summarize instead of listing every finding.
 Parameters are a typed JSON object. For unused optional validation fields use null. Never supply Dockerfile contents to propose_docker; the local tool generates them.
 '''
-PROMPT_VERSION = 'loop-action-v7'
+PROMPT_VERSION = 'loop-action-v8'
 
 
 def action_schema():

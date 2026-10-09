@@ -17,18 +17,18 @@ class DjangoProjectTests(unittest.TestCase):
         self.root=Path(self.tmp.name)/'app';shutil.copytree(FIXTURE,self.root)
     def project(self):return detect_stack(scan_repo(str(self.root)))['project']
     def codes(self):return {x['code'] for x in self.project()['blockers']}
-    def test_clear_discovery_never_enables_generation(self):
+    def test_clear_discovery_enables_reviewed_sqlite_generation(self):
         p=self.project()
-        self.assertEqual(p['discovery_status'],'understood');self.assertEqual(p['eligibility'],'blocked')
+        self.assertEqual(p['discovery_status'],'understood');self.assertEqual(p['eligibility'],'eligible')
         self.assertEqual(p['python_version'],'3.12');self.assertEqual(p['services'],['SQLite'])
         self.assertEqual(p['settings_module'],'config.settings')
-        self.assertEqual(self.codes(),{'django_execution_not_enabled'})
-        self.assertEqual(propose_docker_files(self.root)['status'],'blocked')
+        self.assertEqual(self.codes(),set())
+        self.assertEqual(propose_docker_files(self.root)['status'],'ready')
         self.assertFalse((self.root/'Dockerfile').exists())
     def test_cli_exposes_django_instead_of_nextjs_error(self):
         result=CliRunner().invoke(app,['analyze',str(self.root),'--json'])
         self.assertNotIn('No declared Next.js',result.output)
-        self.assertIn('django_execution_not_enabled',result.output)
+        self.assertEqual(json.loads(result.output)['analysis']['project']['eligibility'],'eligible')
     def test_local_requirements_include(self):
         (self.root/'requirements').mkdir();(self.root/'requirements/base.txt').write_text('Django==5.2.8\n')
         (self.root/'requirements.txt').write_text('-r requirements/base.txt\n')

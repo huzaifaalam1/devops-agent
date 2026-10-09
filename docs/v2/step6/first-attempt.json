@@ -1,0 +1,6 @@
+{
+  "status": "harness_cleanup_failed",
+  "project": "devops-validation-0e1ab6017c42",
+  "evidence": "Log reached validation; owned container was found stopped. Harness rejected noncanonical temporary root during cleanup and did not save earlier check results. No full pass claimed.",
+  "cleanup": "Exact test container, network and generated image subsequently removed; unrelated projects not touched."
+}
