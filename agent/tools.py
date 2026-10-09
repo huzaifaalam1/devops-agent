@@ -15,6 +15,8 @@ from agent.safety import Redactor
 
 SCHEMAS = {
     'inspect_repository': {},
+    'runtime_status': {},
+    'stop_runtime': {'session_id':'string'},
     'read_file': {'path':'string'},
     'patch_file': {'path':'string','old_text':'string','new_text':'string'},
     'propose_docker': {},
@@ -24,7 +26,7 @@ SCHEMAS = {
                          'service': 'string', 'container_port': 'integer',
                          'health_path': 'string', 'timeout': 'integer', 'readiness_timeout': 'integer'},
 }
-MUTATIONS = {'apply_docker', 'validate_runtime', 'patch_file'}
+MUTATIONS = {'apply_docker', 'validate_runtime', 'patch_file', 'stop_runtime'}
 IGNORED = {'.git'}
 
 
@@ -44,6 +46,10 @@ def inputs(name, params):
             raise ToolRefused('Parameter type does not match the tool schema.')
         if isinstance(value, str) and key not in {'old_text','new_text'} and (not value or len(value) > 512 or any(ord(c) < 32 for c in value)):
             raise ToolRefused('Invalid string parameter.')
+    if name=='stop_runtime':
+        import re
+        if set(params)!={'session_id'} or not re.fullmatch('[a-f0-9]{32}',params['session_id']):
+            raise ToolRefused('A retained runtime session ID is required.')
     if name in {'read_file','patch_file'}:
         from agent.file_edits import ALLOWED
         if set(params)!=set(schema) or params['path'] not in ALLOWED:
@@ -83,7 +89,7 @@ class ToolRegistry:
 
     def schemas(self):
         return {name: {'type': 'object', 'properties': {key: {'type': kind} for key, kind in props.items()},
-                       'additionalProperties': False, 'required': list(props) if name in {'apply_docker','read_file','patch_file'} else [],
+                       'additionalProperties': False, 'required': list(props) if name in {'apply_docker','read_file','patch_file','stop_runtime'} else [],
                        'requires_review': name in MUTATIONS}
                 for name, props in SCHEMAS.items()}
 
@@ -135,6 +141,10 @@ class ToolRegistry:
         return digest.hexdigest()
 
     def action_fingerprint(self, name, params):
+        if name=='stop_runtime':
+            from agent.runtime_control import fingerprint
+            self._scope()
+            return fingerprint(self.root,params['session_id'])
         if name=='patch_file':
             from agent.file_edits import read_config
             self._scope()
@@ -156,6 +166,9 @@ class ToolRegistry:
         if name == 'patch_file':
             from agent.file_edits import preview as edit_preview
             preview=edit_preview(self.root,params)
+        if name=='stop_runtime':
+            from agent.runtime_control import snapshot
+            preview=snapshot(self.root,params['session_id'])
         configuration = {}
         if name == 'validate_runtime':
             from agent.main import choose_compose_file
@@ -175,7 +188,7 @@ class ToolRegistry:
         self._reviews[review_id] = record
         return Redactor(self.root).clean({'review_id': review_id, 'tool': name, 'parameters': params,
             'repository': str(self.root), 'preview': preview, 'configuration': configuration,
-            'effect': 'Apply the displayed file diff.' if name in {'apply_docker','patch_file'} else
+            'effect': 'Stop only the listed agent-owned containers; preserve volumes and data.' if name=='stop_runtime' else 'Apply the displayed file diff.' if name in {'apply_docker','patch_file'} else
                       'Resolve Compose; requested builds/run may execute repository code and use network. Cleanup is scoped; keep_running retains successful services.'})
 
     def approve(self, review_id):
@@ -204,6 +217,12 @@ class ToolRegistry:
         redactor = Redactor(self.root)
         if name == 'inspect_repository':
             result = detect_stack(scan_repo(str(self.root)))
+        elif name == 'runtime_status':
+            from agent.runtime_control import status
+            result=status(self.root)
+        elif name == 'stop_runtime':
+            from agent.runtime_control import stop
+            result=stop(self.root,params['session_id'],record['preview'])
         elif name == 'read_file':
             from agent.file_edits import read_result
             result=read_result(self.root,params['path'])

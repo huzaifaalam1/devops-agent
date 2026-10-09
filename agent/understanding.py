@@ -66,6 +66,10 @@ def dependencies(package):
 
 def inspect_project(repo_info):
     root = Path(repo_info["path"])
+    if any(name in repo_info['found_files'] for name in ('manage.py','requirements.txt')):
+        from agent.django_inspection import inspect_django_project
+        django=inspect_django_project(repo_info)
+        if django is not None:return django
     findings, blockers, assumptions, unknowns = [], [], [], []
     def fact(name, value, source, field=None, certainty="confirmed"):
         evidence = {"path": source}

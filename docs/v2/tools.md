@@ -6,6 +6,8 @@ The [step-4 loop](agent-loop.md) now connects this boundary to terminal reviews.
 
 | Tool | Effect | Authorization |
 | --- | --- | --- |
+| runtime_status | Live state of journaled containers | Read-only Docker queries |
+| stop_runtime | Stop exact retained container IDs, preserving data | Trusted UI approval of runtime snapshot |
 | inspect_repository | Static repository findings | Automatic within selected root |
 | read_file | Read supported root configuration text | Automatic within selected root |
 | patch_file | Apply one exact text replacement | Trusted UI approval of displayed diff |

@@ -1,0 +1,242 @@
+{
+  "whole_repo": {
+    "eligibility": "blocked",
+    "findings": [
+      {
+        "name": "existing_infrastructure",
+        "value": "Present; compatibility unverified",
+        "certainty": "confirmed",
+        "evidence": [
+          {
+            "path": "docker-compose.yml"
+          }
+        ]
+      }
+    ],
+    "blockers": [
+      {
+        "code": "application_selection",
+        "message": "Additional application directories were found.",
+        "evidence": [
+          {
+            "path": "."
+          }
+        ],
+        "next_action": "Which application should be inspected? Run the command with one of: backend, frontend",
+        "needs_input": true
+      },
+      {
+        "code": "unsupported_framework",
+        "message": "No declared Next.js dependency was found.",
+        "evidence": [
+          {
+            "path": "package.json"
+          }
+        ],
+        "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+        "needs_input": false
+      }
+    ],
+    "assumptions": [
+      "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+    ],
+    "unknowns": [
+      "Framework-specific prerequisites and runtime readiness have not been evaluated."
+    ],
+    "application_candidates": [
+      "backend",
+      "frontend"
+    ],
+    "setup": "unverified",
+    "startup_command": null,
+    "services": [],
+    "scope": "Analysis only; preserve the existing framework. Automated setup and runtime validation are unsupported."
+  },
+  "django_component": {
+    "framework": "Django",
+    "eligibility": "blocked",
+    "discovery_status": "needs_input",
+    "findings": [
+      {
+        "name": "framework",
+        "value": "Django",
+        "certainty": "inferred",
+        "evidence": [
+          {
+            "path": "manage.py"
+          }
+        ]
+      },
+      {
+        "name": "dependency_manifest",
+        "value": "pip requirements.txt",
+        "certainty": "confirmed",
+        "evidence": [
+          {
+            "path": "requirements.txt"
+          }
+        ]
+      },
+      {
+        "name": "dependency_count",
+        "value": 0,
+        "certainty": "confirmed",
+        "evidence": [
+          {
+            "path": "requirements.txt"
+          }
+        ]
+      },
+      {
+        "name": "settings_module_candidate",
+        "value": "config.settings.dev",
+        "certainty": "inferred",
+        "evidence": [
+          {
+            "path": "manage.py",
+            "line": 9
+          }
+        ]
+      },
+      {
+        "name": "settings_file",
+        "value": "config/settings/dev.py",
+        "certainty": "confirmed",
+        "evidence": [
+          {
+            "path": "config/settings/dev.py"
+          }
+        ]
+      }
+    ],
+    "blockers": [
+      {
+        "code": "dependency_pin",
+        "message": "Pin a stable explicit version for each dependency in this bounded workflow.",
+        "evidence": [
+          {
+            "path": "requirements.txt"
+          }
+        ],
+        "next_action": "Pin a stable explicit version for each dependency in this bounded workflow.",
+        "needs_input": true
+      },
+      {
+        "code": "dependency_pin",
+        "message": "Pin a stable explicit version for each dependency in this bounded workflow.",
+        "evidence": [
+          {
+            "path": "requirements.txt"
+          }
+        ],
+        "next_action": "Pin a stable explicit version for each dependency in this bounded workflow.",
+        "needs_input": true
+      },
+      {
+        "code": "dependency_pin",
+        "message": "Pin a stable explicit version for each dependency in this bounded workflow.",
+        "evidence": [
+          {
+            "path": "requirements.txt"
+          }
+        ],
+        "next_action": "Pin a stable explicit version for each dependency in this bounded workflow.",
+        "needs_input": true
+      },
+      {
+        "code": "dependency_pin",
+        "message": "Pin a stable explicit version for each dependency in this bounded workflow.",
+        "evidence": [
+          {
+            "path": "requirements.txt"
+          }
+        ],
+        "next_action": "Pin a stable explicit version for each dependency in this bounded workflow.",
+        "needs_input": true
+      },
+      {
+        "code": "dependency_pin",
+        "message": "Pin a stable explicit version for each dependency in this bounded workflow.",
+        "evidence": [
+          {
+            "path": "requirements.txt"
+          }
+        ],
+        "next_action": "Pin a stable explicit version for each dependency in this bounded workflow.",
+        "needs_input": true
+      },
+      {
+        "code": "django_requirement",
+        "message": "Declare an explicit stable Django pin in the inspected requirements.",
+        "evidence": [
+          {
+            "path": "requirements.txt"
+          }
+        ],
+        "next_action": "Declare an explicit stable Django pin in the inspected requirements.",
+        "needs_input": true
+      },
+      {
+        "code": "python_selection",
+        "message": "Declare the intended Python version in .python-version or runtime.txt.",
+        "evidence": [
+          {
+            "path": ".python-version"
+          }
+        ],
+        "next_action": "Declare the intended Python version in .python-version or runtime.txt.",
+        "needs_input": true
+      },
+      {
+        "code": "database_dynamic",
+        "message": "Review computed, conditional, missing or multiple DATABASES assignments.",
+        "evidence": [
+          {
+            "path": "config/settings/dev.py"
+          }
+        ],
+        "next_action": "Review computed, conditional, missing or multiple DATABASES assignments.",
+        "needs_input": true
+      },
+      {
+        "code": "settings_import",
+        "message": "Imported settings require review; imports are never executed.",
+        "evidence": [
+          {
+            "path": "config/settings/dev.py"
+          }
+        ],
+        "next_action": "Imported settings require review; imports are never executed.",
+        "needs_input": true
+      },
+      {
+        "code": "django_execution_not_enabled",
+        "message": "Django inspection is available; setup and execution are step 6.",
+        "evidence": [
+          {
+            "path": "."
+          }
+        ],
+        "next_action": "Review these findings; Django generation and runtime execution remain disabled.",
+        "needs_input": false
+      }
+    ],
+    "assumptions": [
+      "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+    ],
+    "unknowns": [
+      "Static settings evidence does not prove effective runtime configuration; environment overrides and arbitrary Python effects are not executed.",
+      "Dependency installability, migrations, service connectivity and application health are unverified.",
+      "Compatibility is version compatibility only, not a security or lifecycle certification."
+    ],
+    "application_candidates": [],
+    "setup": "existing",
+    "startup_command": null,
+    "startup_candidate": "python manage.py runserver",
+    "python_version": null,
+    "settings_module": "config.settings.dev",
+    "services": [],
+    "scope": "Static Django/pip inspection only; execution is disabled."
+  },
+  "git_status": ""
+}

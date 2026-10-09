@@ -30,7 +30,7 @@ class ToolTests(unittest.TestCase):
 
     def test_schema_has_no_shell_paths_or_approval_tool(self):
         schemas = self.registry.schemas()
-        self.assertEqual(set(schemas), {'inspect_repository','propose_docker','apply_docker','validate_runtime','read_file','patch_file'})
+        self.assertEqual(set(schemas), {'inspect_repository','propose_docker','apply_docker','validate_runtime','read_file','patch_file','runtime_status','stop_runtime'})
         for schema in schemas.values():
             self.assertFalse(schema['additionalProperties'])
             self.assertNotIn('approval', schema['properties'])

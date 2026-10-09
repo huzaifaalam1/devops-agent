@@ -1,0 +1,541 @@
+{
+  "scope": "Django discovery acceptance. Docker uses an explicitly authored test harness, not product Django setup support.",
+  "prompt_version": "loop-action-v6",
+  "source_sha256": {
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/conversation.py": "044deeb1fd8c653e9c576f4fe1859051c0b4d6540f996e0ff15af4f60aec8a48",
+    "agent/detector.py": "e869fba75bd2774d91976465fbd44f2b613934795bc2e6ec55d8122d0a794006",
+    "agent/diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "agent/django_inspection.py": "585fb3a5a731549397efb9405eb017feff4871bdd72c891d984f47b0b408b790",
+    "agent/django_project.py": "6a21a8194dce284edc71ce2b7ac9a0556394f15962452314c42ac21824de2074",
+    "agent/docker_generator.py": "6d7c8d281054a23559b584ab5f281b81690e53f5448abbb320aff9c2d799203a",
+    "agent/file_edits.py": "cc061e038463a96f424e08f1da45d3a9c829a949255fa6d58830458c74ac1ffd",
+    "agent/loop.py": "645e28d0289c26f9ab5547482ee68da9b09aa567574c2d9a0496e5494231c549",
+    "agent/loop_model.py": "476628d7702166eb5fa208aad9a1043aa69aafd9c6cef5810add6fd89123a836",
+    "agent/main.py": "72403e3114b98bd99c784cc04c5f42c1c2490f8d61e214b3491d46474f8f545f",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/node_runtime.py": "84e9fa821bbd1c488895d2ccdc79270e74a829e43a7a4a63bd4fc9c016238893",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/repair.py": "51ee1d1d44e08e9684abd0442497d8036bc2d7cc89038ce949526d2bad2960c3",
+    "agent/runtime_control.py": "5edb2978e702972704794ab962b74d5392082fe588c03b0e1e016a419e0a936b",
+    "agent/safety.py": "df35e59a58ef22a5a2cee5bf905fd95ac2f0e26f5b8c1bdf7528280e5a307926",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/session.py": "d661b52c218750d04b1e577c02325daeff28201d7d3969e1421ed4b2ab486ae3",
+    "agent/tools.py": "969b294750aaa2a65b7e9aed1d0d233cd91b5ace0b6d4fcb9d316e2b5b010034",
+    "agent/understanding.py": "acaa6af93fcd676634e4bc00f84e85c1b0986b2ee2f6d75e0d913709afb0695e",
+    "agent/validator.py": "60a3c0858583b05d4c08b556937ebc99437d1a74d435c4fd3c7268f10c1267de"
+  },
+  "frozen_cases": {
+    "clear": {
+      "inspection": {
+        "framework": "Django",
+        "eligibility": "blocked",
+        "discovery_status": "understood",
+        "findings": [
+          {
+            "name": "framework",
+            "value": "Django",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "manage.py"
+              }
+            ]
+          },
+          {
+            "name": "django_version",
+            "value": "5.2.8",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt",
+                "line": 1
+              }
+            ]
+          },
+          {
+            "name": "dependency_manifest",
+            "value": "pip requirements.txt",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt"
+              }
+            ]
+          },
+          {
+            "name": "dependency_count",
+            "value": 1,
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt"
+              }
+            ]
+          },
+          {
+            "name": "python_requirement",
+            "value": "3.12",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": ".python-version"
+              }
+            ]
+          },
+          {
+            "name": "python_django_compatibility",
+            "value": "Version combination is documented; dependency installability is unverified.",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": ".python-version"
+              }
+            ]
+          },
+          {
+            "name": "settings_module_candidate",
+            "value": "config.settings",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "manage.py",
+                "line": 5
+              }
+            ]
+          },
+          {
+            "name": "settings_file",
+            "value": "config/settings.py",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "config/settings.py"
+              }
+            ]
+          },
+          {
+            "name": "database_backend",
+            "value": "SQLite",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "config/settings.py",
+                "line": 7
+              }
+            ]
+          }
+        ],
+        "blockers": [
+          {
+            "code": "django_execution_not_enabled",
+            "message": "Django inspection is available; setup and execution are step 6.",
+            "evidence": [
+              {
+                "path": "."
+              }
+            ],
+            "next_action": "Review these findings; Django generation and runtime execution remain disabled.",
+            "needs_input": false
+          }
+        ],
+        "assumptions": [
+          "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+        ],
+        "unknowns": [
+          "Static settings evidence does not prove effective runtime configuration; environment overrides and arbitrary Python effects are not executed.",
+          "Dependency installability, migrations, service connectivity and application health are unverified.",
+          "Compatibility is version compatibility only, not a security or lifecycle certification."
+        ],
+        "application_candidates": [],
+        "setup": "none",
+        "startup_command": null,
+        "startup_candidate": "python manage.py runserver",
+        "python_version": "3.12",
+        "settings_module": "config.settings",
+        "services": [
+          "SQLite"
+        ],
+        "scope": "Static Django/pip inspection only; execution is disabled."
+      }
+    },
+    "ambiguous": {
+      "inspection": {
+        "framework": "Django",
+        "eligibility": "blocked",
+        "discovery_status": "needs_input",
+        "findings": [
+          {
+            "name": "framework",
+            "value": "Django",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "manage.py"
+              }
+            ]
+          },
+          {
+            "name": "django_version",
+            "value": "5.2.8",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt",
+                "line": 1
+              }
+            ]
+          },
+          {
+            "name": "dependency_manifest",
+            "value": "pip requirements.txt",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt"
+              }
+            ]
+          },
+          {
+            "name": "dependency_count",
+            "value": 1,
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt"
+              }
+            ]
+          },
+          {
+            "name": "python_requirement",
+            "value": "3.12",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": ".python-version"
+              }
+            ]
+          },
+          {
+            "name": "python_requirement",
+            "value": "3.10",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "runtime.txt"
+              }
+            ]
+          },
+          {
+            "name": "settings_module_candidate",
+            "value": "config.settings",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "manage.py",
+                "line": 5
+              }
+            ]
+          },
+          {
+            "name": "settings_file",
+            "value": "config/settings.py",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "config/settings.py"
+              }
+            ]
+          }
+        ],
+        "blockers": [
+          {
+            "code": "python_conflict",
+            "message": "Resolve conflicting Python version declarations.",
+            "evidence": [
+              {
+                "path": "."
+              }
+            ],
+            "next_action": "Resolve conflicting Python version declarations.",
+            "needs_input": true
+          },
+          {
+            "code": "database_dynamic",
+            "message": "Review computed, conditional, missing or multiple DATABASES assignments.",
+            "evidence": [
+              {
+                "path": "config/settings.py"
+              }
+            ],
+            "next_action": "Review computed, conditional, missing or multiple DATABASES assignments.",
+            "needs_input": true
+          },
+          {
+            "code": "settings_import",
+            "message": "Imported settings require review; imports are never executed.",
+            "evidence": [
+              {
+                "path": "config/settings.py"
+              }
+            ],
+            "next_action": "Imported settings require review; imports are never executed.",
+            "needs_input": true
+          },
+          {
+            "code": "django_execution_not_enabled",
+            "message": "Django inspection is available; setup and execution are step 6.",
+            "evidence": [
+              {
+                "path": "."
+              }
+            ],
+            "next_action": "Review these findings; Django generation and runtime execution remain disabled.",
+            "needs_input": false
+          }
+        ],
+        "assumptions": [
+          "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+        ],
+        "unknowns": [
+          "Static settings evidence does not prove effective runtime configuration; environment overrides and arbitrary Python effects are not executed.",
+          "Dependency installability, migrations, service connectivity and application health are unverified.",
+          "Compatibility is version compatibility only, not a security or lifecycle certification."
+        ],
+        "application_candidates": [],
+        "setup": "none",
+        "startup_command": null,
+        "startup_candidate": "python manage.py runserver",
+        "python_version": null,
+        "settings_module": "config.settings",
+        "services": [],
+        "scope": "Static Django/pip inspection only; execution is disabled."
+      }
+    }
+  },
+  "live": [
+    {
+      "case": "clear",
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "action": {
+        "tool": "finish",
+        "parameters": {},
+        "reason": "Providing explanation of Django inspection findings and remaining uncertainties as requested."
+      },
+      "passed": true
+    },
+    {
+      "case": "ambiguous",
+      "passed": false,
+      "error": "Model response failed local action/schema validation; no action selected."
+    }
+  ],
+  "product_execution_gate": {
+    "blocked": true,
+    "blockers": [
+      {
+        "code": "django_execution_not_enabled",
+        "message": "Django inspection is available; setup and execution are step 6.",
+        "evidence": [
+          {
+            "path": "."
+          }
+        ],
+        "next_action": "Review these findings; Django generation and runtime execution remain disabled.",
+        "needs_input": false
+      }
+    ]
+  },
+  "docker": {
+    "validation": {
+      "success": true,
+      "phase": "application",
+      "results": [
+        {
+          "command": "docker compose --project-directory <temporary-fixture>/clear -p devops-validation-5b0db6db3210 -f <temporary-fixture>/clear/compose.yml config --format json",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+          "success": true,
+          "stdout": "\"unix:///Users/huzaifaalam/.docker/run/docker.sock\"\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory <temporary-fixture>/clear -p devops-validation-5b0db6db3210 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-xspg7ziy/compose.json build",
+          "success": true,
+          "stdout": "#1 [internal] load local bake definitions\n#1 reading from stdin 665B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 252B 0.0s done\n#2 DONE 0.1s\n\n#3 [internal] load metadata for docker.io/library/python:3.12-slim\n#3 DONE 1.4s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 2B done\n#4 DONE 0.0s\n\n#5 [internal] load build context\n#5 transferring context: 1.31kB done\n#5 DONE 0.0s\n\n#6 [1/6] FROM docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1\n#6 resolve docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 done\n#6 sha256:6e2fcafe72a4c4e812d11805d3f8f7b8fddd43ac39a29aadbe0a93b079d60e18 249B / 249B 0.1s done\n#6 sha256:387b25ff7b944c188f58f0e8633fb93428b7418b9af0549618f96ce8fd56da5f 1.28MB / 1.28MB 0.2s done\n#6 sha256:4dbdca1a513d31094476a7f745c8278b0ca94c30b9bc66ec65b9faebff263a16 0B / 12.06MB 0.2s\n#6 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 0B / 30.20MB 0.2s\n#6 sha256:4dbdca1a513d31094476a7f745c8278b0ca94c30b9bc66ec65b9faebff263a16 3.15MB / 12.06MB 0.3s\n#6 sha256:4dbdca1a513d31094476a7f745c8278b0ca94c30b9bc66ec65b9faebff263a16 12.06MB / 12.06MB 0.4s done\n#6 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 2.10MB / 30.20MB 0.6s\n#6 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 4.19MB / 30.20MB 0.8s\n#6 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 8.39MB / 30.20MB 0.9s\n#6 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 13.63MB / 30.20MB 1.1s\n#6 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 23.07MB / 30.20MB 1.2s\n#6 sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 30.20MB / 30.20MB 1.3s done\n#6 extracting sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba\n#6 extracting sha256:bbeda6b4abb749f743f4547ef5a28070a14de8caef211daa5afb78d5b5fa21ba 0.6s done\n#6 DONE 2.0s\n\n#6 [1/6] FROM docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1\n#6 extracting sha256:387b25ff7b944c188f58f0e8633fb93428b7418b9af0549618f96ce8fd56da5f 0.1s done\n#6 extracting sha256:4dbdca1a513d31094476a7f745c8278b0ca94c30b9bc66ec65b9faebff263a16\n#6 extracting sha256:4dbdca1a513d31094476a7f745c8278b0ca94c30b9bc66ec65b9faebff263a16 0.3s done\n#6 DONE 2.4s\n\n#6 [1/6] FROM docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1\n#6 extracting sha256:6e2fcafe72a4c4e812d11805d3f8f7b8fddd43ac39a29aadbe0a93b079d60e18 done\n#6 DONE 2.4s\n\n#7 [2/6] WORKDIR /app\n#7 DONE 0.4s\n\n#8 [3/6] COPY requirements.txt .\n#8 DONE 0.0s\n\n#9 [4/6] RUN pip install --no-cache-dir -r requirements.txt\n#9 1.106 Collecting Django==5.2.8 (from -r requirements.txt (line 1))\n#9 1.250   Downloading django-5.2.8-py3-none-any.whl.metadata (4.1 kB)\n#9 1.270 Collecting asgiref>=3.8.1 (from Django==5.2.8->-r requirements.txt (line 1))\n#9 1.281   Downloading asgiref-3.12.1-py3-none-any.whl.metadata (9.4 kB)\n#9 1.303 Collecting sqlparse>=0.3.1 (from Django==5.2.8->-r requirements.txt (line 1))\n#9 1.317   Downloading sqlparse-0.6.0-py3-none-any.whl.metadata (6.0 kB)\n#9 1.336 Downloading django-5.2.8-py3-none-any.whl (8.3 MB)\n#9 1.509    \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 8.3/8.3 MB 55.4 MB/s eta 0:00:00\n#9 1.549 Downloading asgiref-3.12.1-py3-none-any.whl (25 kB)\n#9 1.560 Downloading sqlparse-0.6.0-py3-none-any.whl (50 kB)\n#9 1.596 Installing collected packages: sqlparse, asgiref, Django\n#9 3.201 Successfully installed Django-5.2.8 asgiref-3.12.1 sqlparse-0.6.0\n#9 3.201 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.\n#9 3.298 \n#9 3.298 [notice] A new release of pip is available: 25.0.1 -> 26.2.1\n#9 3.298 [notice] To update, run: pip install --upgrade pip\n#9 DONE 3.5s\n\n#10 [5/6] COPY . .\n#10 DONE 0.1s\n\n#11 [6/6] RUN python manage.py check\n#11 0.337 System check identified no issues (0 silenced).\n#11 DONE 0.4s\n\n#12 exporting to image\n#12 exporting layers\n#12 exporting layers 1.1s done\n#12 exporting manifest sha256:f81ea9e621e93b1141d635405b5ec630889aa5f8ef55ad99fa41c85dbee258ef done\n#12 exporting config sha256:e3fa942b47b3e271f4950bb9ddaf782650395ceeeaba0d53fe72b342fc76872e done\n#12 exporting attestation manifest sha256:7fd7cf30b9caab04e6ed4a6bd87ab00fbe3b116c8f072b897ffeb89c6e62130d done\n#12 exporting manifest list sha256:ef796184538351dd600ba690863091160940188375dd76444135ebe26d1c41c0 done\n#12 naming to docker.io/library/devops-validation-5b0db6db3210-app:validation done\n#12 unpacking to docker.io/library/devops-validation-5b0db6db3210-app:validation\n#12 unpacking to docker.io/library/devops-validation-5b0db6db3210-app:validation 1.2s done\n#12 DONE 2.4s\n\n#13 resolving provenance for metadata file\n#13 DONE 0.0s\n",
+          "stderr": " Image devops-validation-5b0db6db3210-app:validation Building \n Image devops-validation-5b0db6db3210-app:validation Built \n",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory <temporary-fixture>/clear -p devops-validation-5b0db6db3210 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-xspg7ziy/compose.json up -d --no-build",
+          "success": true,
+          "stdout": "",
+          "stderr": " Network devops-validation-5b0db6db3210_default Creating \n Network devops-validation-5b0db6db3210_default Creating \n Network devops-validation-5b0db6db3210_default Created \n Network devops-validation-5b0db6db3210_default Created \n Container devops-validation-5b0db6db3210-app-1 Creating \n Container devops-validation-5b0db6db3210-app-1 Created \n Container devops-validation-5b0db6db3210-app-1 Starting \n Container devops-validation-5b0db6db3210-app-1 Started \n",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory <temporary-fixture>/clear -p devops-validation-5b0db6db3210 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-xspg7ziy/compose.json ps --all --quiet",
+          "success": true,
+          "stdout": "f1ced8367379f3c0c247a7a521b15a099b628f326058259177d3caeaba64418c\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker inspect f1ced8367379f3c0c247a7a521b15a099b628f326058259177d3caeaba64418c",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory <temporary-fixture>/clear -p devops-validation-5b0db6db3210 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-xspg7ziy/compose.json ps --all --quiet",
+          "success": true,
+          "stdout": "f1ced8367379f3c0c247a7a521b15a099b628f326058259177d3caeaba64418c\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker inspect f1ced8367379f3c0c247a7a521b15a099b628f326058259177d3caeaba64418c",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory <temporary-fixture>/clear -p devops-validation-5b0db6db3210 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-xspg7ziy/compose.json ps --all --quiet",
+          "success": true,
+          "stdout": "f1ced8367379f3c0c247a7a521b15a099b628f326058259177d3caeaba64418c\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker inspect f1ced8367379f3c0c247a7a521b15a099b628f326058259177d3caeaba64418c",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        }
+      ],
+      "logs": "",
+      "expected_services": [
+        "app"
+      ],
+      "running_services": [
+        "app"
+      ],
+      "stopped_services": [],
+      "application_check": {
+        "url": "http://127.0.0.1:62170/",
+        "reachable": true,
+        "healthy": true,
+        "status_code": 200,
+        "redirect_url": null,
+        "error": null,
+        "redirects": [],
+        "final_url": "http://127.0.0.1:62170/",
+        "success": true,
+        "container_id": "f1ced8367379f3c0c247a7a521b15a099b628f326058259177d3caeaba64418c"
+      },
+      "stages": [
+        {
+          "phase": "config",
+          "success": true
+        },
+        {
+          "phase": "build",
+          "success": true
+        },
+        {
+          "phase": "startup",
+          "success": true
+        },
+        {
+          "phase": "dependencies",
+          "success": true,
+          "status": "not_required"
+        },
+        {
+          "phase": "services",
+          "success": true
+        },
+        {
+          "phase": "application",
+          "success": true
+        }
+      ],
+      "cleanup": {
+        "status": "kept_running",
+        "project": "devops-validation-5b0db6db3210",
+        "stop_command": "docker compose --project-directory <temporary-fixture>/clear -p devops-validation-5b0db6db3210 -f <temporary-fixture>/clear/compose.yml down --volumes"
+      },
+      "verified": [
+        "config",
+        "build",
+        "startup",
+        "services",
+        "application"
+      ],
+      "unverified": [
+        "Business correctness and production readiness",
+        "Future health after validation returns"
+      ],
+      "environment_state": "running",
+      "project": "devops-validation-5b0db6db3210",
+      "application_service": "app",
+      "container_port": 8000,
+      "service_states": {
+        "app": {
+          "id": "f1ced8367379f3c0c247a7a521b15a099b628f326058259177d3caeaba64418c",
+          "state": "running",
+          "health": null,
+          "ports": {
+            "8000/tcp": [
+              {
+                "HostIp": "127.0.0.1",
+                "HostPort": "62170"
+              }
+            ]
+          }
+        }
+      },
+      "dependency_checks": {},
+      "repair_context": {
+        "inputs_sha256": "1ea06985690f0a2e3e1eceaac18f25336001d1ccff7ae3b520fa19310dfa862c",
+        "compose_file": "compose.yml",
+        "health_path": "/",
+        "service": null,
+        "container_port": null,
+        "timeout": 600,
+        "readiness_timeout": 60
+      },
+      "session_id": "422e3bd42c08476386d79fe31db481d8"
+    },
+    "independent_http": {
+      "status": 200,
+      "marker": true
+    },
+    "actual_runtime": {
+      "python": "3.12.15",
+      "django": "5.2.8",
+      "engine": "django.db.backends.sqlite3",
+      "database_probe": 1
+    },
+    "matches_inspection": true,
+    "dependencies": [
+      "asgiref==3.12.1",
+      "Django==5.2.8",
+      "sqlparse==0.6.0"
+    ],
+    "cleanup_verified": true
+  },
+  "unrelated_containers_preserved": true
+}

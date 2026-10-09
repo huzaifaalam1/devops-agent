@@ -121,3 +121,11 @@ mutations before approval. `/status`, `/cancel`, `/repo PATH`, `/resume ID` and
 `/exit` manage the session. Provider configuration uses the existing agent `.env`.
 Chat supports only the current Next.js/npm execution tools; Django and AWS are
 later checkpoints. See the [agent-loop guide](docs/v2/agent-loop.md).
+
+
+### V2 Django inspection
+
+`devops-agent analyze /path/to/django-app` and chat can now inspect a single
+Django/pip app, including Python requirements, settings candidates and database
+hints. This is inspection support; Django generation and execution remain step 6.
+See [step-5 scope and evidence](docs/v2/step5/README.md).

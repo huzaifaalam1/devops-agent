@@ -1,0 +1,28 @@
+DevOps Agent interactive preview — read-only, no model required.
+Ask to inspect the repo, explain blockers, or plan local setup. Commands: 
+/status, /inspect, /cancel, /repo PATH, /help, /exit. This checkpoint inspects 
+only; it does not run Docker or call a model.
+Selected repository: 
+/Users/huzaifaalam/Desktop/repos/devops-agent/tests/fixtures/django_inspection/c
+lear
+You> Plan: inspect evidence, report blockers, and explain the next step.
+Inspecting repository files...
+Generation eligibility: blocked. Runtime readiness has not been tested.
+framework: Django (source: manage.py)
+django_version: 5.2.8 (source: requirements.txt)
+dependency_manifest: pip requirements.txt (source: requirements.txt)
+dependency_count: 1 (source: requirements.txt)
+python_requirement: 3.12 (source: .python-version)
+python_django_compatibility: Version combination is documented; dependency 
+installability is unverified. (source: .python-version)
+settings_module_candidate: config.settings (source: manage.py)
+settings_file: config/settings.py (source: config/settings.py)
+database_backend: SQLite (source: config/settings.py)
+Resolve these blockers before generation:
+django_execution_not_enabled: Django inspection is available; setup and 
+execution are step 6.
+Next: Review these findings; Django generation and runtime execution remain 
+disabled.
+Inspection complete. No files changed or services started by this session.
+You> Session ended. No files changed or services started by this session. History was
+not saved.

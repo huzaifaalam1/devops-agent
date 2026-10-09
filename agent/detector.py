@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from agent.understanding import dependencies, inspect_project, read_json
+from agent.understanding import dependencies, inspect_project, read_json, read_text
 
 
 def has_any(text: str, terms: list[str]) -> bool:
@@ -19,7 +19,8 @@ def detect_python(repo_path, files, detected, services, runtime, startup_command
         requirements_path = repo_path / "requirements.txt"
 
         if requirements_path.exists():
-            text = requirements_path.read_text(errors="ignore").lower()
+            try:text = read_text(repo_path, 'requirements.txt').lower()
+            except (OSError,ValueError):text = ''
 
             if has_any(text, ["psycopg", "postgres"]):
                 services.append("PostgreSQL")
@@ -65,14 +66,6 @@ def detect_python(repo_path, files, detected, services, runtime, startup_command
                 detected.append("Flask app")
                 startup_commands.append("flask run")
 
-            if "django" in text:
-                detected.append("Django app")
-                startup_commands.append("python manage.py runserver")
-
-    if "manage.py" in files and "Django app" not in detected:
-        detected.append("Django app")
-        runtime.append("Python runtime")
-        startup_commands.append("python manage.py runserver")
 
 
 def detect_node(repo_path, files, detected, services, runtime, startup_commands):
@@ -178,7 +171,7 @@ def detect_missing_and_recommendations(repo_info, missing, recommendations):
                 "Component appears to be managed by root-level Docker/config."
             )
         return
-    
+
     if not repo_info["dockerfiles"]:
         missing.append("Dockerfile")
         recommendations.append(
@@ -261,6 +254,8 @@ def detect_stack(repo_info):
         detected.append("Unknown stack")
 
     project = inspect_project(repo_info)
+    if project.get('framework')=='Django':
+        detected.append('Django app');runtime.append('Python runtime')
     services.extend(project["services"])
     # Eligibility actions supersede generic generation recommendations.
     missing = [item for item in missing if item != "Environment configuration"]

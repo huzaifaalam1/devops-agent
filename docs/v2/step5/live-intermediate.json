@@ -1,0 +1,342 @@
+{
+  "scope": "Django discovery acceptance. Docker uses an explicitly authored test harness, not product Django setup support.",
+  "prompt_version": "loop-action-v7",
+  "source_sha256": {
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/conversation.py": "044deeb1fd8c653e9c576f4fe1859051c0b4d6540f996e0ff15af4f60aec8a48",
+    "agent/detector.py": "e869fba75bd2774d91976465fbd44f2b613934795bc2e6ec55d8122d0a794006",
+    "agent/diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "agent/django_inspection.py": "585fb3a5a731549397efb9405eb017feff4871bdd72c891d984f47b0b408b790",
+    "agent/django_project.py": "f5d37ce60ec51c462a248bdb736a26a79586c17c29699b826ec89b1202c8431a",
+    "agent/docker_generator.py": "6d7c8d281054a23559b584ab5f281b81690e53f5448abbb320aff9c2d799203a",
+    "agent/file_edits.py": "cc061e038463a96f424e08f1da45d3a9c829a949255fa6d58830458c74ac1ffd",
+    "agent/loop.py": "645e28d0289c26f9ab5547482ee68da9b09aa567574c2d9a0496e5494231c549",
+    "agent/loop_model.py": "515bcd34fe69bf363c385af5d35a4215fae4fc08d87633e417c3893a1686b21e",
+    "agent/main.py": "72403e3114b98bd99c784cc04c5f42c1c2490f8d61e214b3491d46474f8f545f",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/node_runtime.py": "84e9fa821bbd1c488895d2ccdc79270e74a829e43a7a4a63bd4fc9c016238893",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/repair.py": "51ee1d1d44e08e9684abd0442497d8036bc2d7cc89038ce949526d2bad2960c3",
+    "agent/runtime_control.py": "5edb2978e702972704794ab962b74d5392082fe588c03b0e1e016a419e0a936b",
+    "agent/safety.py": "df35e59a58ef22a5a2cee5bf905fd95ac2f0e26f5b8c1bdf7528280e5a307926",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/session.py": "d661b52c218750d04b1e577c02325daeff28201d7d3969e1421ed4b2ab486ae3",
+    "agent/tools.py": "969b294750aaa2a65b7e9aed1d0d233cd91b5ace0b6d4fcb9d316e2b5b010034",
+    "agent/understanding.py": "acaa6af93fcd676634e4bc00f84e85c1b0986b2ee2f6d75e0d913709afb0695e",
+    "agent/validator.py": "60a3c0858583b05d4c08b556937ebc99437d1a74d435c4fd3c7268f10c1267de"
+  },
+  "frozen_cases": {
+    "clear": {
+      "inspection": {
+        "framework": "Django",
+        "eligibility": "blocked",
+        "discovery_status": "understood",
+        "findings": [
+          {
+            "name": "framework",
+            "value": "Django",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "manage.py"
+              }
+            ]
+          },
+          {
+            "name": "django_version",
+            "value": "5.2.8",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt",
+                "line": 1
+              }
+            ]
+          },
+          {
+            "name": "dependency_manifest",
+            "value": "pip requirements.txt",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt"
+              }
+            ]
+          },
+          {
+            "name": "dependency_count",
+            "value": 1,
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt"
+              }
+            ]
+          },
+          {
+            "name": "python_requirement",
+            "value": "3.12",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": ".python-version"
+              }
+            ]
+          },
+          {
+            "name": "python_django_compatibility",
+            "value": "Version combination is documented; dependency installability is unverified.",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": ".python-version"
+              }
+            ]
+          },
+          {
+            "name": "settings_module_candidate",
+            "value": "config.settings",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "manage.py",
+                "line": 5
+              }
+            ]
+          },
+          {
+            "name": "settings_file",
+            "value": "config/settings.py",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "config/settings.py"
+              }
+            ]
+          },
+          {
+            "name": "database_backend",
+            "value": "SQLite",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "config/settings.py",
+                "line": 7
+              }
+            ]
+          }
+        ],
+        "blockers": [
+          {
+            "code": "django_execution_not_enabled",
+            "message": "Django inspection is available; setup and execution are step 6.",
+            "evidence": [
+              {
+                "path": "."
+              }
+            ],
+            "next_action": "Review these findings; Django generation and runtime execution remain disabled.",
+            "needs_input": false
+          }
+        ],
+        "assumptions": [
+          "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+        ],
+        "unknowns": [
+          "Static settings evidence does not prove effective runtime configuration; environment overrides and arbitrary Python effects are not executed.",
+          "Dependency installability, migrations, service connectivity and application health are unverified.",
+          "Compatibility is version compatibility only, not a security or lifecycle certification."
+        ],
+        "application_candidates": [],
+        "setup": "none",
+        "startup_command": null,
+        "startup_candidate": "python manage.py runserver",
+        "python_version": "3.12",
+        "settings_module": "config.settings",
+        "services": [
+          "SQLite"
+        ],
+        "scope": "Static Django/pip inspection only; execution is disabled."
+      }
+    },
+    "ambiguous": {
+      "inspection": {
+        "framework": "Django",
+        "eligibility": "blocked",
+        "discovery_status": "needs_input",
+        "findings": [
+          {
+            "name": "framework",
+            "value": "Django",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "manage.py"
+              }
+            ]
+          },
+          {
+            "name": "django_version",
+            "value": "5.2.8",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt",
+                "line": 1
+              }
+            ]
+          },
+          {
+            "name": "dependency_manifest",
+            "value": "pip requirements.txt",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt"
+              }
+            ]
+          },
+          {
+            "name": "dependency_count",
+            "value": 1,
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "requirements.txt"
+              }
+            ]
+          },
+          {
+            "name": "python_requirement",
+            "value": "3.12",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": ".python-version"
+              }
+            ]
+          },
+          {
+            "name": "python_requirement",
+            "value": "3.10",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "runtime.txt"
+              }
+            ]
+          },
+          {
+            "name": "settings_module_candidate",
+            "value": "config.settings",
+            "certainty": "inferred",
+            "evidence": [
+              {
+                "path": "manage.py",
+                "line": 5
+              }
+            ]
+          },
+          {
+            "name": "settings_file",
+            "value": "config/settings.py",
+            "certainty": "confirmed",
+            "evidence": [
+              {
+                "path": "config/settings.py"
+              }
+            ]
+          }
+        ],
+        "blockers": [
+          {
+            "code": "python_conflict",
+            "message": "Resolve conflicting Python version declarations.",
+            "evidence": [
+              {
+                "path": "."
+              }
+            ],
+            "next_action": "Resolve conflicting Python version declarations.",
+            "needs_input": true
+          },
+          {
+            "code": "database_dynamic",
+            "message": "Review computed, conditional, missing or multiple DATABASES assignments.",
+            "evidence": [
+              {
+                "path": "config/settings.py"
+              }
+            ],
+            "next_action": "Review computed, conditional, missing or multiple DATABASES assignments.",
+            "needs_input": true
+          },
+          {
+            "code": "settings_import",
+            "message": "Imported settings require review; imports are never executed.",
+            "evidence": [
+              {
+                "path": "config/settings.py"
+              }
+            ],
+            "next_action": "Imported settings require review; imports are never executed.",
+            "needs_input": true
+          },
+          {
+            "code": "django_execution_not_enabled",
+            "message": "Django inspection is available; setup and execution are step 6.",
+            "evidence": [
+              {
+                "path": "."
+              }
+            ],
+            "next_action": "Review these findings; Django generation and runtime execution remain disabled.",
+            "needs_input": false
+          }
+        ],
+        "assumptions": [
+          "Non-Node framework and service labels are legacy heuristics; they do not authorize setup generation."
+        ],
+        "unknowns": [
+          "Static settings evidence does not prove effective runtime configuration; environment overrides and arbitrary Python effects are not executed.",
+          "Dependency installability, migrations, service connectivity and application health are unverified.",
+          "Compatibility is version compatibility only, not a security or lifecycle certification."
+        ],
+        "application_candidates": [],
+        "setup": "none",
+        "startup_command": null,
+        "startup_candidate": "python manage.py runserver",
+        "python_version": null,
+        "settings_module": "config.settings",
+        "services": [],
+        "scope": "Static Django/pip inspection only; execution is disabled."
+      }
+    }
+  },
+  "live": [
+    {
+      "case": "clear",
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "action": {
+        "tool": "finish",
+        "parameters": {},
+        "reason": "The repository was inspected and identified as a Django project. The inspection confirmed:\n- Framework: Django (detected via manage.py)\n- Django version: 5.2.8 (listed in requirements.txt)\n- Dependency manifest: pip requirements.txt with a single dependency\n- Python version requirement: 3.12 (from .python-version)\n- Settings module candidate: config.settings (inferred from manage.py)\n- Settings file: config/settings.py exists\n- Database backend: SQLite (inferred from settings.py)\n\nUncertainties remain because Django execution is disabled:\n- The static analysis does not run the settings code, so any dynamic configuration, environment variable overrides, or custom logic is not verified.\n- Installability of the listed dependencies has not been tested; the presence of Django 5.2.8 does not guarantee a successful pip install.\n- Database migrations, initial data, or other setup steps have not been executed, so the app\u2019s actual startup behavior is unknown.\n- No health check or runtime endpoint was validated; service readiness cannot be confirmed.\n- Potential external services (e.g., cache, email, third\u2011party APIs) referenced in settings are not examined.\n\nIn summary, the project appears to be a Django 5.2.8 application targeting Python 3.12 with a default SQLite database, but runtime behavior, dependency installability, and operational health remain unverified."
+      },
+      "passed": true
+    },
+    {
+      "case": "ambiguous",
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "action": {
+        "tool": "finish",
+        "parameters": {},
+        "reason": "The inspection identified the project as a Django app (manage.py present) using Django 5.2.8 (requirements.txt). The only declared dependency is Django, and the dependency manifest is a pip requirements.txt file. Two conflicting Python version declarations were found: .python-version requests Python\u202f3.12 while runtime.txt requests Python\u202f3.10, creating a python_conflict blocker. The settings module is config.settings (detected from manage.py). However, several blockers require manual review: the settings file imports other modules that are never executed during static inspection, and the DATABASES configuration appears to be computed or conditional, so the actual database setup is uncertain. Because Django execution is not enabled, the inspection cannot verify runtime behavior, migrations, external service connectivity, or health endpoints. Uncertainties therefore include: which Python version will actually be used, the effective DATABASES configuration after imports and runtime logic, any environment\u2011specific overrides, installability of dependencies, and overall application health. These blockers must be resolved before a runtime validation can proceed."
+      },
+      "passed": true
+    }
+  ]
+}

@@ -52,6 +52,8 @@ def inspect_repo(path):
 def print_project(project):
     console.print("\nRepository understanding", style="bold cyan")
     console.print("Eligibility: " + project["eligibility"] + " (not runtime readiness)", markup=False)
+    if project.get('discovery_status'):
+        console.print('Django discovery: '+project['discovery_status'], markup=False)
     for finding in project["findings"]:
         evidence = finding["evidence"][0]
         source = evidence["path"] + (" :: " + evidence["field"] if evidence.get("field") else "")

@@ -193,3 +193,29 @@ The first live attempt applied one patch but stopped on a redundant inspection;
 three Groq calls, applied exactly one approved engine-declaration patch to a
 throwaway fixture, refreshed evidence and finished. This is not a Docker runtime
 verification or a claim of reliable behavior on all prompts.
+
+
+## Stopping a retained app
+
+Ask `kill the container`, `stop the app`, or `shut down the app` in chat.
+`runtime_status` reads private successful run journals for the selected repository
+and checks the recorded container IDs against Docker's current state. It examines
+up to 100 recent journals and returns at most ten retained environments. This is
+container state, not HTTP health. The model should ask which environment if more
+than one is running.
+
+`stop_runtime` takes a runtime session ID, shows the exact environment for review,
+then gracefully stops its recorded containers. It verifies Compose project and
+service labels, uses exact full container IDs, checks that the state has not changed
+since approval, and verifies the containers are no longer running. It requires a
+local Docker engine. Repository changes do not prevent stopping a retained run.
+Volumes, container files, networks and images are preserved; it does not run
+`compose down`, delete data, prune resources or stop unrelated containers. Requests
+without a matching private run journal are refused. Exiting or cancelling chat
+continues to leave retained environments alone. Stop execution is recorded in the
+conversation operation ledger and interrupted operations are not automatically replayed.
+
+Verification evidence is in `work/runtime-stop/`: offline regression coverage,
+a real Docker start/review/stop test with unrelated-container preservation, and
+a single live Groq stop-action selection check. The real test uses a disposable
+Node container and cleans up only its own resources afterward.

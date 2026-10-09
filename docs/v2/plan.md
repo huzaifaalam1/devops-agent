@@ -1,6 +1,6 @@
 # V2 plan and scope contract
 
-Status: steps 1–4 complete. The [persistent agent loop](agent-loop.md) connects terminal requests to the [structured tool boundary](tools.md). Broader model-quality evaluation remains step 8; Django and AWS are not yet implemented.
+Status: steps 1–5 complete. [Django discovery evidence](step5/README.md) is retained. The [persistent agent loop](agent-loop.md) connects terminal requests to the [structured tool boundary](tools.md). Broader model-quality evaluation remains step 8; Django execution and AWS are not yet implemented.
 Baseline: v1 commit `4a5afdb` (`Finalize v1 support contract and verify end-to-end startup`).
 This document records the agreed v2 direction and concrete implementation defaults;
 it does not expand the current [v1 support contract](../product-scope.md).
@@ -137,3 +137,13 @@ its exit criterion requires a real model, Docker or application run.
   are not needed for step 1 or local artifact-only work.
 
 Acceptance cases and required evidence: [V2 acceptance matrix](acceptance.md).
+
+
+### Step 5 complete
+
+Django discovery is integrated into CLI and chat inspection. See the
+[contract and retained verification](step5/README.md): 292 offline tests, two final
+live model cases and a disposable real Docker fixture whose effective runtime
+matched static findings. The earlier prototype was consolidated into the bounded
+production inspector. Source-code inspection never executes repository code.
+Django generation and execution remain explicitly gated for step 6.

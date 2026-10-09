@@ -39,18 +39,18 @@ class State(TypedDict, total=False):
 
 def compact(tool, result):
     """Only bounded facts and result summaries go to the planner, never raw logs."""
-    if tool=='read_file':
+    if tool in {'read_file','runtime_status'}:
         return result
     if tool=='inspect_repository':
         project=result.get('project',{})
-        return {k:project.get(k) for k in ['eligibility','setup','findings','blockers']}
+        return {k:project.get(k) for k in ['eligibility','discovery_status','setup','findings','blockers','unknowns']}
     if tool=='propose_docker':
         return {k:result.get(k) for k in ['status','id','blockers','preserved']}
     result=dict(result)
     if isinstance(result.get('cleanup'),dict):
         result['cleanup']={k:result['cleanup'][k] for k in ['status','project','stop_command'] if k in result['cleanup']}
     return {k:result.get(k) for k in ['success','phase','error','created','updated','session_id',
-                                     'application_check','environment_state','cleanup','unverified','blockers'] if k in result}
+                                     'application_check','environment_state','cleanup','unverified','blockers','notice'] if k in result}
 
 
 class AgentLoop:
@@ -225,6 +225,8 @@ class AgentLoop:
                     self.emit('Change applied. Refreshed repository findings'+(' and file contents.' if action['tool']=='patch_file' else '.'))
                 except (OSError,ValueError,TypeError):
                     update.update(self._stop('Change applied, but refreshing the evidence failed. Inspect the file before continuing; the edit will not be replayed.'))
+            if action['tool']=='stop_runtime' and result.get('success'):
+                update.update(status='finished',message='The agent-owned containers are stopped. Volumes and data were preserved.')
             if action['tool']=='validate_runtime' and result.get('phase')=='eligibility':
                 blockers=result.get('blockers',result.get('project',{}).get('blockers',[]))
                 details=' '.join(item.get('message','')+' '+item.get('next_action','') for item in blockers)
