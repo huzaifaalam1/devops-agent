@@ -1,0 +1,45 @@
+{
+  "candidate_matches_freeze": true,
+  "scope": "Held-out request phrasings on established fixtures, not unseen-repository generalization. Harness-approved actions; no independent human reviewer.",
+  "provider": "[REDACTED]",
+  "model": "[REDACTED]",
+  "cases": {
+    "nextjs": {
+      "success": true,
+      "model_calls": 3,
+      "failed_actions": 0,
+      "status": "verified",
+      "elapsed_seconds": 85.71
+    },
+    "django": {
+      "success": true,
+      "model_calls": 3,
+      "failed_actions": 0,
+      "status": "verified",
+      "elapsed_seconds": 96.35
+    },
+    "postgres": {
+      "success": true,
+      "model_calls": 4,
+      "failed_actions": 0,
+      "status": "verified",
+      "elapsed_seconds": 219.16
+    },
+    "recovery": {
+      "success": true,
+      "model_calls": 2,
+      "failed_actions": 0,
+      "status": "verified",
+      "elapsed_seconds": 89.12
+    },
+    "unsupported": {
+      "success": true,
+      "model_calls": 1,
+      "failed_actions": 0,
+      "status": "finished",
+      "elapsed_seconds": 6.35
+    }
+  },
+  "total_model_calls": 13,
+  "all_passed": true
+}

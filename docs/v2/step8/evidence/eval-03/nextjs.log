@@ -1,0 +1,25 @@
+Inspecting repository evidence...
+Selecting the next action...
+Next: propose_docker — The repository is identified as a Next.js app without Docker configuration. Proposing Docker setup is needed to generate Dockerfile and compose files before building and running the container.
+Executing propose_docker...
+Selecting the next action...
+Next: apply_docker — Apply the Docker proposal generated for the Next.js app so we can build and run the container, then validate it and keep it running for local development.
+Executing apply_docker...
+Change applied. Refreshed repository findings.
+Selecting the next action...
+Next: validate_runtime — Validate the generated Docker configuration by building and running the containers, checking that the Next.js app starts (default port 3000), and leave it running for the user.
+Executing validate_runtime...
+{
+  "success": true,
+  "error": null,
+  "independent_http": {
+    "status": 200,
+    "marker": true,
+    "url": "http://127.0.0.1:3000/",
+    "sha256": "49323daf9d63d9767299306586b4249df9d1647629b4fedc198cdf0002ab5728"
+  },
+  "cleanup": {
+    "success": true,
+    "project": "devops-validation-ee27101addfa"
+  }
+}

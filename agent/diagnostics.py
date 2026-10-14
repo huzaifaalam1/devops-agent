@@ -7,9 +7,9 @@ CATALOG = {
     "port_conflict": (
         "A requested host port is occupied.",
         "Another local process or container owns the requested binding.",
-        "Identify the owner of the reported port, then change this project's Compose published host port to an available port. Keep the container target port unchanged.",
-        "The application's local URL changes; unrelated workloads stay running.",
-        "Rerun validate --run and require successful binding plus HTTP readiness on the newly inspected host port."),
+        "Ask the user to make the requested host port available, then retry the unchanged configuration. Do not stop its owner or change the port automatically.",
+        "Preserves the application's requested URL and unrelated workloads; waits for the user to release the port.",
+        "Rerun validate --run and require successful binding plus HTTP readiness on the original requested host port."),
     "missing_environment": (
         "Required environment configuration is missing.",
         "A required value is absent or is not loaded into the application.",
@@ -19,7 +19,7 @@ CATALOG = {
     "dependency_installation": (
         "Dependency installation failed during the image build.",
         "The package manager could not resolve or install the locked dependencies; the specific error determines whether this is lockfile, registry, authentication, or compatibility related.",
-        "Inspect the first package-manager error in the failed build output. For lockfile mismatch, reconcile package.json and package-lock.json with the project's npm version; for registry/network/auth errors, correct that access before rebuilding.",
+        "Inspect the first installation error. For pip, compare the Python version, pinned requirements and available package wheels; for npm, compare package.json and package-lock.json with the declared npm version. Correct registry/network/authentication failures before rebuilding.",
         "May update the lockfile or local registry configuration; review lockfile changes. Do not delete the lockfile or disable integrity checks as a generic fix.",
         "Rerun validate --build and require the dependency-install layer to succeed; then validate --run to check startup separately."),
     "connection_failure": (
@@ -58,6 +58,18 @@ CATALOG = {
         "Inspect cleanup.results and the reported validation project label. Restore Docker access, then remove only that run's resources after confirming ownership.",
         "Stops/removes the identified validation environment; the original failure may still require a separate fix.",
         "Require scoped shutdown to succeed and no containers to remain with the reported project label."),
+    "python_configuration": (
+        "Python could not load a required module or configuration.",
+        "A Django settings or import error prevents application initialization.",
+        "Check the named setting or missing module against the declared settings module and pinned requirements. Supply required local values; do not invent credentials or rewrite application code without evidence.",
+        "A configuration or dependency correction may be needed; no automatic edit is justified by this category alone.",
+        "Repeat the failed initialization and require Django startup plus owned HTTP readiness."),
+    "database_migration": (
+        "Database initialization did not complete.",
+        "The recorded migration stage failed or its reviewed plan changed; the database may be partially initialized.",
+        "Inspect the retained owned session. Do not replay, reset or reverse migrations. Stop that disposable session after review and prepare a fresh one only when the cause is resolved.",
+        "Preserves evidence and avoids replaying an uncertain database mutation. Stopping disposable PostgreSQL destroys its data.",
+        "A fresh reviewed initialization must pass migrations, ORM writes and owned HTTP readiness."),
     "unknown": (
         "Validation failed without a supported diagnosis.",
         "The available evidence is insufficient to identify a cause.",
@@ -97,12 +109,16 @@ def _diagnose_failure(validation_result: dict, context: dict | None = None) -> d
         ("port_conflict", ("address already in use", "port is already allocated", "is already in use")),
         ("missing_environment", ("environment variable",)),
         ("ruby_dependencies", ("bundler::gemnotfound", "locally installed gems")),
-        ("dependency_installation", ("eresolve", "eusage", "etarget", "eintegrity", "ebadengine", "npm error code e401", "npm error code e404", "npm ci can only install")),
+        ("dependency_installation", ("eresolve", "eusage", "etarget", "eintegrity", "ebadengine", "npm error code e401", "npm error code e404", "npm ci can only install", "no matching distribution found for", "could not find a version that satisfies", "resolutionimpossible", "failed building wheel", "could not build wheels")),
+        ("python_configuration", ("django.core.exceptions.improperlyconfigured", "modulenotfounderror:", "importerror:")),
         ("connection_failure", ("connection refused", "could not connect to server", "econnrefused", "enotfound")),
     ]
     if phase == "cleanup":
         category, confidence = "cleanup_failure", "high"
         evidence = [{"source": "cleanup.status", "excerpt": str(validation_result.get("cleanup", {}).get("status", "unknown"))}]
+    elif phase in {'migration','database_plan'}:
+        category, confidence = 'database_migration', 'medium'
+        evidence = [{'source':'phase','excerpt':phase}]+[{'source':source,'excerpt':line} for source,line in lines[:2]]
     elif missing_configuration:
         category, confidence, evidence = "missing_environment", "high", missing_configuration[:3]
     else:

@@ -131,3 +131,9 @@ hints. Eligible single Django/pip apps with disposable SQLite can now receive
 reviewed Docker setup and runtime verification on loopback port 8000. PostgreSQL
 now has a separate disposable preparation and migration-review workflow. See the [step-7 contract](docs/v2/step7/README.md); stopping its database destroys its temporary data.
 See [step-6 scope, usage and verification](docs/v2/step6/README.md).
+
+Step 8 adds structured failure explanations and separately reviewed readiness
+recovery in chat. If a port is occupied, chat asks you to free that port. If `/`
+requires authentication, supply an existing public health route; the agent can
+verify it once and clean up its test environment. See [scope and evaluation
+status](docs/v2/step8/README.md).

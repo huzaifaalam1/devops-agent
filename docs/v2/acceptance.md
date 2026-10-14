@@ -76,3 +76,11 @@ release tagging, publishing and cloud deployment are separate decisions.
 ## Step-7 checkpoint
 
 The supported disposable Django/PostgreSQL fixture now has retained [real Docker, live Groq and offline evidence](step7/README.md) for V2-09, database-target refusal coverage for V2-10, and scoped cleanup evidence for the step-7 portion of V2-17. This is one integration fixture, not the broader step-8 held-out evaluation or the final external Django pilot/release gate.
+
+## Step-8 checkpoint
+
+[Retained evidence](step8/README.md) covers 320 offline tests, all five frozen live
+cases, real 401-to-public-readiness recovery, and a real port-owner preservation
+check. The held-out set varies request phrasing on established fixtures; it does
+not prove unseen-repository coverage. Earlier failures are retained. User review
+of final summaries and the external pilots remain part of the release gate.

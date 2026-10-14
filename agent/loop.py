@@ -44,13 +44,17 @@ def compact(tool, result):
     if tool=='inspect_repository':
         project=result.get('project',{})
         return {k:project.get(k) for k in ['eligibility','discovery_status','setup','findings','blockers','unknowns']}
+    if tool=='propose_runtime_repair':
+        return {k:result.get(k) for k in ['status','id','source_session','summary','blockers','verification','attempt_limit']}
     if tool=='propose_docker':
         return {k:result.get(k) for k in ['status','id','blockers','preserved']}
     result=dict(result)
+    if tool=='apply_runtime_repair' and isinstance(result.get('validation'),dict):
+        result['validation']=compact('validate_runtime',result['validation'])
     if isinstance(result.get('cleanup'),dict):
         result['cleanup']={k:result['cleanup'][k] for k in ['status','project','stop_command'] if k in result['cleanup']}
     return {k:result.get(k) for k in ['success','phase','error','created','updated','session_id',
-                                     'database_plan','orm_verified','application_check','environment_state','cleanup','unverified','blockers','notice'] if k in result}
+                                     'validation','diagnosis','status','summary','rollback','attempts','attempt_limit','database_plan','orm_verified','application_check','environment_state','cleanup','unverified','blockers','notice'] if k in result}
 
 
 class AgentLoop:
@@ -200,6 +204,9 @@ class AgentLoop:
         grant,self.grant=self.grant,None
         try:
             result=self.registry.execute(action['tool'],action['parameters'],approval=grant)['result']
+            if result.get('success') is False and not result.get('diagnosis'):
+                from agent.diagnostics import diagnose_failure
+                result['diagnosis']=diagnose_failure(result)
             summary=self._clean(compact(action['tool'],result))
             failed=result.get('success') is False or result.get('status')=='blocked'
             update={'observations':state['observations']+[{'tool':action['tool'],'result':summary}],
@@ -225,6 +232,15 @@ class AgentLoop:
                     self.emit('Change applied. Refreshed repository findings'+(' and file contents.' if action['tool']=='patch_file' else '.'))
                 except (OSError,ValueError,TypeError):
                     update.update(self._stop('Change applied, but refreshing the evidence failed. Inspect the file before continuing; the edit will not be replayed.'))
+            diagnosis=result.get('diagnosis') or {}
+            if failed and diagnosis:
+                self.emit(diagnosis.get('summary','Action failed.'))
+            if failed and diagnosis.get('type')=='port_conflict':
+                update.update(self._stop('The requested port is occupied. Please make it available, then ask me to retry. I have not changed the port or stopped its owner.'))
+            if failed and diagnosis.get('type')=='cleanup_failure':
+                update.update(self._stop('Cleanup could not be verified. Inspect the owned session before any further setup or repair.','reconcile'))
+            if action['tool']=='apply_runtime_repair' and result.get('success'):
+                update.update(status='verified',message='The reviewed repair passed runtime verification. Its test environment was cleaned up; no service was kept running.')
             if action['tool']=='migrate_database' and result.get('success'):
                 update.update(status='verified',message='Disposable PostgreSQL migrations, diagnostic ORM create/read/delete and HTTP readiness verified. Stopping the database destroys its data; business-specific behavior remains unverified.')
             if action['tool']=='stop_runtime' and result.get('success'):

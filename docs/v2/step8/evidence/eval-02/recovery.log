@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "<home>/Desktop/repos/devops-agent/tests/step8_eval.py", line 59, in <module>
+    if __name__=='__main__':raise SystemExit(main())
+                                             ^^^^^^
+  File "<home>/Desktop/repos/devops-agent/tests/step8_eval.py", line 57, in main
+    return importlib.import_module(module).main()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<home>/Desktop/repos/devops-agent/tests/step8_recovery_smoke.py", line 18, in main
+    with socket.socket() as check:check.bind(('127.0.0.1',8000))
+                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+OSError: [Errno 48] Address already in use

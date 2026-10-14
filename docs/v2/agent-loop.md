@@ -229,3 +229,21 @@ SQLite. Python templates use port 8000; no Node migration is proposed. See the
 [step-6 contract and verification](step6/README.md). Postgres and migrations were outside that checkpoint. Earlier checkpoint descriptions above are historical.
 
 Step 7 adds separately reviewed `prepare_database` and `migrate_database` actions for new disposable PostgreSQL containers. See [the database workflow](step7/README.md).
+
+## Step 8: failure evidence and recovery
+
+Failed actions now retain their bounded diagnosis in model observations and
+conversation checkpoints. Pip installation, Python initialization, database
+migration, HTTP authentication and cleanup failures have distinct guidance;
+unknown failures remain uncertain. Raw logs are not passed as instructions.
+
+An occupied port immediately returns control to the user to free the original
+port (8000 for generated Django). The loop never changes that port or stops its
+owner in response to this failure. Unverified cleanup stops in reconciliation.
+Interrupted/failed migrations retain their owned session for inspection and
+cannot be replayed by generic repair.
+
+For a known public readiness route after HTTP 401/403, the planner can propose a
+repair, request separate approval and run one verification. It cleans up the test
+environment and reports that nothing was kept running. An unchanged repair cannot
+be repeated through a new conversation. See [step-8 evidence](step8/README.md).

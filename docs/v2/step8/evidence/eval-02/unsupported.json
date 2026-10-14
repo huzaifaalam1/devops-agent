@@ -1,0 +1,118 @@
+{
+  "success": true,
+  "approvals": [
+    {
+      "kind": "provider",
+      "context": {
+        "request": "Set up this repository for local development with Docker, build it, verify HTTP readiness, and leave the successful app running so I can open its page.",
+        "history": [],
+        "read_only_request": false,
+        "observations": [
+          {
+            "tool": "inspect_repository",
+            "result": {
+              "eligibility": "blocked",
+              "discovery_status": null,
+              "setup": "none",
+              "findings": [],
+              "blockers": [
+                {
+                  "code": "unsupported_framework",
+                  "message": "No declared Next.js dependency was found.",
+                  "evidence": [
+                    {
+                      "path": "package.json"
+                    }
+                  ],
+                  "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+                  "needs_input": false
+                }
+              ],
+              "unknowns": [
+                "Framework-specific prerequisites and runtime readiness have not been evaluated."
+              ]
+            }
+          }
+        ],
+        "remaining_actions": 11
+      }
+    }
+  ],
+  "manual_interventions": [],
+  "case": "unsupported",
+  "scope": "Live model acceptance: fresh Next.js build/page/cleanup or unsupported-stack stop. Automated harness supplies explicit reviewed approvals.",
+  "provider": "[REDACTED]",
+  "model": "[REDACTED]",
+  "source_sha256": {
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/conversation.py": "fda9560c3dc59568cec43e93f3f1cc9f91753f16544a1969b37fee29bae1a496",
+    "agent/detector.py": "56a7a1fd243b50f9955fe5aba7dc1d13212b57ef0c13357a84d68f3e4f4def96",
+    "agent/diagnostics.py": "0e1bbbfcc52510afe6cf3bf06c1af0d550388e6233b8009067973963d438ae41",
+    "agent/django_database.py": "32571eda503a666c2806e4724b2d37abc980cb869cb1514d23a33e1fb4ce4f2e",
+    "agent/django_inspection.py": "69f1aba8976762cafdbdf8c934e5e4c450ffafe8b18d7531f3bedcae5df3060b",
+    "agent/django_runtime.py": "aab2bea6f98fb31bdf6130145c53c75d04689cbe65d028da1b5edc875c50f85e",
+    "agent/docker_generator.py": "a80c8cd6b96b84ee3d64a24bd91f639eb144991bb91b7c4d774e715db91aa601",
+    "agent/file_edits.py": "cc061e038463a96f424e08f1da45d3a9c829a949255fa6d58830458c74ac1ffd",
+    "agent/loop.py": "1d7bed79783d1a72c68ede91e03dc6153dd819cf7374d7cd1662bff953498c38",
+    "agent/loop_model.py": "b93117fca9e4712eedda34cab1a0a3361f179e72ff84304913c0cbf34982d78c",
+    "agent/main.py": "711a2bf0d2185bde860eb71e13793f2d20a2892f6a2e6448ac6d524318c5ebef",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/node_runtime.py": "84e9fa821bbd1c488895d2ccdc79270e74a829e43a7a4a63bd4fc9c016238893",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/repair.py": "95ed5c0b7486f623e70af86711fbceb1f4305159daad04c1e11fc5e4be038cc3",
+    "agent/runtime_control.py": "39d39199f97250b1d5a02eac135fd65019e86c81793b00de800b89c5be5ca1f0",
+    "agent/safety.py": "8c75bf346da5c303516f792c1eb82f196f8dfcae7bbd7d03ea1c9f0510246590",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/session.py": "d661b52c218750d04b1e577c02325daeff28201d7d3969e1421ed4b2ab486ae3",
+    "agent/tools.py": "073a8cbcae0ab389c27ddd3c69e38dc81a520680731aa3bc0c26c64ddfdb9d2f",
+    "agent/understanding.py": "c94fe3252d0f2af3a4ec08d05615331dcac1573f9db0e44ca9e6883e26f63d89",
+    "agent/validator.py": "cfa8b4f4001b7a0529c08ab4d58488f6450eade3f665cce3a5b699efac0cd900"
+  },
+  "conversation": {
+    "id": "3636cd9e068943f8acdaa9e389778c6b",
+    "state": {
+      "read_only_request": false,
+      "history": [],
+      "request": "Set up this repository for local development with Docker, build it, verify HTTP readiness, and leave the successful app running so I can open its page.",
+      "observations": [
+        {
+          "tool": "inspect_repository",
+          "result": {
+            "eligibility": "blocked",
+            "discovery_status": null,
+            "setup": "none",
+            "findings": [],
+            "blockers": [
+              {
+                "code": "unsupported_framework",
+                "message": "No declared Next.js dependency was found.",
+                "evidence": [
+                  {
+                    "path": "package.json"
+                  }
+                ],
+                "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+                "needs_input": false
+              }
+            ],
+            "unknowns": [
+              "Framework-specific prerequisites and runtime readiness have not been evaluated."
+            ]
+          }
+        }
+      ],
+      "seen": [
+        "106036f8ed3d967f1855062b65298a00bbf6b4818ed724d3b000e17b1b1ba522"
+      ],
+      "count": 1,
+      "failures": 0,
+      "model_calls": 1,
+      "status": "finished",
+      "message": "Automated Docker setup cannot be performed because the repository does not declare a supported framework (e.g., Next.js) in its package.json. The inspector flagged an unsupported_framework blocker, indicating that no known build or runtime workflow is available for this code base. Without a recognized framework, we cannot safely propose Dockerfiles, compose files, or runtime validation. You may need to add the appropriate framework dependencies or provide custom Docker configuration manually."
+    },
+    "pending": null
+  },
+  "blocked_without_mutation": true
+}

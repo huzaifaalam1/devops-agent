@@ -68,6 +68,8 @@ def _propose_repair(path, session_id, host_port=None, health_path=None):
         analysis = detect_stack(scan_repo(str(root)))
         if analysis['project']['eligibility'] != 'eligible':
             raise RepairRefused('Project is not eligible for the first-release runtime workflow.')
+        if analysis['project'].get('services')==['PostgreSQL']:
+            raise RepairRefused('Disposable PostgreSQL initialization cannot be replayed by generic repair; inspect and stop its owned session first.')
         compose = context.get('compose_file')
         if not isinstance(compose, str) or Path(compose).is_absolute() or len(Path(compose).parts) != 1:
             raise RepairRefused('Repair requires a recorded root-level Compose filename.')
@@ -77,6 +79,9 @@ def _propose_repair(path, session_id, host_port=None, health_path=None):
         # One fixed execution budget, never a log-controlled command or retry count.
         validation.update(run=True, keep_running=False, timeout=300, readiness_timeout=90)
         category = diagnosis['type']
+        kind = {'port_conflict': 'host_port', 'http_authentication': 'health_path'}.get(category)
+        if kind and already_attempted(root, sha((str(root) + fingerprint + kind).encode())):
+            raise RepairRefused('This repair was already attempted for unchanged inputs. Stop and investigate; a new session does not reset the attempt limit.')
         if category == 'port_conflict':
             if health_path is not None:
                 raise RepairRefused('A port repair cannot also change the health path.')

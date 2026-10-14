@@ -1,0 +1,6 @@
+{
+  "tests": 320,
+  "passed": true,
+  "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -s tests -q",
+  "output": "----------------------------------------------------------------------\nRan 320 tests in 27.600s\n\nOK\n"
+}

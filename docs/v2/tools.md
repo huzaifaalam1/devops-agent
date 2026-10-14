@@ -76,3 +76,17 @@ boundary tests. A focused rerun of all 11 boundary tests also passed after addin
 malformed tool-name/payload cases. Evidence: ignored
 `work/v2-step3/offline.json`. Documentation links and `git diff --check` passed.
 No live model calls or real Docker runs were made for this internal boundary change.
+
+## Step 8: reviewed readiness recovery
+
+`propose_runtime_repair {session_id, health_path}` reads the selected repository's
+private failed-run journal and returns a proposal. Chat supports an evidenced or
+user-supplied public readiness route after HTTP 401/403. It does not expose a port
+change or shell command. The source must have verified cleanup and unchanged inputs.
+PostgreSQL initialization is excluded from generic replay.
+
+`apply_runtime_repair {session_id, health_path, proposal_id}` requires its own
+one-use review, rechecks the proposal and inputs, and performs one runtime
+verification with cleanup. The persistent attempt fence survives new chat sessions.
+A successful probe changes neither authentication nor repository files and does
+not leave the app running. Future runs must explicitly select the health path.

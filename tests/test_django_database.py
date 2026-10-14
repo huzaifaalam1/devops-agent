@@ -88,7 +88,8 @@ class DjangoDatabaseTests(unittest.TestCase):
     def test_failed_migration_keeps_fence_and_records_failure(self):
         preview={'runtime':{},'plan':{'digest':'d'*64}}
         with patch('agent.django_database.migration_preview',return_value=preview), patch('agent.django_database.run_database',side_effect=ValueError('Plan changed')) as run:
-            with self.assertRaises(ValueError):migrate(self.root,'a'*32,preview)
+            result=migrate(self.root,'a'*32,preview)
+            self.assertFalse(result['success']);self.assertEqual(result['diagnosis']['type'],'database_migration')
             with self.assertRaises(FileExistsError):migrate(self.root,'a'*32,preview)
             run.assert_called_once()
         records=[json.loads(p.read_text()) for p in (self.root.parent/'state').glob('*.json')]

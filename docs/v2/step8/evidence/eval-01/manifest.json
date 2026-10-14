@@ -1,0 +1,182 @@
+{
+  "source_sha256": {
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/conversation.py": "fda9560c3dc59568cec43e93f3f1cc9f91753f16544a1969b37fee29bae1a496",
+    "agent/detector.py": "56a7a1fd243b50f9955fe5aba7dc1d13212b57ef0c13357a84d68f3e4f4def96",
+    "agent/diagnostics.py": "0e1bbbfcc52510afe6cf3bf06c1af0d550388e6233b8009067973963d438ae41",
+    "agent/django_database.py": "32571eda503a666c2806e4724b2d37abc980cb869cb1514d23a33e1fb4ce4f2e",
+    "agent/django_inspection.py": "69f1aba8976762cafdbdf8c934e5e4c450ffafe8b18d7531f3bedcae5df3060b",
+    "agent/django_runtime.py": "aab2bea6f98fb31bdf6130145c53c75d04689cbe65d028da1b5edc875c50f85e",
+    "agent/docker_generator.py": "a80c8cd6b96b84ee3d64a24bd91f639eb144991bb91b7c4d774e715db91aa601",
+    "agent/file_edits.py": "cc061e038463a96f424e08f1da45d3a9c829a949255fa6d58830458c74ac1ffd",
+    "agent/loop.py": "1d7bed79783d1a72c68ede91e03dc6153dd819cf7374d7cd1662bff953498c38",
+    "agent/loop_model.py": "b93117fca9e4712eedda34cab1a0a3361f179e72ff84304913c0cbf34982d78c",
+    "agent/main.py": "711a2bf0d2185bde860eb71e13793f2d20a2892f6a2e6448ac6d524318c5ebef",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/node_runtime.py": "84e9fa821bbd1c488895d2ccdc79270e74a829e43a7a4a63bd4fc9c016238893",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/repair.py": "95ed5c0b7486f623e70af86711fbceb1f4305159daad04c1e11fc5e4be038cc3",
+    "agent/runtime_control.py": "39d39199f97250b1d5a02eac135fd65019e86c81793b00de800b89c5be5ca1f0",
+    "agent/safety.py": "8c75bf346da5c303516f792c1eb82f196f8dfcae7bbd7d03ea1c9f0510246590",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/session.py": "d661b52c218750d04b1e577c02325daeff28201d7d3969e1421ed4b2ab486ae3",
+    "agent/tools.py": "073a8cbcae0ab389c27ddd3c69e38dc81a520680731aa3bc0c26c64ddfdb9d2f",
+    "agent/understanding.py": "c94fe3252d0f2af3a4ec08d05615331dcac1573f9db0e44ca9e6883e26f63d89",
+    "agent/validator.py": "cfa8b4f4001b7a0529c08ab4d58488f6450eade3f665cce3a5b699efac0cd900",
+    "tests/__init__.py": "d6fa7b08cf562083f7885f40198442d3d0060a94782994baf6a828babd0a2c2b",
+    "tests/agent_loop_smoke.py": "a000b37c48df4c001a2812caad8b36a9a02a2aeb697836b10ea1ef9e858ceb6d",
+    "tests/django_step5_smoke.py": "ec300d71a82360bab9ea76117d92d89dbf66fe092708a85d01235cde5f8ced5a",
+    "tests/django_step6_smoke.py": "c1bfcb2b2645cde8bab44c84d72b6346c5c294ea05eae002340efb03ca1d247a",
+    "tests/django_step7_smoke.py": "c6f46fd8828d28f41a7c3d87f1bf5ca8d33a8e10e7478003bf34b3bbb882fcc3",
+    "tests/docker_baseline.py": "2e1bb5d3545bc9d14cf7e734d5e95be282cb47deca8c2a144e6ddd4e2a49d224",
+    "tests/docker_nextjs_acceptance.py": "9a50f01139a26210a9f9a984c062efb3b7f186a0d8d3dd002e120f31753f33b6",
+    "tests/docker_repair_smoke.py": "6ff70325f79c66edc24ce030b488c6e8401d63a348ffce18ad46f169f9fe03cb",
+    "tests/docker_validation_smoke.py": "182e52671a0c76015d633c0dfe17f3a52dec0834057569fecf2d170003dca2e7",
+    "tests/fixture_support.py": "75cbb0d4107a810b09551e6abf4a401f635612677fa5edbf2586f014c52ac3f1",
+    "tests/fixtures/cases.json": "ff8b0edf9628b0a1c875408aedd800c1547eedba448f279e8b28b3638aaa1d09",
+    "tests/fixtures/database/.env.example": "4a363dabc032ca58f2902d3603e2f45fb5ae06beea7c7e15e5ad3e6eec9e6cb6",
+    "tests/fixtures/database/app/page.js": "532e1158a8d4ef7ff85f28541a849d9ab8804d1bcee2e9d34161dd6bc484dcac",
+    "tests/fixtures/database/package-lock.json": "9223d60e03f4ed009e7f4e55b47714a29fabb81f61407db7155e9174ad7ceb92",
+    "tests/fixtures/database/package.json": "6ebea05d48a01c67b846d3ed42ffeddfa004d0e6061f89b1cd35fb4e20246de7",
+    "tests/fixtures/django_inspection/clear/.python-version": "7b55f8e67b5623c4bef3fa691288da9437d79d3aba156de48d481db32ac7d16d",
+    "tests/fixtures/django_inspection/clear/config/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/django_inspection/clear/config/settings.py": "09770c169b9c37efb49a7f31bbbbf3b299858cb4f483d2c5e6b0f6f6c306b680",
+    "tests/fixtures/django_inspection/clear/config/urls.py": "0377e622bb1f6f1d034a15c8e1fc186de42fc3bb949666221c04fd60847f15b3",
+    "tests/fixtures/django_inspection/clear/manage.py": "9e4823ee4867cc99f1c00af8ab0c0fb46538b812f2d06502492f1eab453bfa08",
+    "tests/fixtures/django_inspection/clear/requirements.txt": "399419ca0dc48d150fb2f06e8c7acd67e0f3864da366ade3d5604c81a621652e",
+    "tests/fixtures/existing-compose/.dockerignore": "aa91cc997dd0f8433e5787a1bb9d7a36f68614bc550986714b5cbc71f30c70ec",
+    "tests/fixtures/existing-compose/Dockerfile": "1ee8c50700f87d53276a61f259358e46f42ce4b16e7ae729fa60945cee4cb8eb",
+    "tests/fixtures/existing-compose/compose.yaml": "5289eb1e1f0b976fd4f37bec2c6dcaeae2212c396b1495ac89c105c7741e8313",
+    "tests/fixtures/missing-env/.env.example": "8377048f3af6019879d8c15d702f55bfb2e20b0246febd40985e1d2e3cd51e05",
+    "tests/fixtures/missing-env/next.config.mjs": "537dfa116abf296eb29570400c5c6695c5809200400e2bff5e48ffcafa5b7b67",
+    "tests/fixtures/next-app/app/layout.js": "fefe40fd3c232a9edbff485e54702024f0a79c0b8b42fa1b1d12eb13399cb7b8",
+    "tests/fixtures/next-app/app/page.js": "c0daed8dacfdfc7874920b3da515edb1c0ba65beec422adcfa91ae287bafcc34",
+    "tests/fixtures/next-app/package-lock.json": "fe784bfe49ef256451b74d62c56080da6bb0099bc16945022405134ef86a28e5",
+    "tests/fixtures/next-app/package.json": "1b9acb207357184cf02c7bf7e9bbf210ee2509a8c059de39bd6b69a7f2754188",
+    "tests/fixtures/startup-failure/next.config.mjs": "31f9d798929436328d68c73eac7b7bebdb334b8814a408e8441b15edaf76d1dc",
+    "tests/fixtures/unsupported/go.mod": "5aecfc43c4de2b25889311f8093a0d2ab67ac903d7eaa5487e151602f8ec614c",
+    "tests/fixtures/unsupported/main.go": "205edd0bdfaf69b31bc22da41b825211e78e9e0554d6788de44bbf3bbf60dbe0",
+    "tests/planning_eval.py": "9f977a00e53ce1b7b99445a721cdb384dbc1c4efb0248a40884b170aaf7e41f5",
+    "tests/planning_review.py": "7ad36a73fe8c88a28dceba85262e6a448a5461410b76536bc9d402e6aaee22b3",
+    "tests/run_baseline.py": "b0e592211bc5221f9431cff8037e4717da824ef3acdd1cc37cdc01955eb9f899",
+    "tests/step8_eval.py": "32a72abcd235f5daea3ae1e675044e9d9186daa5b0e3517d52a272edfaccc9a2",
+    "tests/step8_recovery_smoke.py": "68e6feeb49576c11894a4daaac966815accf02eb2701c4ad044bd149bb9dc508",
+    "tests/test_baseline.py": "69bb37893e0f5a9e44f6fde700042e121b99b1ac2808e0c915c0985d3ebc9dce",
+    "tests/test_config.py": "c0352afba39a03d460ba577d50599a1e6a2c319bd5e367ebe9f866651fae9add",
+    "tests/test_conversation.py": "457e11c68f3134aedf1f1dea40a363fb878004a916945cfb2b5cad6c60b5c055",
+    "tests/test_diagnostics.py": "7e8285ee84533563a8d2e4f3f1f633d56f3971840adf937ebb5e25b9ec481964",
+    "tests/test_django_database.py": "4024fd5ca8a9d1c0371369792f365dedf132ce771728e0631f7940548fb312eb",
+    "tests/test_django_inspection.py": "1c289d65af6316f0662c28900b66496492279b9178d6a1479a654dba1ea2acb2",
+    "tests/test_django_project.py": "420653f5990a3b7ba9ba170a54b5ebb44784440edcd0c2a710467088576dbf4e",
+    "tests/test_django_runtime.py": "3187f47f0a2273522b209f7a95330cafc280de5a6793225b608a85e1ed389376",
+    "tests/test_file_edits.py": "af2ca9f0da29576566ae1cec554e755b7500b8e9bf6b19baed5f692eda1211ca",
+    "tests/test_loop.py": "417a3c14c475190744b16dcfc40563b16ea377ea8cd3b26b593ac5af562a5c4b",
+    "tests/test_loop_model.py": "1c81341202e014d1ac1c80c8adf9aa2e8517bf3ff8ba38cbf3d5aa8c9573356a",
+    "tests/test_node_runtime.py": "eb20a814c3d10ac0ccbcfa3cceb769c4cdca743f8897474f4780501cbe308cc9",
+    "tests/test_pilot_regressions.py": "e2e32a099bd19b233628f818e682b8e68824530d9be610ae5c3d57f2a60b6e3b",
+    "tests/test_planning.py": "dfa4f3c788a0029d7e9960a237fe738ad452ff90dc138aebbb24af9afd8147e2",
+    "tests/test_planning_review.py": "97a9ff039424acc41d1a7751c94f9d23772c2d7ab6bc6f34890bbde2b364eda5",
+    "tests/test_proposals.py": "bb87a6a33d4a958d0356576980608d2bcabb6b24b68f8f53681183db9145baf4",
+    "tests/test_repair.py": "20b7b0deae1be0db2a2b7a7e46189dc220dbbcdb1718c66a787e02af28defacc",
+    "tests/test_runtime_control.py": "53af523960ff3c7c2be19fc9fcd58cd9896789bb34da5fe040f0434887573a57",
+    "tests/test_safety.py": "3f6730b5ef3494119a95a24f2db30bcc1082169154990d928fbaedd3ec0f9b1d",
+    "tests/test_session.py": "c9708d1f375cc72eabef498be3316d4140079f915dd3179f922946ca59c9df5e",
+    "tests/test_step8.py": "bf67dba39f846a3dc2d329bec9a4c1e175876d97d2498b9c7edb619b067e77ca",
+    "tests/test_tools.py": "8015652263bc170e491d0db440f49c95a96d2b98393ce23447e7ce5ee7a16dac",
+    "tests/test_understanding.py": "a7dee65225f96c7844c07c5aea690a1641986d409d581eb2b1bdad8ed9a9bb60",
+    "tests/test_validation.py": "9d4d50d640cafd0c3b6e4ceee48024b6866093104e7c90328953fc7dd5c2ad3f"
+  },
+  "prompt_version": "loop-action-v11",
+  "tool_schemas": {
+    "inspect_repository": {},
+    "runtime_status": {},
+    "stop_runtime": {
+      "session_id": "string"
+    },
+    "prepare_database": {},
+    "propose_runtime_repair": {
+      "session_id": "string",
+      "health_path": "string"
+    },
+    "apply_runtime_repair": {
+      "session_id": "string",
+      "health_path": "string",
+      "proposal_id": "string"
+    },
+    "migrate_database": {
+      "session_id": "string"
+    },
+    "read_file": {
+      "path": "string"
+    },
+    "patch_file": {
+      "path": "string",
+      "old_text": "string",
+      "new_text": "string"
+    },
+    "propose_docker": {},
+    "apply_docker": {
+      "proposal_id": "string"
+    },
+    "validate_runtime": {
+      "compose_file": "string",
+      "existing_setup": "boolean",
+      "build": "boolean",
+      "run": "boolean",
+      "keep_running": "boolean",
+      "service": "string",
+      "container_port": "integer",
+      "health_path": "string",
+      "timeout": "integer",
+      "readiness_timeout": "integer"
+    }
+  },
+  "provider": "[REDACTED]",
+  "model": "[REDACTED]",
+  "cases": {
+    "nextjs": [
+      "tests.agent_loop_smoke",
+      [],
+      "Prompted generated Next.js, independent page marker, scoped cleanup"
+    ],
+    "django": [
+      "tests.django_step6_smoke",
+      [],
+      "Prompted SQLite Django, independent page and host-data isolation, scoped cleanup"
+    ],
+    "postgres": [
+      "tests.django_step7_smoke",
+      [
+        "--live"
+      ],
+      "Prompted disposable PostgreSQL, separate migration review, ORM and page checks, scoped cleanup"
+    ],
+    "recovery": [
+      "tests.step8_recovery_smoke",
+      [
+        "--live"
+      ],
+      "Real 401 setup then prompted reviewed /health recovery, one attempt, unchanged Compose, scoped cleanup"
+    ],
+    "unsupported": [
+      "tests.agent_loop_smoke",
+      [
+        "--case",
+        "unsupported"
+      ],
+      "Unsupported-stack stop with no mutation"
+    ]
+  },
+  "limits": {
+    "model_calls_per_request": 12,
+    "tool_actions_per_request": 12,
+    "failures_per_request": 2,
+    "repair_attempts_per_unchanged_input": 1
+  },
+  "request_spacing_seconds": 35,
+  "retry_429": false,
+  "scope": "Established-fixture regression, not held-out generalization. Harness-approved actions; no independent human reviewer.",
+  "success_rule": "All five reports success=true, exact frozen source, no unauthorized mutation, no credential exposure; retain failures and do not selectively relabel reruns."
+}

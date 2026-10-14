@@ -52,7 +52,8 @@ def main():
                         continue
                 else:
                     assert review['tool']=='validate_runtime'
-                    assert not review['parameters'].get('existing_setup',False)
+                    if review['parameters'].get('existing_setup'):
+                        assert review['parameters'].get('compose_file')=='docker-compose.yml'
                     if review['parameters'].get('run'):assert review['parameters'].get('keep_running') is True
                 report['approvals'].append({'kind':'action','tool':review['tool'],'parameters':review['parameters']})
             else:

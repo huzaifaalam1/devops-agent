@@ -1,0 +1,513 @@
+{
+  "success": true,
+  "approvals": [
+    {
+      "tool": "apply_docker",
+      "parameters": {
+        "proposal_id": "7f89c28bec1f2654faff521e23310cd665aab7e05235c40011348f785986a723"
+      }
+    },
+    {
+      "tool": "validate_runtime",
+      "parameters": {
+        "compose_file": "docker-compose.yml",
+        "run": true,
+        "readiness_timeout": 5,
+        "timeout": 300
+      }
+    },
+    {
+      "tool": "apply_runtime_repair",
+      "parameters": {
+        "session_id": "ca6b4aac3759423dbdc2ab72f412775a",
+        "health_path": "/health",
+        "proposal_id": "02c352e8d9fc74db685a48ad34f196e338dff9a184961d6d5729cbd24fbaeb51"
+      }
+    }
+  ],
+  "failure": {
+    "success": false,
+    "phase": "application",
+    "results": [
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app/docker-compose.yml config --format json",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+        "success": true,
+        "stdout": "\"unix://<home>/.docker/run/docker.sock\"\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-z5jrq3_u/compose.json build",
+        "success": true,
+        "stdout": "#1 [internal] load local bake definitions\n#1 reading from stdin 665B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 391B done\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/python:3.12-slim\n#3 DONE 0.6s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 330B done\n#4 DONE 0.0s\n\n#5 [1/4] FROM docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1\n#5 resolve docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 done\n#5 DONE 0.0s\n\n#6 [internal] load build context\n#6 transferring context: 1.96kB done\n#6 DONE 0.0s\n\n#7 [2/4] WORKDIR /app\n#7 CACHED\n\n#8 [3/4] COPY . .\n#8 CACHED\n\n#9 [4/4] RUN python -m pip install --no-cache-dir -r requirements.txt\n#9 CACHED\n\n#10 exporting to image\n#10 exporting layers done\n#10 exporting manifest sha256:60eb14d7acedd330d7842f8a748c42b3bb6b451b075fc5363402fdd65b816c26 done\n#10 exporting config sha256:d35cc7dee02daf31442d8ea5a4074fe5bcbdc8ad914b0621000a862956a34fdf done\n#10 exporting attestation manifest sha256:a933828cec9bed34a03ad0432b5b7a4b34a780b8eb2ee580b078f95eb24ccd59 done\n#10 exporting manifest list sha256:b72a210e35e9bd1f71f0c4d9cb46c5da5205ef875ba2de9edc0cc3c083209a72 done\n#10 naming to docker.io/library/devops-validation-c9814c405f1f-app:validation done\n#10 unpacking to docker.io/library/devops-validation-c9814c405f1f-app:validation\n#10 unpacking to docker.io/library/devops-validation-c9814c405f1f-app:validation 1.1s done\n#10 DONE 1.1s\n\n#11 resolving provenance for metadata file\n#11 DONE 0.0s\n",
+        "stderr": " Image devops-validation-c9814c405f1f-app:validation Building \n Image devops-validation-c9814c405f1f-app:validation Built \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-z5jrq3_u/compose.json up -d --no-build",
+        "success": true,
+        "stdout": "",
+        "stderr": " Network devops-validation-c9814c405f1f_default Creating \n Network devops-validation-c9814c405f1f_default Creating \n Network devops-validation-c9814c405f1f_default Created \n Network devops-validation-c9814c405f1f_default Created \n Container devops-validation-c9814c405f1f-app-1 Creating \n Container devops-validation-c9814c405f1f-app-1 Created \n Container devops-validation-c9814c405f1f-app-1 Starting \n Container devops-validation-c9814c405f1f-app-1 Started \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-z5jrq3_u/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-z5jrq3_u/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-z5jrq3_u/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-z5jrq3_u/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-z5jrq3_u/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-z5jrq3_u/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-z5jrq3_u/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-z5jrq3_u/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      }
+    ],
+    "logs": "app-1  | Performing system checks...\napp-1  | \napp-1  | System check identified no issues (0 silenced).\napp-1  | October 14, 2026 - 01:14:44\napp-1  | Django version 5.2.8, using settings '[REDACTED]'\napp-1  | Starting development server at http://0.0.0.0:8000/\napp-1  | Quit the server with CONTROL-C.\napp-1  | \napp-1  | WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.\napp-1  | For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/\napp-1  | [14/Oct/2026 01:14:44] \"HEAD / HTTP/1.1\" 401 0\napp-1  | [14/Oct/2026 01:14:45] \"HEAD / HTTP/1.1\" 401 0\napp-1  | [14/Oct/2026 01:14:45] \"HEAD / HTTP/1.1\" 401 0\napp-1  | [14/Oct/2026 01:14:46] \"HEAD / HTTP/1.1\" 401 0\napp-1  | [14/Oct/2026 01:14:47] \"HEAD / HTTP/1.1\" 401 0\napp-1  | [14/Oct/2026 01:14:47] \"HEAD / HTTP/1.1\" 401 0\napp-1  | [14/Oct/2026 01:14:48] \"HEAD / HTTP/1.1\" 401 0\n",
+    "expected_services": [
+      "app"
+    ],
+    "running_services": [
+      "app"
+    ],
+    "stopped_services": [],
+    "application_check": {
+      "url": "http://127.0.0.1:8000/",
+      "reachable": true,
+      "healthy": false,
+      "status_code": 401,
+      "redirect_url": null,
+      "error": "Authentication is required; choose an unauthenticated readiness path.",
+      "redirects": [],
+      "final_url": "http://127.0.0.1:8000/",
+      "success": false,
+      "container_id": "1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb"
+    },
+    "stages": [
+      {
+        "phase": "config",
+        "success": true
+      },
+      {
+        "phase": "build",
+        "success": true
+      },
+      {
+        "phase": "startup",
+        "success": true
+      },
+      {
+        "phase": "application",
+        "success": false
+      }
+    ],
+    "cleanup": {
+      "status": "complete",
+      "results": [
+        {
+          "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-c9814c405f1f -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-z5jrq3_u/compose.json down --volumes --timeout 5",
+          "success": true,
+          "stdout": "",
+          "stderr": " Container devops-validation-c9814c405f1f-app-1 Stopping \n Container devops-validation-c9814c405f1f-app-1 Stopped \n Container devops-validation-c9814c405f1f-app-1 Removing \n Container devops-validation-c9814c405f1f-app-1 Removed \n Network devops-validation-c9814c405f1f_default Removing \n Network devops-validation-c9814c405f1f_default Removed \n",
+          "returncode": 0
+        },
+        {
+          "command": "docker ps --all --quiet --filter label=com.docker.compose.project=devops-validation-c9814c405f1f",
+          "success": true,
+          "stdout": "",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker image rm devops-validation-c9814c405f1f-app:validation",
+          "success": true,
+          "stdout": "Untagged: devops-validation-c9814c405f1f-app:validation\nDeleted: sha256:b72a210e35e9bd1f71f0c4d9cb46c5da5205ef875ba2de9edc0cc3c083209a72\n",
+          "stderr": "",
+          "returncode": 0
+        }
+      ]
+    },
+    "verified": [
+      "config",
+      "build",
+      "startup"
+    ],
+    "unverified": [
+      "Business correctness and production readiness",
+      "Shared image/build cache is retained"
+    ],
+    "environment_state": "stopped",
+    "project": "devops-validation-c9814c405f1f",
+    "application_service": "app",
+    "container_port": 8000,
+    "service_states": {
+      "app": {
+        "id": "1e3e847d64f2031d82270022b7edf5775468e95d4a51c13ea7c0636e17db19bb",
+        "state": "running",
+        "health": null,
+        "ports": {
+          "8000/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "8000"
+            }
+          ]
+        }
+      }
+    },
+    "error": "Readiness deadline exceeded. Authentication is required; choose an unauthenticated readiness path.",
+    "next_action": "Inspect service health or select an unauthenticated --health-path.",
+    "repair_context": {
+      "inputs_sha256": "1d088f20a2b93e6a8d3ea3a0c1f8fedd10490bfe56b657c442cb694d60a056d8",
+      "compose_file": "docker-compose.yml",
+      "health_path": "/",
+      "service": null,
+      "container_port": null,
+      "timeout": 300,
+      "readiness_timeout": 5
+    },
+    "session_id": "ca6b4aac3759423dbdc2ab72f412775a",
+    "diagnosis": {
+      "type": "http_authentication",
+      "phase": "application",
+      "summary": "The readiness endpoint requires authentication.",
+      "symptoms": [
+        "401"
+      ],
+      "evidence": [
+        {
+          "source": "application_check.status_code",
+          "excerpt": "401"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+      "likely_causes": [
+        "HTTP 401/403 means the endpoint is reachable but does not prove unauthenticated readiness."
+      ],
+      "suggested_actions": [
+        "Select an existing unauthenticated readiness route with --health-path; do not disable application authentication."
+      ],
+      "expected_impact": "Changes the probe path only.",
+      "verification": "Rerun validate --run --health-path /your-readiness-route and require a final 2xx response from the owned endpoint.",
+      "automatic_repair": false,
+      "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+    }
+  },
+  "repair": {
+    "success": true,
+    "status": "repaired",
+    "session_id": "d52406e8c14046649b6c88e7590fee24",
+    "source_session": "ca6b4aac3759423dbdc2ab72f412775a",
+    "proposal_id": "02c352e8d9fc74db685a48ad34f196e338dff9a184961d6d5729cbd24fbaeb51",
+    "attempts": 1,
+    "attempt_limit": 1,
+    "changes": [],
+    "rollback": {
+      "status": "not_needed"
+    },
+    "validation": {
+      "success": true,
+      "phase": "application",
+      "results": [
+        {
+          "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-2ef895483604 -f /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app/docker-compose.yml config --format json",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+          "success": true,
+          "stdout": "\"unix://<home>/.docker/run/docker.sock\"\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-2ef895483604 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-9sgszu2g/compose.json build",
+          "success": true,
+          "stdout": "#1 [internal] load local bake definitions\n#1 reading from stdin 665B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 391B done\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/python:3.12-slim\n#3 DONE 0.6s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 330B done\n#4 DONE 0.0s\n\n#5 [1/4] FROM docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1\n#5 resolve docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 done\n#5 DONE 0.0s\n\n#6 [internal] load build context\n#6 transferring context: 334B done\n#6 DONE 0.0s\n\n#7 [2/4] WORKDIR /app\n#7 CACHED\n\n#8 [3/4] COPY . .\n#8 CACHED\n\n#9 [4/4] RUN python -m pip install --no-cache-dir -r requirements.txt\n#9 CACHED\n\n#10 exporting to image\n#10 exporting layers done\n#10 exporting manifest sha256:22ff331393e52ac151a7be8a494ccd055a9cbbd3411d0e1fd1c46b3aa0c9c4e4 done\n#10 exporting config sha256:07aacc5a43a91c70750226dc3847d94407d257bcac8e19f015ff55c93821a5c6 done\n#10 exporting attestation manifest sha256:759b001a2177ba71567c45e6217741f45c12d3a49cd87372ce0d6ef8163ef08e done\n#10 exporting manifest list sha256:95b78063923bec790019ea94e30f438c2987164122611d712516fdf4339d6f9c done\n#10 naming to docker.io/library/devops-validation-2ef895483604-app:validation done\n#10 unpacking to docker.io/library/devops-validation-2ef895483604-app:validation\n#10 unpacking to docker.io/library/devops-validation-2ef895483604-app:validation 1.2s done\n#10 DONE 1.2s\n\n#11 resolving provenance for metadata file\n#11 DONE 0.0s\n",
+          "stderr": " Image devops-validation-2ef895483604-app:validation Building \n Image devops-validation-2ef895483604-app:validation Built \n",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-2ef895483604 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-9sgszu2g/compose.json up -d --no-build",
+          "success": true,
+          "stdout": "",
+          "stderr": " Network devops-validation-2ef895483604_default Creating \n Network devops-validation-2ef895483604_default Creating \n Network devops-validation-2ef895483604_default Created \n Network devops-validation-2ef895483604_default Created \n Container devops-validation-2ef895483604-app-1 Creating \n Container devops-validation-2ef895483604-app-1 Created \n Container devops-validation-2ef895483604-app-1 Starting \n Container devops-validation-2ef895483604-app-1 Started \n",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-2ef895483604 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-9sgszu2g/compose.json ps --all --quiet",
+          "success": true,
+          "stdout": "d93b6215a618fee3fc0d8dbbdc1ce31b5365447c50a2484c9826fc0b8e3b6e8a\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker inspect d93b6215a618fee3fc0d8dbbdc1ce31b5365447c50a2484c9826fc0b8e3b6e8a",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-2ef895483604 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-9sgszu2g/compose.json ps --all --quiet",
+          "success": true,
+          "stdout": "d93b6215a618fee3fc0d8dbbdc1ce31b5365447c50a2484c9826fc0b8e3b6e8a\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker inspect d93b6215a618fee3fc0d8dbbdc1ce31b5365447c50a2484c9826fc0b8e3b6e8a",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-2ef895483604 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-9sgszu2g/compose.json ps --all --quiet",
+          "success": true,
+          "stdout": "d93b6215a618fee3fc0d8dbbdc1ce31b5365447c50a2484c9826fc0b8e3b6e8a\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker inspect d93b6215a618fee3fc0d8dbbdc1ce31b5365447c50a2484c9826fc0b8e3b6e8a",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        }
+      ],
+      "logs": "",
+      "expected_services": [
+        "app"
+      ],
+      "running_services": [
+        "app"
+      ],
+      "stopped_services": [],
+      "application_check": {
+        "url": "http://127.0.0.1:8000/health",
+        "reachable": true,
+        "healthy": true,
+        "status_code": 200,
+        "redirect_url": null,
+        "error": null,
+        "redirects": [],
+        "final_url": "http://127.0.0.1:8000/health",
+        "success": true,
+        "container_id": "d93b6215a618fee3fc0d8dbbdc1ce31b5365447c50a2484c9826fc0b8e3b6e8a"
+      },
+      "stages": [
+        {
+          "phase": "config",
+          "success": true
+        },
+        {
+          "phase": "build",
+          "success": true
+        },
+        {
+          "phase": "startup",
+          "success": true
+        },
+        {
+          "phase": "dependencies",
+          "success": true,
+          "status": "not_required"
+        },
+        {
+          "phase": "services",
+          "success": true
+        },
+        {
+          "phase": "application",
+          "success": true
+        }
+      ],
+      "cleanup": {
+        "status": "complete",
+        "results": [
+          {
+            "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-vusqzddf/app -p devops-validation-2ef895483604 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-9sgszu2g/compose.json down --volumes --timeout 5",
+            "success": true,
+            "stdout": "",
+            "stderr": " Container devops-validation-2ef895483604-app-1 Stopping \n Container devops-validation-2ef895483604-app-1 Stopped \n Container devops-validation-2ef895483604-app-1 Removing \n Container devops-validation-2ef895483604-app-1 Removed \n Network devops-validation-2ef895483604_default Removing \n Network devops-validation-2ef895483604_default Removed \n",
+            "returncode": 0
+          },
+          {
+            "command": "docker ps --all --quiet --filter label=com.docker.compose.project=devops-validation-2ef895483604",
+            "success": true,
+            "stdout": "",
+            "stderr": "",
+            "returncode": 0
+          },
+          {
+            "command": "docker image rm devops-validation-2ef895483604-app:validation",
+            "success": true,
+            "stdout": "Untagged: devops-validation-2ef895483604-app:validation\nDeleted: sha256:95b78063923bec790019ea94e30f438c2987164122611d712516fdf4339d6f9c\n",
+            "stderr": "",
+            "returncode": 0
+          }
+        ]
+      },
+      "verified": [
+        "config",
+        "build",
+        "startup",
+        "services",
+        "application"
+      ],
+      "unverified": [
+        "Business correctness and production readiness",
+        "Shared image/build cache is retained"
+      ],
+      "environment_state": "stopped",
+      "project": "devops-validation-2ef895483604",
+      "application_service": "app",
+      "container_port": 8000,
+      "service_states": {
+        "app": {
+          "id": "d93b6215a618fee3fc0d8dbbdc1ce31b5365447c50a2484c9826fc0b8e3b6e8a",
+          "state": "running",
+          "health": null,
+          "ports": {
+            "8000/tcp": [
+              {
+                "HostIp": "127.0.0.1",
+                "HostPort": "8000"
+              }
+            ]
+          }
+        }
+      },
+      "dependency_checks": {},
+      "repair_context": {
+        "inputs_sha256": "1d088f20a2b93e6a8d3ea3a0c1f8fedd10490bfe56b657c442cb694d60a056d8",
+        "compose_file": "docker-compose.yml",
+        "health_path": "/health",
+        "service": null,
+        "container_port": null,
+        "timeout": 300,
+        "readiness_timeout": 90
+      },
+      "session_id": "3d9e60559989487dabc6f8f8e8ca5989"
+    },
+    "diagnosis": null,
+    "summary": "Retry readiness at /health; leave authentication and files unchanged."
+  },
+  "replay_refused": true,
+  "compose_unchanged": true,
+  "cleanup_verified": true,
+  "unrelated_containers_preserved": true
+}

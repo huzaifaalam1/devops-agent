@@ -64,7 +64,7 @@ def run_chat(path, read, emit, resume=None):
                 show('Enter yes, no, or pause. No approval was issued.')
         show(result['state'].get('message') or result['state']['status'])
         for item in result['state'].get('observations',[]):
-            if item['tool'] in {'apply_docker','patch_file','validate_runtime','stop_runtime','prepare_database','migrate_database'}:
+            if item['tool'] in {'apply_docker','patch_file','validate_runtime','stop_runtime','prepare_database','migrate_database','apply_runtime_repair'}:
                 show(item)
 
     try:

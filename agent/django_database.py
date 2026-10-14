@@ -285,9 +285,13 @@ def migrate(root, session, expected):
             journal.finish('succeeded' if result['success'] else 'failed', result)
             return result
         except (Exception, KeyboardInterrupt) as error:
-            journal.finish('failed', {'success': False, 'session_id': session, 'phase': 'migration',
-                'error': 'Migration interrupted or failed; environment retained for inspection. No replay or rollback. Stop the owned session when finished.'})
-            if isinstance(error, KeyboardInterrupt):
-                raise
             message=str(error) if isinstance(error,DatabaseOperationError) else 'Database initialization or verification failed; inspect the retained environment. No automatic retry or rollback.'
-            raise ValueError(message) from None
+            result={'success':False,'session_id':session,'phase':'migration',
+                    'error':message,'environment_state':'unknown',
+                    'notice':'The owned environment was retained for inspection. Migrations will not be replayed; review stop_runtime when finished.'}
+            from agent.diagnostics import diagnose_failure
+            result['diagnosis']=diagnose_failure(result)
+            journal.finish('failed',result)
+            if isinstance(error,KeyboardInterrupt):
+                raise
+            return result

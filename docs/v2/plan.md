@@ -1,6 +1,6 @@
 # V2 plan and scope contract
 
-Status: steps 1–6 complete. [Django runtime evidence](step6/README.md) is retained. [Django discovery evidence](step5/README.md) is retained. The [persistent agent loop](agent-loop.md) connects terminal requests to the [structured tool boundary](tools.md). Broader model-quality evaluation remains step 8; PostgreSQL initialization/migrations and AWS remain later steps.
+Status: steps 1–8 complete. [Step-8 diagnosis, recovery and evaluation evidence](step8/README.md) is retained. [PostgreSQL evidence](step7/README.md), [Django runtime evidence](step6/README.md) and [Django discovery evidence](step5/README.md) are retained. AWS preparation remains step 9.
 Baseline: v1 commit `4a5afdb` (`Finalize v1 support contract and verify end-to-end startup`).
 This document records the agreed v2 direction and concrete implementation defaults;
 it does not expand the current [v1 support contract](../product-scope.md).
@@ -69,10 +69,11 @@ pilot if separation requires rewriting the application.
   must not overwrite intervening edits.
 
 Initial loop limits (implementation defaults, to be tested in steps 4 and 8):
-maximum 12 tool actions per user request, at most two repair attempts, and no
+maximum 12 tool actions and 12 model calls per user request, two failed actions,
+one repair attempt per unchanged repository input and repair kind, and no
 repetition of an identical failed action on unchanged inputs without a stated
 transient cause. Existing per-command deadlines remain mandatory. Honor provider
-retry delays with a bounded wait/retry path; do not spin on rate limits. New user
+retry delays before a new user request; no automatic 429 retry or paid fallback. New user
 input may explicitly authorize continued work after a limit. Limits must appear
 in the session record and be adjustable deliberately, not by model instruction.
 
