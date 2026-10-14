@@ -7,7 +7,9 @@ The [step-4 loop](agent-loop.md) now connects this boundary to terminal reviews.
 | Tool | Effect | Authorization |
 | --- | --- | --- |
 | runtime_status | Live state of journaled containers | Read-only Docker queries |
-| stop_runtime | Stop exact retained container IDs, preserving data | Trusted UI approval of runtime snapshot |
+| stop_runtime | Stop exact retained container IDs; volumes remain, tmpfs data is lost | Trusted UI approval of runtime snapshot |
+| prepare_database | Fresh disposable PostgreSQL and migration plan; no app readiness claim | Separate trusted UI approval |
+| migrate_database | Reviewed forward migrations, diagnostic ORM check and app startup | Separate one-use approval for an exact prepared session |
 | inspect_repository | Static repository findings | Automatic within selected root |
 | read_file | Read supported root configuration text | Automatic within selected root |
 | patch_file | Apply one exact text replacement | Trusted UI approval of displayed diff |
@@ -16,7 +18,7 @@ The [step-4 loop](agent-loop.md) now connects this boundary to terminal reviews.
 | validate_runtime | Compose resolution; optional build/run | Trusted UI approval, even for config-only Docker invocation |
 
 There is no arbitrary shell, path override, credential setter, approval tool,
-cloud operation or database migration tool. Repair and retained-log adapters can
+cloud operation or arbitrary database command. Step 7 adds only the bounded disposable workflow described in [its contract](step7/README.md). Repair and retained-log adapters can
 be added with explicit schemas and provenance checks when their loop workflows
 are implemented; existing CLI repair remains available. No additional model or
 orchestration dependency is introduced.

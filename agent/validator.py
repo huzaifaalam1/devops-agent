@@ -32,10 +32,11 @@ def run_command(command, repo_path, timeout=30):
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
-            process.communicate()
+            stdout, stderr = process.communicate()
+            result.update(stdout=stdout, stderr=stderr)
         if isinstance(error, KeyboardInterrupt):
             raise
-        result.update(stderr=f"Command timed out after {timeout:.1f} seconds.", timed_out=True)
+        result.update(stderr=result["stderr"]+f"\nCommand timed out after {timeout:.1f} seconds.", timed_out=True)
     except OSError:
         result.update(stderr="Executable is missing or cannot be started.", host_error=True)
     return result
@@ -225,7 +226,7 @@ def application_endpoint(records, service, container_port, health_path):
 
 def _validate_docker(path, compose_file=None, build=False, run=False, keep_running=False,
                     service=None, container_port=None, health_path="/", timeout=300.0,
-                    readiness_timeout=90.0, redactor=None, journal=None):
+                    readiness_timeout=90.0, redactor=None, journal=None, database_project=None):
     repo = Path(path).resolve()
     report = {"success": False, "phase": "repository", "results": [], "logs": "",
               "expected_services": [], "running_services": [], "stopped_services": [],
@@ -303,10 +304,14 @@ def _validate_docker(path, compose_file=None, build=False, run=False, keep_runni
                 fail("host", "Runtime validation requires a local Docker engine.", "Select a local Docker context; remote-host readiness is not supported.")
             # Compose normalizes its implicit default network name from -p. Only
             # remove the exact run-owned name, never an arbitrary custom name.
-            default = (config.get("networks") or {}).get("default")
-            if default and default.get("name") == project + "_default" and not default.get("external"):
-                default.pop("name")
+            for network_name in (['default','ingress'] if database_project else ['default']):
+                network = (config.get("networks") or {}).get(network_name)
+                if network and network.get("name") == project + "_" + network_name and not network.get("external"):
+                    network.pop("name")
             config = isolated_config(config, project, repo)
+            if database_project:
+                from agent.django_database import prepare_config
+                config = prepare_config(config, database_project, redactor)
             report["expected_services"] = sorted(config["services"])
             if run:
                 candidates = [name for name, item in config["services"].items() if item.get("ports")]
@@ -348,6 +353,17 @@ def _validate_docker(path, compose_file=None, build=False, run=False, keep_runni
                     report["service_states"] = records
                     report["running_services"] = sorted(k for k, v in records.items() if v["state"] == "running")
                     report["stopped_services"] = sorted(set(config["services"]) - set(report["running_services"]))
+                    if ready and database_project:
+                        from agent.django_database import run_database
+                        record = {'project': project, 'containers': {k: v['id'] for k,v in records.items()}}
+                        try:
+                            report['database_plan'] = run_database(repo, record)
+                        except ValueError as error:
+                            fail('database_plan',str(error))
+                        stage('services')
+                        report.update(success=True, phase='database_prepared')
+                        report['unverified'].extend(['Migrations require separate approval', 'Application HTTP readiness'])
+                        break
                     if ready:
                         last_phase = "application"
                         url = application_endpoint(records, service, container_port, health_path)
@@ -423,7 +439,7 @@ def _validate_docker(path, compose_file=None, build=False, run=False, keep_runni
 
 def _journaled_validation(path, compose_file=None, build=False, run=False, keep_running=False,
                     service=None, container_port=None, health_path="/", timeout=300.0,
-                    readiness_timeout=90.0):
+                    readiness_timeout=90.0, database_project=None):
     """Sanitize reports and journal authorized execution before side effects."""
     redactor = Redactor(path)
     journal = None
@@ -435,7 +451,7 @@ def _journaled_validation(path, compose_file=None, build=False, run=False, keep_
         result = _validate_docker(path, compose_file=compose_file, build=build, run=run,
                                   keep_running=keep_running, service=service, container_port=container_port,
                                   health_path=health_path, timeout=timeout, readiness_timeout=readiness_timeout,
-                                  redactor=redactor, journal=journal)
+                                  redactor=redactor, journal=journal, database_project=database_project)
     except (OSError, ValueError):
         result = {"success": False, "phase": "safety", "error": "Private execution journal could not be created; execution was refused.",
                   "cleanup": {"status": "not_needed"}, "environment_state": "not_started"}
@@ -457,10 +473,10 @@ def _journaled_validation(path, compose_file=None, build=False, run=False, keep_
 
 def validate_docker(path, compose_file=None, build=False, run=False, keep_running=False,
                     service=None, container_port=None, health_path="/", timeout=300.0,
-                    readiness_timeout=90.0):
+                    readiness_timeout=90.0, database_project=None):
     options = dict(compose_file=compose_file, build=build, run=run, keep_running=keep_running,
                    service=service, container_port=container_port, health_path=health_path,
-                   timeout=timeout, readiness_timeout=readiness_timeout)
+                   timeout=timeout, readiness_timeout=readiness_timeout, database_project=database_project)
     if options.get("build") or options.get("run"):
         try:
             with project_lock(path):

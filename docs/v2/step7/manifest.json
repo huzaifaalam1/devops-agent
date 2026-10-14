@@ -1,0 +1,73 @@
+{
+  "verified_on": "2026-10-13",
+  "scope": "Single Django/pip app; fresh disposable PostgreSQL; reviewed initialization; diagnostic ORM and application-model create/read/delete; localhost:8000; scoped cleanup.",
+  "provider": "groq",
+  "model": "openai/gpt-oss-120b",
+  "model_calls": 4,
+  "reviewed_actions": [
+    {
+      "tool": "apply_docker",
+      "parameters": {
+        "proposal_id": "3e345c873442fe0239793b545b33cd0a03484f73575be36cbc727cce3e854e70"
+      }
+    },
+    {
+      "tool": "prepare_database",
+      "parameters": {}
+    },
+    {
+      "tool": "migrate_database",
+      "parameters": {
+        "session_id": "0751ae92995341a39114ce808abd4551"
+      }
+    },
+    {
+      "tool": "stop_runtime",
+      "parameters": {
+        "session_id": "0751ae92995341a39114ce808abd4551"
+      }
+    }
+  ],
+  "fixture": {
+    "python": "3.12",
+    "django": "5.2.8",
+    "psycopg": "3.2.10",
+    "postgres_image": "postgres:16-alpine",
+    "postgres_digest": "sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea",
+    "docker_server": "29.8.0"
+  },
+  "final_source_sha256": {
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/conversation.py": "297d71914f08df40934caaa329bd758c068fa99ec0e6796bc9760fc8476c292c",
+    "agent/detector.py": "56a7a1fd243b50f9955fe5aba7dc1d13212b57ef0c13357a84d68f3e4f4def96",
+    "agent/diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "agent/django_database.py": "5e8b8c35d598191969c31af62baff5e8c296bb362a1a5a264cfb33fbbcb961f0",
+    "agent/django_inspection.py": "69f1aba8976762cafdbdf8c934e5e4c450ffafe8b18d7531f3bedcae5df3060b",
+    "agent/django_runtime.py": "aab2bea6f98fb31bdf6130145c53c75d04689cbe65d028da1b5edc875c50f85e",
+    "agent/docker_generator.py": "a80c8cd6b96b84ee3d64a24bd91f639eb144991bb91b7c4d774e715db91aa601",
+    "agent/file_edits.py": "cc061e038463a96f424e08f1da45d3a9c829a949255fa6d58830458c74ac1ffd",
+    "agent/loop.py": "b584de9721c705a3932757ece158ee100d90ac4f991cbf78013ce1d4fa76c7da",
+    "agent/loop_model.py": "8d3a0e7e47d7dee7a8d7e27cffc95a304ccc40ba11e29b0e84b23d4f296a6adf",
+    "agent/main.py": "711a2bf0d2185bde860eb71e13793f2d20a2892f6a2e6448ac6d524318c5ebef",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/node_runtime.py": "84e9fa821bbd1c488895d2ccdc79270e74a829e43a7a4a63bd4fc9c016238893",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/repair.py": "51ee1d1d44e08e9684abd0442497d8036bc2d7cc89038ce949526d2bad2960c3",
+    "agent/runtime_control.py": "39d39199f97250b1d5a02eac135fd65019e86c81793b00de800b89c5be5ca1f0",
+    "agent/safety.py": "8c75bf346da5c303516f792c1eb82f196f8dfcae7bbd7d03ea1c9f0510246590",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/session.py": "d661b52c218750d04b1e577c02325daeff28201d7d3969e1421ed4b2ab486ae3",
+    "agent/tools.py": "6560294f647bbfb324d3c3272f886ccea5616cc384bb267546cdbacec1cbf662",
+    "agent/understanding.py": "c94fe3252d0f2af3a4ec08d05615331dcac1573f9db0e44ca9e6883e26f63d89",
+    "agent/validator.py": "cfa8b4f4001b7a0529c08ab4d58488f6450eade3f665cce3a5b699efac0cd900"
+  },
+  "post_runtime_verification_change": {
+    "files": [
+      "agent/docker_generator.py"
+    ],
+    "description": "Suppress the generic docker compose up hint for PostgreSQL proposals; users must follow the separately reviewed preparation/migration workflow. Executor, templates, prompt, schemas and runtime logic are unchanged from the retained real runs. Covered by the final offline suite."
+  },
+  "reviewer": "Implementing assistant; trusted harness approvals under user authorization, not independent human review."
+}

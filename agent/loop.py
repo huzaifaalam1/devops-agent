@@ -50,7 +50,7 @@ def compact(tool, result):
     if isinstance(result.get('cleanup'),dict):
         result['cleanup']={k:result['cleanup'][k] for k in ['status','project','stop_command'] if k in result['cleanup']}
     return {k:result.get(k) for k in ['success','phase','error','created','updated','session_id',
-                                     'application_check','environment_state','cleanup','unverified','blockers','notice'] if k in result}
+                                     'database_plan','orm_verified','application_check','environment_state','cleanup','unverified','blockers','notice'] if k in result}
 
 
 class AgentLoop:
@@ -225,8 +225,10 @@ class AgentLoop:
                     self.emit('Change applied. Refreshed repository findings'+(' and file contents.' if action['tool']=='patch_file' else '.'))
                 except (OSError,ValueError,TypeError):
                     update.update(self._stop('Change applied, but refreshing the evidence failed. Inspect the file before continuing; the edit will not be replayed.'))
+            if action['tool']=='migrate_database' and result.get('success'):
+                update.update(status='verified',message='Disposable PostgreSQL migrations, diagnostic ORM create/read/delete and HTTP readiness verified. Stopping the database destroys its data; business-specific behavior remains unverified.')
             if action['tool']=='stop_runtime' and result.get('success'):
-                update.update(status='finished',message='The agent-owned containers are stopped. Volumes and data were preserved.')
+                update.update(status='finished',message='The agent-owned containers are stopped. Volumes were preserved; tmpfs database data is lost.')
             if action['tool']=='validate_runtime' and result.get('phase')=='eligibility':
                 blockers=result.get('blockers',result.get('project',{}).get('blockers',[]))
                 details=' '.join(item.get('message','')+' '+item.get('next_action','') for item in blockers)

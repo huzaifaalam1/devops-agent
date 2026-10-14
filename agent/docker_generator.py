@@ -131,9 +131,11 @@ def propose_docker_files(path):
     inputs = ("package.json", "package-lock.json", ".nvmrc", ".node-version",
               "next.config.js", "next.config.mjs", "next.config.ts", ".env.example", *ENV_FILES)
     if django:
+        if project['services']==['PostgreSQL']:
+            proposal['run_command']=None  # Initialization must use the separately reviewed agent workflow.
         inputs=tuple(sorted(set(project['inspected_files']) | {'.env','.python-version','runtime.txt','pyproject.toml'}))
         proposal['notes'].extend(['SQLite files and dotenv files are excluded from the image. No host database is mounted.',
-                                  'No migrations are run. Select an unauthenticated readiness path; page readiness does not verify database business operations.'])
+                                  'Generation does not run migrations. PostgreSQL requires prepare_database and a separate migrate_database review; stopping its tmpfs storage destroys data. Page readiness alone does not verify business operations.'])
     combined = hashlib.sha256()
     for filename in inputs:
         file = root / filename

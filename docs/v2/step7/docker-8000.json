@@ -1,0 +1,234 @@
+{
+  "success": true,
+  "live_model": false,
+  "approvals": [
+    {
+      "tool": "apply_docker",
+      "parameters": {
+        "proposal_id": "8662215e5dacef9f5f9c7e5635e2180c3f845a13c55a1a79c1428401043604d2"
+      }
+    },
+    {
+      "tool": "prepare_database",
+      "parameters": {}
+    },
+    {
+      "tool": "migrate_database",
+      "parameters": {
+        "session_id": "87f0fd6c6b0e4998ab288058dbc6ccb5"
+      }
+    },
+    {
+      "tool": "stop_runtime",
+      "parameters": {
+        "session_id": "87f0fd6c6b0e4998ab288058dbc6ccb5"
+      }
+    }
+  ],
+  "source_sha256": {
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/conversation.py": "297d71914f08df40934caaa329bd758c068fa99ec0e6796bc9760fc8476c292c",
+    "agent/detector.py": "56a7a1fd243b50f9955fe5aba7dc1d13212b57ef0c13357a84d68f3e4f4def96",
+    "agent/diagnostics.py": "43b7223f79d9ba12e88aca9cd6886237425ad61cc514813705a178541bcac275",
+    "agent/django_database.py": "5e8b8c35d598191969c31af62baff5e8c296bb362a1a5a264cfb33fbbcb961f0",
+    "agent/django_inspection.py": "69f1aba8976762cafdbdf8c934e5e4c450ffafe8b18d7531f3bedcae5df3060b",
+    "agent/django_runtime.py": "aab2bea6f98fb31bdf6130145c53c75d04689cbe65d028da1b5edc875c50f85e",
+    "agent/docker_generator.py": "b34a7e9fe3bf8f2cb3836978d06b28f9f935fc89b3b0d740dbebecd628aed41a",
+    "agent/file_edits.py": "cc061e038463a96f424e08f1da45d3a9c829a949255fa6d58830458c74ac1ffd",
+    "agent/loop.py": "b584de9721c705a3932757ece158ee100d90ac4f991cbf78013ce1d4fa76c7da",
+    "agent/loop_model.py": "8d3a0e7e47d7dee7a8d7e27cffc95a304ccc40ba11e29b0e84b23d4f296a6adf",
+    "agent/main.py": "711a2bf0d2185bde860eb71e13793f2d20a2892f6a2e6448ac6d524318c5ebef",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/node_runtime.py": "84e9fa821bbd1c488895d2ccdc79270e74a829e43a7a4a63bd4fc9c016238893",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/repair.py": "51ee1d1d44e08e9684abd0442497d8036bc2d7cc89038ce949526d2bad2960c3",
+    "agent/runtime_control.py": "39d39199f97250b1d5a02eac135fd65019e86c81793b00de800b89c5be5ca1f0",
+    "agent/safety.py": "8c75bf346da5c303516f792c1eb82f196f8dfcae7bbd7d03ea1c9f0510246590",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/session.py": "d661b52c218750d04b1e577c02325daeff28201d7d3969e1421ed4b2ab486ae3",
+    "agent/tools.py": "6560294f647bbfb324d3c3272f886ccea5616cc384bb267546cdbacec1cbf662",
+    "agent/understanding.py": "c94fe3252d0f2af3a4ec08d05615331dcac1573f9db0e44ca9e6883e26f63d89",
+    "agent/validator.py": "cfa8b4f4001b7a0529c08ab4d58488f6450eade3f665cce3a5b699efac0cd900"
+  },
+  "prepare": {
+    "success": true,
+    "phase": "database_prepared",
+    "results": [
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/django-step7-rcpbs8hn/app -p devops-validation-27acd700a9bf -f /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/django-step7-rcpbs8hn/app/docker-compose.yml config --format json",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+        "success": true,
+        "stdout": "\"unix:///Users/huzaifaalam/.docker/run/docker.sock\"\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/django-step7-rcpbs8hn/app -p devops-validation-27acd700a9bf -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-zraf0exp/compose.json build",
+        "success": true,
+        "stdout": "#1 [internal] load local bake definitions\n#1 reading from stdin 661B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 391B done\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/python:3.12-slim\n#3 DONE 0.6s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 330B done\n#4 DONE 0.0s\n\n#5 [1/4] FROM docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1\n#5 resolve docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 done\n#5 DONE 0.0s\n\n#6 [internal] load build context\n#6 transferring context: 3.44kB done\n#6 DONE 0.0s\n\n#7 [2/4] WORKDIR /app\n#7 CACHED\n\n#8 [3/4] COPY . .\n#8 CACHED\n\n#9 [4/4] RUN python -m pip install --no-cache-dir -r requirements.txt\n#9 CACHED\n\n#10 exporting to image\n#10 exporting layers done\n#10 exporting manifest sha256:95e82fe8bb1513835d95738fbc3c7bfe8feec74bc55609902a8bbfdc362823c4 done\n#10 exporting config sha256:95c84f42045120ca2e6901da28eef6a3c1718f44e45ee58c27cea47e0c70e4d2 done\n#10 exporting attestation manifest sha256:9c38ac1fffa0daacc2aa6eff904353a5d01ab7fd2b7783384cbf6c7259e229cf done\n#10 exporting manifest list sha256:73ef77ce88f646bb6b985ad9112f67c8729a8e1898c5c4e22f59f5b210b002cd done\n#10 naming to docker.io/library/devops-validation-27acd700a9bf-app:validation done\n#10 unpacking to docker.io/library/devops-validation-27acd700a9bf-app:validation\n#10 unpacking to docker.io/library/devops-validation-27acd700a9bf-app:validation 1.0s done\n#10 DONE 1.1s\n\n#11 resolving provenance for metadata file\n#11 DONE 0.0s\n",
+        "stderr": " Image devops-validation-27acd700a9bf-app:validation Building \n Image devops-validation-27acd700a9bf-app:validation Built \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/django-step7-rcpbs8hn/app -p devops-validation-27acd700a9bf -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-zraf0exp/compose.json up -d --no-build",
+        "success": true,
+        "stdout": "",
+        "stderr": " Network devops-validation-27acd700a9bf_default Creating \n Network devops-validation-27acd700a9bf_ingress Creating \n Network devops-validation-27acd700a9bf_default Creating \n Network devops-validation-27acd700a9bf_ingress Creating \n Network devops-validation-27acd700a9bf_default Created \n Network devops-validation-27acd700a9bf_default Created \n Container devops-validation-27acd700a9bf-[REDACTED]-1 Creating \n Network devops-validation-27acd700a9bf_ingress Created \n Network devops-validation-27acd700a9bf_ingress Created \n Container devops-validation-27acd700a9bf-[REDACTED]-1 Created \n Container devops-validation-27acd700a9bf-app-1 Creating \n Container devops-validation-27acd700a9bf-app-1 Created \n Container devops-validation-27acd700a9bf-[REDACTED]-1 Starting \n Container devops-validation-27acd700a9bf-[REDACTED]-1 Started \n Container devops-validation-27acd700a9bf-[REDACTED]-1 Waiting \n Container devops-validation-27acd700a9bf-[REDACTED]-1 Healthy \n Container devops-validation-27acd700a9bf-app-1 Starting \n Container devops-validation-27acd700a9bf-app-1 Started \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/django-step7-rcpbs8hn/app -p devops-validation-27acd700a9bf -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-zraf0exp/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "b08d93d231ea243c0ae0990f3a3fa395cfdf5512154d0cd32c27a541e0953130\n8e7855973e7f3554b343a598d61a0fee18449c1e8271af6c4d4d590300def15b\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect b08d93d231ea243c0ae0990f3a3fa395cfdf5512154d0cd32c27a541e0953130 8e7855973e7f3554b343a598d61a0fee18449c1e8271af6c4d4d590300def15b",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      }
+    ],
+    "logs": "",
+    "expected_services": [
+      "app",
+      "[REDACTED]"
+    ],
+    "running_services": [
+      "app",
+      "[REDACTED]"
+    ],
+    "stopped_services": [],
+    "application_check": null,
+    "stages": [
+      {
+        "phase": "config",
+        "success": true
+      },
+      {
+        "phase": "build",
+        "success": true
+      },
+      {
+        "phase": "startup",
+        "success": true
+      },
+      {
+        "phase": "services",
+        "success": true
+      }
+    ],
+    "cleanup": {
+      "status": "kept_running",
+      "project": "devops-validation-27acd700a9bf",
+      "stop_command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/django-step7-rcpbs8hn/app -p devops-validation-27acd700a9bf -f /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/django-step7-rcpbs8hn/app/docker-compose.yml down --volumes"
+    },
+    "verified": [
+      "config",
+      "build",
+      "startup",
+      "services"
+    ],
+    "unverified": [
+      "Business correctness and production readiness",
+      "Migrations require separate approval",
+      "Application HTTP readiness",
+      "Future health after validation returns"
+    ],
+    "environment_state": "running",
+    "project": "devops-validation-27acd700a9bf",
+    "application_service": "app",
+    "container_port": 8000,
+    "service_states": {
+      "app": {
+        "id": "b08d93d231ea243c0ae0990f3a3fa395cfdf5512154d0cd32c27a541e0953130",
+        "state": "running",
+        "health": null,
+        "ports": {
+          "8000/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "8000"
+            }
+          ]
+        }
+      },
+      "db": {
+        "id": "8e7855973e7f3554b343a598d61a0fee18449c1e8271af6c4d4d590300def15b",
+        "state": "running",
+        "health": "healthy",
+        "ports": {
+          "5432/tcp": null
+        }
+      }
+    },
+    "database_plan": {
+      "digest": "f8133383da4b9561f71ac24475dbdf069561e3f158606a834c48a2eaff5933c1",
+      "pending": [
+        {
+          "app": "notes",
+          "name": "0001_initial",
+          "operations": [
+            "CreateModel"
+          ]
+        }
+      ],
+      "orm_verified": false
+    },
+    "repair_context": {
+      "inputs_sha256": "87f53b3376f86bb816b2498614c96a831bafb8fb00bd7c10bac62be93c9cab1f",
+      "compose_file": "docker-compose.yml",
+      "health_path": "/",
+      "service": null,
+      "container_port": null,
+      "timeout": 600,
+      "readiness_timeout": 120
+    },
+    "session_id": "87f0fd6c6b0e4998ab288058dbc6ccb5"
+  },
+  "migrate": {
+    "success": true,
+    "application_check": {
+      "url": "http://127.0.0.1:8000/",
+      "reachable": true,
+      "healthy": true,
+      "status_code": 200,
+      "redirect_url": null,
+      "error": null,
+      "redirects": [],
+      "final_url": "http://127.0.0.1:8000/"
+    },
+    "phase": "database_migrated",
+    "session_id": "87f0fd6c6b0e4998ab288058dbc6ccb5",
+    "orm_verified": true,
+    "environment_state": "running",
+    "unverified": [
+      "Business-specific data operations beyond the diagnostic ORM table"
+    ],
+    "notice": "Forward migrations and a disposable diagnostic ORM table were verified. No application data is retained when the database stops."
+  },
+  "independent_application_orm": {
+    "status": 200,
+    "marker": true
+  },
+  "replay_refused": true,
+  "stop": {
+    "success": true,
+    "phase": "stop",
+    "session_id": "87f0fd6c6b0e4998ab288058dbc6ccb5",
+    "environment_state": "stopped",
+    "notice": "Containers, volumes, networks and images are preserved. Any tmpfs data (including disposable PostgreSQL) is destroyed by stopping."
+  },
+  "cleanup_verified": true,
+  "unrelated_containers_preserved": true
+}

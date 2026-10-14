@@ -72,3 +72,7 @@ infrastructure failures remain unverified, not application successes.
 Step 10 finishes with current user docs, exact version/environment coverage,
 known limitations, frozen evidence and a commit-message handoff. The user commits;
 release tagging, publishing and cloud deployment are separate decisions.
+
+## Step-7 checkpoint
+
+The supported disposable Django/PostgreSQL fixture now has retained [real Docker, live Groq and offline evidence](step7/README.md) for V2-09, database-target refusal coverage for V2-10, and scoped cleanup evidence for the step-7 portion of V2-17. This is one integration fixture, not the broader step-8 held-out evaluation or the final external Django pilot/release gate.

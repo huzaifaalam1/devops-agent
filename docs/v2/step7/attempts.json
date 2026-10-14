@@ -1,0 +1,106 @@
+[
+  {
+    "file": "work/v2-step7/attempt-1.json",
+    "success": false,
+    "live_model": false,
+    "error": "Docker returned invalid data or temporary configuration could not be written.",
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/attempt-10.json",
+    "success": false,
+    "live_model": false,
+    "error": "Database initialization or verification failed; inspect the retained environment. No automatic retry or rollback.",
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/attempt-11.json",
+    "success": true,
+    "live_model": false,
+    "error": null,
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/attempt-2.json",
+    "success": false,
+    "live_model": false,
+    "error": "RuntimeError: Django database planning/migration failed. No success is claimed; inspect the owned container locally. No automatic retry or rollback.",
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/attempt-3.json",
+    "success": false,
+    "live_model": false,
+    "error": "Connection does not reach the owned database",
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/attempt-4.json",
+    "success": false,
+    "live_model": false,
+    "error": "list indices must be integers or slices, not str",
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/attempt-5.json",
+    "success": false,
+    "live_model": false,
+    "error": "Database has persistent storage or published ports; migration refused.",
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/attempt-6.json",
+    "success": false,
+    "live_model": false,
+    "error": "Database initialization or verification failed; inspect the retained environment. No automatic retry or rollback.",
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/attempt-7.json",
+    "success": false,
+    "live_model": false,
+    "error": "Database initialization or verification failed; inspect the retained environment. No automatic retry or rollback.",
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/attempt-8.json",
+    "success": false,
+    "live_model": false,
+    "error": "Database initialization or verification failed; inspect the retained environment. No automatic retry or rollback.",
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/docker-8000.json",
+    "success": true,
+    "live_model": false,
+    "error": null,
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/live-attempt-1.json",
+    "success": false,
+    "live_model": true,
+    "error": "Provider request failed: rate_limit_exceeded (HTTP 429). Retry after 6.0 seconds before a new request; no automatic retry or paid fallback.",
+    "cleanup_verified": false,
+    "unrelated_containers_preserved": true
+  },
+  {
+    "file": "work/v2-step7/live-attempt-2.json",
+    "success": false,
+    "live_model": true,
+    "error": "The disposable PostgreSQL database has been created (session_id: 4ca1559bb2ed407ea8b9d79636f67d21) and a migration plan is prepared (pending migration: notes 0001_initial). The Docker containers are already running and will remain running as requested. To proceed, I need separate approval to apply the migration using the migrate_database tool. Once approved, I can run the migration, verify ORM operations, and check that the root page responds correctly.",
+    "cleanup_verified": true,
+    "unrelated_containers_preserved": true
+  }
+]

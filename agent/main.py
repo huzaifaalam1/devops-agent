@@ -238,7 +238,7 @@ def dockerize(
 
 def validation_result(path, compose_file=None, existing_setup=False, build=False, run=False,
                       keep_running=False, service=None, container_port=None, health_path="/",
-                      timeout=300, readiness_timeout=90):
+                      timeout=300, readiness_timeout=90, prepare_database=False):
     """Shared CLI/tool policy path; never bypass eligibility or isolation."""
     repo_info, analysis = inspect_repo(path)
     try:
@@ -252,6 +252,26 @@ def validation_result(path, compose_file=None, existing_setup=False, build=False
         result = {"success": False, "phase": "selection", "error": str(error)}
         return result
     project = analysis["project"]
+    database_project = None
+    if prepare_database:
+        from agent.django_runtime import files
+        try:
+            if project.get('services') != ['PostgreSQL'] or project['blockers'] or not run or not keep_running:
+                raise ValueError('Preparation requires an eligible PostgreSQL app, run and keep_running.')
+            from agent.docker_generator import IGNORE_RULES
+            from agent.django_runtime import IGNORE
+            root=Path(path)
+            ignore=root/'.dockerignore'
+            if ignore.is_symlink() or not ignore.is_file() or not ignore.read_text().endswith(IGNORE_RULES+IGNORE) or (root/'Dockerfile.dockerignore').exists():
+                raise ValueError('Preserve the generated build exclusions; Dockerfile-specific ignore overrides are not supported for database preparation.')
+            expected = files(project, (Path(path)/".env").exists())
+            if selected != 'docker-compose.yml' or any((Path(path)/name).read_text() != content for name,(content,_) in expected.items()):
+                raise ValueError('Disposable database preparation requires the exact reviewed generated Dockerfile and docker-compose.yml; existing database setups are not adopted.')
+            database_project = project
+        except (ValueError, OSError) as error:
+            return {'success': False, 'phase': 'eligibility', 'error': str(error)}
+    elif run and project.get('services') == ['PostgreSQL']:
+        return {'success': False, 'phase': 'eligibility', 'error': 'Use prepare_database for a new disposable PostgreSQL database, then separately approve migrate_database.'}
     deferred = []
     blocking = project["blockers"]
     if existing_setup:
@@ -274,6 +294,7 @@ def validation_result(path, compose_file=None, existing_setup=False, build=False
         result = validate_docker(path, compose_file=selected,
                                  build=build, run=run, keep_running=keep_running, service=service,
                                  container_port=container_port, health_path=health_path, timeout=timeout,
+                                 **({"database_project": database_project} if database_project else {}),
                                  readiness_timeout=readiness_timeout)
     if existing_setup:
         result["eligibility_basis"] = {"mode": "existing_setup", "compose_file": selected,

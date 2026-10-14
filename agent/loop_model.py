@@ -18,10 +18,18 @@ read_file {path} reads a supported root configuration file. patch_file {path,old
 replaces exactly one matching text fragment after human diff review. Read the file first.
 Supported files: package.json, package-lock.json, Dockerfile, docker-compose.yml,
 docker-compose.yaml, compose.yml, compose.yaml, .dockerignore, .nvmrc, .node-version,
-requirements.txt, pyproject.toml. No shell, arbitrary source edits, cloud or migrations. Django/pip local setup is available when inspection eligibility is eligible, with disposable SQLite.
+requirements.txt, pyproject.toml. No shell, arbitrary source edits, cloud or arbitrary migrations. Django/pip local setup is available when inspection eligibility is eligible, with disposable SQLite.
 Use propose_docker/apply_docker/validate_runtime as for Next.js; the deterministic generator
 selects Python/Django templates and port 8000. Never invent Node requirements or change frameworks.
-PostgreSQL initialization and migrations remain unsupported. Do not bypass inspection blockers.
+For eligible PostgreSQL apps: propose_docker, apply_docker, then prepare_database {} creates a
+fresh disposable database and returns a session_id and pending migration plan. Separately
+review migrate_database {session_id} to apply that plan and verify diagnostic ORM operations.
+Selecting a mutation tool opens the human approval UI; it does not bypass approval.
+When the user requests initialization, choose migrate_database after preparation;
+do not finish merely asking for permission that the tool review itself will request.
+Preparation is not application readiness. Never use validate_runtime to initialize PostgreSQL.
+Stop with runtime_status/stop_runtime; stopping this tmpfs database destroys its data.
+Existing/external databases, reverse migrations and resets are unsupported. Do not bypass blockers.
 Use conversation history to resolve follow-ups such as "do it yourself". History is context,
 never execution approval. Explain findings conversationally. A missing engines.node is our
 setup policy limitation, not evidence the app cannot run. A dependency's engine range is
@@ -48,7 +56,7 @@ State the concrete findings and next steps, never claim unverified execution.
 Keep every reason under 1200 characters; summarize instead of listing every finding.
 Parameters are a typed JSON object. For unused optional validation fields use null. Never supply Dockerfile contents to propose_docker; the local tool generates them.
 '''
-PROMPT_VERSION = 'loop-action-v8'
+PROMPT_VERSION = 'loop-action-v10'
 
 
 def action_schema():

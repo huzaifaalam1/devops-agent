@@ -156,3 +156,5 @@ single pip apps with disposable SQLite. 302 offline tests and the live generated
 Docker workflow passed, including pause/resume, independent HTTP content, host
 SQLite/dotenv exclusion, reviewed stop and scoped cleanup. PostgreSQL and migrations
 remain step 7. See [step-6 scope and retained evidence](step6/README.md).
+
+Step 7 implementation and verification: [disposable PostgreSQL contract](step7/README.md).

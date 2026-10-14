@@ -17,6 +17,7 @@ from pathlib import Path
 from urllib.parse import quote
 
 ACTIONS = {
+    "migrate": "disposable_database_initialization",
     "inspect": "read_only",
     "apply": "reversible_project_edit",
     "recover": "reversible_project_edit",

@@ -129,5 +129,5 @@ later checkpoints. See the [agent-loop guide](docs/v2/agent-loop.md).
 Django/pip app, including Python requirements, settings candidates and database
 hints. Eligible single Django/pip apps with disposable SQLite can now receive
 reviewed Docker setup and runtime verification on loopback port 8000. PostgreSQL
-initialization and migrations remain step 7.
+now has a separate disposable preparation and migration-review workflow. See the [step-7 contract](docs/v2/step7/README.md); stopping its database destroys its temporary data.
 See [step-6 scope, usage and verification](docs/v2/step6/README.md).

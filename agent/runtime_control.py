@@ -78,4 +78,4 @@ def stop(root,session,expected):
         success=all(item['state']!='running' for item in after['states'].values())
         return {'success':success,'phase':'stop','session_id':session,
                 'environment_state':'stopped' if success else 'unknown',
-                'notice':'Container data, volumes, networks and images are preserved.'}
+                'notice':'Containers, volumes, networks and images are preserved. Any tmpfs data (including disposable PostgreSQL) is destroyed by stopping.'}
