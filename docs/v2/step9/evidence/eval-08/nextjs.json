@@ -1,0 +1,212 @@
+{
+  "success": false,
+  "case": "nextjs",
+  "request": "Prepare this app for AWS with reviewable local infrastructure files. Show the proposal, ask before writing, validate the files locally, and explain everything still unresolved. Do not deploy.",
+  "approvals": [],
+  "conversation": {
+    "id": "dfcfcbe3c5a84e86ab2a9ea26f14403d",
+    "state": {
+      "read_only_request": false,
+      "history": [],
+      "request": "Prepare this app for AWS with reviewable local infrastructure files. Show the proposal, ask before writing, validate the files locally, and explain everything still unresolved. Do not deploy.",
+      "observations": [
+        {
+          "tool": "inspect_repository",
+          "result": {
+            "eligibility": "eligible",
+            "discovery_status": null,
+            "setup": "none",
+            "findings": [
+              {
+                "name": "framework",
+                "value": "Next.js",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "dependencies.next"
+                  }
+                ]
+              },
+              {
+                "name": "package_manager",
+                "value": "npm",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package-lock.json"
+                  }
+                ]
+              },
+              {
+                "name": "lockfile",
+                "value": "Root declarations match package.json",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package-lock.json",
+                    "field": "packages['']"
+                  }
+                ]
+              },
+              {
+                "name": "runtime_requirement",
+                "value": "22.x",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "engines.node"
+                  }
+                ]
+              },
+              {
+                "name": "runtime_requirement",
+                "value": ">=20.9.0",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package-lock.json",
+                    "field": "packages['node_modules/next'].engines.node"
+                  }
+                ]
+              },
+              {
+                "name": "runtime",
+                "value": "Selected node:22",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "engines.node"
+                  }
+                ]
+              },
+              {
+                "name": "startup_command",
+                "value": "npm run dev",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "scripts.dev"
+                  }
+                ]
+              },
+              {
+                "name": "application_port",
+                "value": "3000",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "scripts.dev"
+                  }
+                ]
+              }
+            ],
+            "blockers": [],
+            "unknowns": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated."
+            ]
+          }
+        },
+        {
+          "tool": "propose_aws",
+          "result": {
+            "status": "ready",
+            "id": "155755d96381fcd92e7e8262f87670a85df9f0c12e7883e9d5fd0061081a87c0",
+            "blockers": [],
+            "artifact_paths": [
+              "aws-template.json",
+              "aws-readiness.json",
+              "AWS-PREPARATION.md"
+            ],
+            "readiness": {
+              "schema_version": 1,
+              "framework": "Next.js",
+              "path": "ECS Fargate / CloudFormation",
+              "artifact_scope": "local preparation only",
+              "deployment_ready": false,
+              "cloud_verified": false,
+              "required_parameters": [
+                "VpcId",
+                "PrivateSubnetIds",
+                "AlbSecurityGroupId",
+                "HttpsListenerArn",
+                "Hostname",
+                "RulePriority",
+                "ImageUri",
+                "ExecutionRoleArn",
+                "TaskRoleArn",
+                "HealthPath"
+              ],
+              "runtime_secret_names": "[REDACTED]",
+              "unresolved": [
+                "Supply every template parameter without a default; select and confirm the deployment account and region separately.",
+                "Build and independently verify a production Linux X86_64 image in ECR. Development npm/runserver images are not production evidence.",
+                "Verify VPC/subnet membership, HTTPS listener protocol, certificate/DNS, ALB security group, unique hostname rule and unused rule priority.",
+                "Verify private-subnet egress (NAT or ECR/S3/logs/secret[REDACTED] endpoints), execution-role access and separate least-privilege task-role trust.",
+                "Review all runtime variables and Secret[REDACTED] Manager mappings. No dotenv values are copied; aws-runtime.json lists names only.",
+                "Verify the readiness route returns 200 with ALB health-check Host headers; authentication must remain intact.",
+                "Review availability, scaling, CPU/memory, outbound rules, log retention and budget before a separate deployment review.",
+                "Verify npm production build/start behavior, build-time NEXT_PUBLIC values, image contents and any writable cache or upload storage."
+              ],
+              "cost_drivers": [
+                "Fargate CPU/memory runtime",
+                "Existing ALB capacity",
+                "NAT/endpoints and data transfer",
+                "ECR storage",
+                "CloudWatch ingestion/retention",
+                "Secret[REDACTED] Manager",
+                "External database/storage"
+              ],
+              "excluded": [
+                "Cloud API calls",
+                "Image build/push",
+                "IAM changes",
+                "VPC/ALB/DNS provisioning",
+                "Database creation or migrations",
+                "Deployment"
+              ]
+            }
+          }
+        }
+      ],
+      "action": {
+        "tool": "propose_aws",
+        "parameters": {},
+        "reason": "Create AWS preparation artifacts (aws-template.json, aws-readiness.json, AWS-PREPARATION.md) for the Next.js app so the user can review the proposal before applying, then later validate the generated files."
+      },
+      "operation": "858d917c3f1c42a1983d9f8a72e3d325",
+      "seen": [
+        "dfc4fa5107b0eac0183c75ff138068766fe5649b5a7db7b9d0deaf77581ed10c",
+        "cf0809431806ac7dd498481e379ba1aa209cf3d5f63e2ac89fd007bda0e2ee50"
+      ],
+      "count": 2,
+      "failures": 0,
+      "model_calls": 2,
+      "status": "blocked",
+      "message": "Model response failed local action/schema validation; no action selected."
+    },
+    "pending": null
+  },
+  "error": "Model response failed local action/schema validation; no action selected.",
+  "model_diagnostic": {
+    "response_status": "completed",
+    "output_types": [
+      "reasoning",
+      "message"
+    ],
+    "incomplete_details": null,
+    "action": {
+      "tool": "read_file",
+      "parameters": {
+        "path": "AWS-PREPARATION.md"
+      },
+      "reason": "User wants to review the generated AWS preparation proposal before applying any changes."
+    }
+  },
+  "elapsed_seconds": 40.06
+}

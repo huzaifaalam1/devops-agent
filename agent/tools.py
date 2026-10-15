@@ -15,6 +15,10 @@ from agent.safety import Redactor
 
 SCHEMAS = {
     'inspect_repository': {},
+    'propose_aws': {},
+    'prepare_aws': {},
+    'apply_aws': {'proposal_id':'string'},
+    'validate_aws': {},
     'runtime_status': {},
     'stop_runtime': {'session_id':'string'},
     'prepare_database': {},
@@ -30,7 +34,7 @@ SCHEMAS = {
                          'service': 'string', 'container_port': 'integer',
                          'health_path': 'string', 'timeout': 'integer', 'readiness_timeout': 'integer'},
 }
-MUTATIONS = {'apply_docker', 'validate_runtime', 'patch_file', 'stop_runtime', 'prepare_database', 'migrate_database', 'apply_runtime_repair'}
+MUTATIONS = {'prepare_aws', 'apply_aws', 'apply_docker', 'validate_runtime', 'patch_file', 'stop_runtime', 'prepare_database', 'migrate_database', 'apply_runtime_repair'}
 IGNORED = {'.git'}
 
 
@@ -64,7 +68,7 @@ def inputs(name, params):
             raise ToolRefused('Select a supported root configuration file and supply all fields.')
         if any(len(params.get(k,''))>16000 for k in ['old_text','new_text']):
             raise ToolRefused('Patch text exceeds 16,000 characters.')
-    if name == 'apply_docker' and 'proposal_id' not in params:
+    if name in {'apply_docker','apply_aws'} and 'proposal_id' not in params:
         raise ToolRefused('A reviewed proposal ID is required.')
     if 'compose_file' in params:
         value = params['compose_file']
@@ -97,7 +101,7 @@ class ToolRegistry:
 
     def schemas(self):
         return {name: {'type': 'object', 'properties': {key: {'type': kind} for key, kind in props.items()},
-                       'additionalProperties': False, 'required': list(props) if name in {'apply_docker','read_file','patch_file','stop_runtime','migrate_database','propose_runtime_repair','apply_runtime_repair'} else [],
+                       'additionalProperties': False, 'required': list(props) if name in {'apply_aws','apply_docker','read_file','patch_file','stop_runtime','migrate_database','propose_runtime_repair','apply_runtime_repair'} else [],
                        'requires_review': name in MUTATIONS}
                 for name, props in SCHEMAS.items()}
 
@@ -171,6 +175,11 @@ class ToolRegistry:
             raise ToolRefused('Read-only inspection does not require approval.')
         fingerprint = self.action_fingerprint(name, params)
         preview = None
+        if name in {'apply_aws','prepare_aws'}:
+            from agent.aws_preparation import propose
+            preview=propose(self.root)
+            if preview['status']!='ready' or (name=='apply_aws' and preview.get('id')!=params.get('proposal_id')):
+                raise ToolRefused('AWS proposal is stale or blocked; review a fresh proposal.')
         if name == 'apply_runtime_repair':
             from agent.repair import propose_repair
             preview=propose_repair(self.root,params['session_id'],health_path=params['health_path'])
@@ -208,7 +217,7 @@ class ToolRegistry:
         self._reviews[review_id] = record
         return Redactor(self.root).clean({'review_id': review_id, 'tool': name, 'parameters': params,
             'repository': str(self.root), 'preview': preview, 'configuration': configuration,
-            'effect': 'Apply the displayed repair and perform one bounded runtime verification. The test environment is cleaned up; failed edits use guarded rollback. No repeated repair of unchanged inputs.' if name=='apply_runtime_repair' else 'Create fresh disposable Postgres/app containers on loopback port 8000, install dependencies and execute repository code to plan migrations. No migrations are applied. Database data is destroyed on stop.' if name=='prepare_database' else 'Apply the displayed forward migration plan and verify a diagnostic ORM operation in the prepared disposable database.' if name=='migrate_database' else 'Stop only the listed agent-owned containers. Volumes are preserved; tmpfs database data is destroyed.' if name=='stop_runtime' else 'Apply the displayed file diff.' if name in {'apply_docker','patch_file'} else
+            'effect': 'Write only the displayed AWS preparation files locally. No AWS API calls, deployment or account changes.' if name in {'apply_aws','prepare_aws'} else 'Apply the displayed repair and perform one bounded runtime verification. The test environment is cleaned up; failed edits use guarded rollback. No repeated repair of unchanged inputs.' if name=='apply_runtime_repair' else 'Create fresh disposable Postgres/app containers on loopback port 8000, install dependencies and execute repository code to plan migrations. No migrations are applied. Database data is destroyed on stop.' if name=='prepare_database' else 'Apply the displayed forward migration plan and verify a diagnostic ORM operation in the prepared disposable database.' if name=='migrate_database' else 'Stop only the listed agent-owned containers. Volumes are preserved; tmpfs database data is destroyed.' if name=='stop_runtime' else 'Apply the displayed file diff.' if name in {'apply_docker','patch_file'} else
                       'Resolve Compose; requested builds/run may execute repository code and use network. Cleanup is scoped; keep_running retains successful services.'})
 
     def approve(self, review_id):
@@ -237,6 +246,15 @@ class ToolRegistry:
         redactor = Redactor(self.root)
         if name == 'inspect_repository':
             result = detect_stack(scan_repo(str(self.root)))
+        elif name == 'propose_aws':
+            from agent.aws_preparation import propose
+            result=propose(self.root)
+        elif name in {'apply_aws','prepare_aws'}:
+            from agent.aws_preparation import apply
+            result=apply(record['preview'])
+        elif name == 'validate_aws':
+            from agent.aws_preparation import validate
+            result=validate(self.root)
         elif name == 'runtime_status':
             from agent.runtime_control import status
             result=status(self.root)

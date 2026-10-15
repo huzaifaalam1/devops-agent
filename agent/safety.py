@@ -26,7 +26,7 @@ ACTIONS = {
     "build": "project_build",
     "run": "project_service_management",
 }
-TARGETS = {"Dockerfile", "docker-compose.yml", ".dockerignore"}
+TARGETS = {"Dockerfile", "docker-compose.yml", ".dockerignore", "aws-template.json", "aws-readiness.json", "AWS-PREPARATION.md"}
 SENSITIVE = re.compile(r"(?i)(password|passwd|secret|token|api[_-]?key|authorization|credential|private[_-]?key)")
 
 

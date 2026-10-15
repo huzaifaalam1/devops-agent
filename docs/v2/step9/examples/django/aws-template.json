@@ -1,0 +1,282 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Review-only single HTTP service foundation. Requires production image and existing AWS prerequisites.",
+  "Outputs": {
+    "LogGroup": {
+      "Value": {
+        "Ref": "Logs"
+      }
+    },
+    "ServiceArn": {
+      "Value": {
+        "Ref": "Service"
+      }
+    }
+  },
+  "Parameters": {
+    "AlbSecurityGroupId": {
+      "Type": "AWS::EC2::SecurityGroup::Id"
+    },
+    "ContainerPort": {
+      "Default": 8000,
+      "MaxValue": 65535,
+      "MinValue": 1,
+      "Type": "Number"
+    },
+    "ExecutionRoleArn": {
+      "AllowedPattern": "arn:aws:iam::[0-9]{12}:role/.+",
+      "Description": "Existing ecs-tasks trust role with ECR pull, log write and selected secret/KMS permissions.",
+      "Type": "String"
+    },
+    "HealthPath": {
+      "AllowedPattern": "/[A-Za-z0-9/_.-]*",
+      "Description": "An existing unauthenticated readiness route; verify ALB Host-header behavior.",
+      "Type": "String"
+    },
+    "Hostname": {
+      "AllowedPattern": "[a-z0-9][a-z0-9.-]*\\.[a-z]{2,}",
+      "Description": "Existing DNS name and TLS certificate on the selected HTTPS listener; never a wildcard.",
+      "Type": "String"
+    },
+    "HttpsListenerArn": {
+      "AllowedPattern": "arn:aws:elasticloadbalancing:[a-z0-9-]+:[0-9]{12}:listener/app/.+",
+      "Type": "String"
+    },
+    "ImageUri": {
+      "AllowedPattern": "[0-9]{12}\\.dkr\\.ecr\\.[a-z0-9-]+\\.amazonaws\\.com/[a-z0-9._/-]+@sha256:[a-f0-9]{64}",
+      "Description": "Prebuilt production Linux X86_64 image in private ECR, pinned by digest.",
+      "Type": "String"
+    },
+    "PrivateSubnetIds": {
+      "Description": "At least two private subnets in this VPC; provide NAT or required service endpoints.",
+      "Type": "List<AWS::EC2::Subnet::Id>"
+    },
+    "RulePriority": {
+      "Description": "Unused listener rule priority; must be checked by the operator.",
+      "MaxValue": 50000,
+      "MinValue": 1,
+      "Type": "Number"
+    },
+    "RuntimeSecret0Arn": {
+      "AllowedPattern": "arn:aws:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:.+",
+      "Description": "Existing Secrets Manager secret for DATABASE_URL; value never appears here.",
+      "Type": "String"
+    },
+    "RuntimeSecret1Arn": {
+      "AllowedPattern": "arn:aws:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:.+",
+      "Description": "Existing Secrets Manager secret for DJANGO_SECRET_KEY; value never appears here.",
+      "Type": "String"
+    },
+    "TaskRoleArn": {
+      "AllowedPattern": "arn:aws:iam::[0-9]{12}:role/.+",
+      "Description": "Existing least-privilege application role, separate from execution role.",
+      "Type": "String"
+    },
+    "VpcId": {
+      "Type": "AWS::EC2::VPC::Id"
+    }
+  },
+  "Resources": {
+    "AppSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "App ingress only from selected ALB security group",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Review outbound needs for ECR, logs, secrets and application dependencies.",
+            "IpProtocol": "-1"
+          }
+        ],
+        "SecurityGroupIngress": [
+          {
+            "FromPort": {
+              "Ref": "ContainerPort"
+            },
+            "IpProtocol": "tcp",
+            "SourceSecurityGroupId": {
+              "Ref": "AlbSecurityGroupId"
+            },
+            "ToPort": {
+              "Ref": "ContainerPort"
+            }
+          }
+        ],
+        "VpcId": {
+          "Ref": "VpcId"
+        }
+      },
+      "Type": "AWS::EC2::SecurityGroup"
+    },
+    "Cluster": {
+      "Type": "AWS::ECS::Cluster"
+    },
+    "ListenerRule": {
+      "Properties": {
+        "Actions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "TargetGroup"
+            },
+            "Type": "forward"
+          }
+        ],
+        "Conditions": [
+          {
+            "Field": "host-header",
+            "Values": [
+              {
+                "Ref": "Hostname"
+              }
+            ]
+          }
+        ],
+        "ListenerArn": {
+          "Ref": "HttpsListenerArn"
+        },
+        "Priority": {
+          "Ref": "RulePriority"
+        }
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::ListenerRule"
+    },
+    "Logs": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "RetentionInDays": 14
+      },
+      "Type": "AWS::Logs::LogGroup",
+      "UpdateReplacePolicy": "Retain"
+    },
+    "Service": {
+      "DependsOn": [
+        "ListenerRule"
+      ],
+      "Properties": {
+        "Cluster": {
+          "Ref": "Cluster"
+        },
+        "DeploymentConfiguration": {
+          "DeploymentCircuitBreaker": {
+            "Enable": true,
+            "Rollback": true
+          }
+        },
+        "DesiredCount": 1,
+        "HealthCheckGracePeriodSeconds": 60,
+        "LaunchType": "FARGATE",
+        "LoadBalancers": [
+          {
+            "ContainerName": "app",
+            "ContainerPort": {
+              "Ref": "ContainerPort"
+            },
+            "TargetGroupArn": {
+              "Ref": "TargetGroup"
+            }
+          }
+        ],
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "DISABLED",
+            "SecurityGroups": [
+              {
+                "Ref": "AppSecurityGroup"
+              }
+            ],
+            "Subnets": {
+              "Ref": "PrivateSubnetIds"
+            }
+          }
+        },
+        "PlatformVersion": "1.4.0",
+        "TaskDefinition": {
+          "Ref": "Task"
+        }
+      },
+      "Type": "AWS::ECS::Service"
+    },
+    "TargetGroup": {
+      "Properties": {
+        "HealthCheckPath": {
+          "Ref": "HealthPath"
+        },
+        "Matcher": {
+          "HttpCode": "200"
+        },
+        "Port": {
+          "Ref": "ContainerPort"
+        },
+        "Protocol": "HTTP",
+        "TargetType": "ip",
+        "VpcId": {
+          "Ref": "VpcId"
+        }
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup"
+    },
+    "Task": {
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Essential": true,
+            "Image": {
+              "Ref": "ImageUri"
+            },
+            "LogConfiguration": {
+              "LogDriver": "awslogs",
+              "Options": {
+                "awslogs-group": {
+                  "Ref": "Logs"
+                },
+                "awslogs-region": {
+                  "Ref": "AWS::Region"
+                },
+                "awslogs-stream-prefix": "app"
+              }
+            },
+            "Name": "app",
+            "PortMappings": [
+              {
+                "ContainerPort": {
+                  "Ref": "ContainerPort"
+                },
+                "Protocol": "tcp"
+              }
+            ],
+            "Secrets": [
+              {
+                "Name": "DATABASE_URL",
+                "ValueFrom": {
+                  "Ref": "RuntimeSecret0Arn"
+                }
+              },
+              {
+                "Name": "DJANGO_SECRET_KEY",
+                "ValueFrom": {
+                  "Ref": "RuntimeSecret1Arn"
+                }
+              }
+            ]
+          }
+        ],
+        "Cpu": "256",
+        "ExecutionRoleArn": {
+          "Ref": "ExecutionRoleArn"
+        },
+        "Memory": "512",
+        "NetworkMode": "awsvpc",
+        "RequiresCompatibilities": [
+          "FARGATE"
+        ],
+        "RuntimePlatform": {
+          "CpuArchitecture": "X86_64",
+          "OperatingSystemFamily": "LINUX"
+        },
+        "TaskRoleArn": {
+          "Ref": "TaskRoleArn"
+        }
+      },
+      "Type": "AWS::ECS::TaskDefinition"
+    }
+  }
+}

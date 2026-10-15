@@ -84,3 +84,11 @@ cases, real 401-to-public-readiness recovery, and a real port-owner preservation
 check. The held-out set varies request phrasing on established fixtures; it does
 not prove unseen-repository coverage. Earlier failures are retained. User review
 of final summaries and the external pilots remain part of the release gate.
+
+## Step-9 checkpoint
+
+[Retained AWS evidence](step9/README.md) covers V2-14–16 at artifact-preparation
+scope: concrete ECS Fargate/CloudFormation files, unresolved required inputs and
+production gaps, real local schema validation, and refusal of cloud deployment/IAM
+changes. 338 offline tests and four final live fixture cases passed. Existing AWS
+resource validity, production images and cloud execution remain unverified.

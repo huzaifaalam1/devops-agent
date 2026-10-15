@@ -247,3 +247,12 @@ For a known public readiness route after HTTP 401/403, the planner can propose a
 repair, request separate approval and run one verification. It cleans up the test
 environment and reports that nothing was kept running. An unchanged repair cannot
 be repeated through a new conversation. See [step-8 evidence](step8/README.md).
+
+## Step 9: AWS preparation
+
+`prepare_aws` constructs a full local artifact proposal and opens human review.
+After approval, the executor writes the files and runs local CloudFormation
+validation without another model decision. It reserves action budget for this
+check and cannot report `prepared` if validation fails. `prepared` is not deployed
+or production-ready. Preview-only and explicit validation tools remain available.
+See [usage, limitations and retained evaluation](step9/README.md).

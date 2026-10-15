@@ -1,0 +1,52 @@
+{
+  "success": true,
+  "case": "unsupported",
+  "request": "Prepare AWS artifacts for this project if its stack is supported; otherwise explain the blocker without writing files.",
+  "approvals": [],
+  "conversation": {
+    "id": "11979ecc15d341c08fba805b1c149efc",
+    "state": {
+      "read_only_request": false,
+      "history": [],
+      "request": "Prepare AWS artifacts for this project if its stack is supported; otherwise explain the blocker without writing files.",
+      "observations": [
+        {
+          "tool": "inspect_repository",
+          "result": {
+            "eligibility": "blocked",
+            "discovery_status": null,
+            "setup": "none",
+            "findings": [],
+            "blockers": [
+              {
+                "code": "unsupported_framework",
+                "message": "No declared Next.js dependency was found.",
+                "evidence": [
+                  {
+                    "path": "package.json"
+                  }
+                ],
+                "next_action": "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.",
+                "needs_input": false
+              }
+            ],
+            "unknowns": [
+              "Framework-specific prerequisites and runtime readiness have not been evaluated."
+            ]
+          }
+        }
+      ],
+      "seen": [
+        "106036f8ed3d967f1855062b65298a00bbf6b4818ed724d3b000e17b1b1ba522"
+      ],
+      "count": 1,
+      "failures": 0,
+      "model_calls": 1,
+      "status": "finished",
+      "message": "The repository inspection found an unsupported framework: no Next.js dependency was detected in package.json. Because the stack is not supported for automated AWS artifact preparation, we cannot generate AWS files. The blocker is the unsupported framework."
+    },
+    "pending": null
+  },
+  "refused_without_mutation": true,
+  "elapsed_seconds": 2.17
+}

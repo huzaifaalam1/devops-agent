@@ -137,3 +137,8 @@ recovery in chat. If a port is occupied, chat asks you to free that port. If `/`
 requires authentication, supply an existing public health route; the agent can
 verify it once and clean up its test environment. See [scope and evaluation
 status](docs/v2/step8/README.md).
+
+AWS preparation is available through chat or `devops-agent aws PATH`. It generates
+reviewable ECS Fargate/CloudFormation artifacts and lists unresolved production
+requirements; it does not deploy or access an AWS account. Install the optional
+validator with `pip install -e '.[aws-validation]'`. See [usage and boundaries](docs/v2/step9/README.md).

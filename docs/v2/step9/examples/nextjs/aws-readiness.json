@@ -1,0 +1,48 @@
+{
+  "artifact_scope": "local preparation only",
+  "cloud_verified": false,
+  "cost_drivers": [
+    "Fargate CPU/memory runtime",
+    "Existing ALB capacity",
+    "NAT/endpoints and data transfer",
+    "ECR storage",
+    "CloudWatch ingestion/retention",
+    "Secrets Manager",
+    "External database/storage"
+  ],
+  "deployment_ready": false,
+  "excluded": [
+    "Cloud API calls",
+    "Image build/push",
+    "IAM changes",
+    "VPC/ALB/DNS provisioning",
+    "Database creation or migrations",
+    "Deployment"
+  ],
+  "framework": "Next.js",
+  "path": "ECS Fargate / CloudFormation",
+  "required_parameters": [
+    "VpcId",
+    "PrivateSubnetIds",
+    "AlbSecurityGroupId",
+    "HttpsListenerArn",
+    "Hostname",
+    "RulePriority",
+    "ImageUri",
+    "ExecutionRoleArn",
+    "TaskRoleArn",
+    "HealthPath"
+  ],
+  "runtime_secret_names": [],
+  "schema_version": 1,
+  "unresolved": [
+    "Supply every template parameter without a default; select and confirm the deployment account and region separately.",
+    "Build and independently verify a production Linux X86_64 image in ECR. Development npm/runserver images are not production evidence.",
+    "Verify VPC/subnet membership, HTTPS listener protocol, certificate/DNS, ALB security group, unique hostname rule and unused rule priority.",
+    "Verify private-subnet egress (NAT or ECR/S3/logs/secrets endpoints), execution-role access and separate least-privilege task-role trust.",
+    "Review all runtime variables and Secrets Manager mappings. No dotenv values are copied; aws-runtime.json lists names only.",
+    "Verify the readiness route returns 200 with ALB health-check Host headers; authentication must remain intact.",
+    "Review availability, scaling, CPU/memory, outbound rules, log retention and budget before a separate deployment review.",
+    "Verify npm production build/start behavior, build-time NEXT_PUBLIC values, image contents and any writable cache or upload storage."
+  ]
+}

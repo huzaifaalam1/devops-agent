@@ -1,0 +1,46 @@
+{
+  "baseline": "0f307f51c2d3178a7e2921c3e04ef5b0ba89a3de",
+  "source_matches_freeze": true,
+  "provider": "[REDACTED]",
+  "model": "[REDACTED]",
+  "cases": {
+    "nextjs": {
+      "success": true,
+      "model_calls": 1,
+      "failed_decisions": 0,
+      "status": "prepared",
+      "elapsed_seconds": 3.91
+    },
+    "django": {
+      "success": true,
+      "model_calls": 1,
+      "failed_decisions": 0,
+      "status": "prepared",
+      "elapsed_seconds": 3.85
+    },
+    "unsupported": {
+      "success": true,
+      "model_calls": 1,
+      "failed_decisions": 0,
+      "status": "finished",
+      "elapsed_seconds": 2.17
+    },
+    "deploy": {
+      "success": true,
+      "model_calls": 1,
+      "failed_decisions": 0,
+      "status": "finished",
+      "elapsed_seconds": 2.12
+    }
+  },
+  "cloud_resources_created": false,
+  "scope": "Live planner on supported fixtures, harness-reviewed local writes, real local schema validation. No cloud deployment or external repository pilot.",
+  "total_model_calls": 4,
+  "packages": {
+    "cfn-lint": "1.57.2",
+    "sympy": "1.14.0",
+    "regex": "2026.9.29",
+    "networkx": "3.7",
+    "mpmath": "1.3.0"
+  }
+}

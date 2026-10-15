@@ -1,0 +1,16 @@
+{
+  "fixture_sha256": {
+    "requirements.txt": "399419ca0dc48d150fb2f06e8c7acd67e0f3864da366ade3d5604c81a621652e",
+    "aws-runtime.json": "87111a1e3207d180f2f79f7eec1b9d430b7ed0a13eb003b6ccaf02260786d9eb",
+    ".python-version": "7b55f8e67b5623c4bef3fa691288da9437d79d3aba156de48d481db32ac7d16d",
+    "manage.py": "9e4823ee4867cc99f1c00af8ab0c0fb46538b812f2d06502492f1eab453bfa08",
+    "config/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "config/settings.py": "09770c169b9c37efb49a7f31bbbbf3b299858cb4f483d2c5e6b0f6f6c306b680",
+    "config/urls.py": "0377e622bb1f6f1d034a15c8e1fc186de42fc3bb949666221c04fd60847f15b3"
+  },
+  "artifact_sha256": {
+    "aws-template.json": "ef4f64aca7d08fb400222f58c5adac0d83056628dbad7e99159d1913f0ffc29e",
+    "aws-readiness.json": "9661285d6e89f1956045348075d34f0299345e00d18496058096cdc0461a8215",
+    "AWS-PREPARATION.md": "193acac203db11ec63b7149a89eff6da2d3706afa07a5340b49d5879e39bd203"
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "success": false,
+  "case": "nextjs",
+  "request": "Prepare this app for AWS with reviewable local infrastructure files. Show the proposal, ask before writing, validate the files locally, and explain everything still unresolved. Do not deploy.",
+  "approvals": [],
+  "conversation": {
+    "id": "22998a8e6d1346899419d1277009928e",
+    "state": {
+      "read_only_request": false,
+      "history": [],
+      "request": "Prepare this app for AWS with reviewable local infrastructure files. Show the proposal, ask before writing, validate the files locally, and explain everything still unresolved. Do not deploy.",
+      "observations": [
+        {
+          "tool": "inspect_repository",
+          "result": {
+            "eligibility": "eligible",
+            "discovery_status": null,
+            "setup": "none",
+            "findings": [
+              {
+                "name": "framework",
+                "value": "Next.js",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "dependencies.next"
+                  }
+                ]
+              },
+              {
+                "name": "package_manager",
+                "value": "npm",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package-lock.json"
+                  }
+                ]
+              },
+              {
+                "name": "lockfile",
+                "value": "Root declarations match package.json",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package-lock.json",
+                    "field": "packages['']"
+                  }
+                ]
+              },
+              {
+                "name": "runtime_requirement",
+                "value": "22.x",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "engines.node"
+                  }
+                ]
+              },
+              {
+                "name": "runtime_requirement",
+                "value": ">=20.9.0",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package-lock.json",
+                    "field": "packages['node_modules/next'].engines.node"
+                  }
+                ]
+              },
+              {
+                "name": "runtime",
+                "value": "Selected node:22",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "engines.node"
+                  }
+                ]
+              },
+              {
+                "name": "startup_command",
+                "value": "npm run dev",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "scripts.dev"
+                  }
+                ]
+              },
+              {
+                "name": "application_port",
+                "value": "3000",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "scripts.dev"
+                  }
+                ]
+              }
+            ],
+            "blockers": [],
+            "unknowns": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated."
+            ]
+          }
+        }
+      ],
+      "seen": [
+        "dfc4fa5107b0eac0183c75ff138068766fe5649b5a7db7b9d0deaf77581ed10c"
+      ],
+      "count": 1,
+      "failures": 0,
+      "model_calls": 1,
+      "status": "blocked",
+      "message": "Provider request failed: connection_error. No action selected."
+    },
+    "pending": null
+  },
+  "error": "Provider request failed: connection_error. No action selected.",
+  "elapsed_seconds": 0.72
+}

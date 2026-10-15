@@ -1,0 +1,13 @@
+{
+  "fixture_sha256": {
+    "package-lock.json": "fe784bfe49ef256451b74d62c56080da6bb0099bc16945022405134ef86a28e5",
+    "package.json": "1b9acb207357184cf02c7bf7e9bbf210ee2509a8c059de39bd6b69a7f2754188",
+    "app/layout.js": "fefe40fd3c232a9edbff485e54702024f0a79c0b8b42fa1b1d12eb13399cb7b8",
+    "app/page.js": "c0daed8dacfdfc7874920b3da515edb1c0ba65beec422adcfa91ae287bafcc34"
+  },
+  "artifact_sha256": {
+    "aws-template.json": "cc2d588a1b46c0986de2678ca30acd47e87fc7daa28e31712b6b0c02561702c1",
+    "aws-readiness.json": "7d17e589e05e1852ea23f5a2606c22e176e5e3eaef61330f9c2815526e33ab30",
+    "AWS-PREPARATION.md": "acd1710cc1249175311d45bce664ad610c5148b633e688a52f56d5d6eae6bb02"
+  }
+}

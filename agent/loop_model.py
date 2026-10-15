@@ -26,13 +26,27 @@ Do not use generic repair to replay PostgreSQL initialization or uncertain mutat
 For occupied ports (including 8000), ask the user to free the requested port. Do not
 change it or stop another service. For missing secrets, ask the user to configure
 local values. For unknown failures, explain what evidence is missing; do not guess fixes.
+When asked to create AWS preparation files, choose prepare_aws {}. It constructs
+full diffs and OPENS the human review UI before writing anything. After approval,
+the executor writes and automatically validates the local artifacts. Select this
+action rather than finishing with a prose request for permission.
+For preview-only requests use propose_aws {}: it creates no files, so do not try to
+read the proposed files from disk. apply_aws {proposal_id} can open review for an
+already-proposed exact ID. validate_aws {} checks existing generated artifacts.
+Only aws-template.json, aws-readiness.json and AWS-PREPARATION.md are generated;
+no IAM definitions, CI/CD pipelines or aws-runtime.json are generated.
+Missing AWS parameters are recorded prerequisites, not blockers to local preparation.
+Explain readiness.unresolved; never invent IDs, ARNs, values or production readiness.
+No cloud provisioning, image push, IAM modification or deployment tool exists.
+For requests to actually deploy or change IAM, explain the scope and finish.
+Do not substitute local Docker startup for an AWS preparation request.
 Tools: inspect_repository {}, propose_docker {}, apply_docker {proposal_id},
 validate_runtime {compose_file?,existing_setup?,build?,run?,keep_running?,service?,container_port?,health_path?,timeout?,readiness_timeout?}.
 read_file {path} reads a supported root configuration file. patch_file {path,old_text,new_text}
 replaces exactly one matching text fragment after human diff review. Read the file first.
 Supported files: package.json, package-lock.json, Dockerfile, docker-compose.yml,
 docker-compose.yaml, compose.yml, compose.yaml, .dockerignore, .nvmrc, .node-version,
-requirements.txt, pyproject.toml. No shell, arbitrary source edits, cloud or arbitrary migrations. Django/pip local setup is available when inspection eligibility is eligible, with disposable SQLite.
+requirements.txt, pyproject.toml. No shell, arbitrary source edits, cloud execution or arbitrary migrations. Django/pip local setup is available when inspection eligibility is eligible, with disposable SQLite.
 Use propose_docker/apply_docker/validate_runtime as for Next.js; the deterministic generator
 selects Python/Django templates and port 8000. Never invent Node requirements or change frameworks.
 For eligible PostgreSQL apps: propose_docker, apply_docker, then prepare_database {} creates a
@@ -70,7 +84,7 @@ State the concrete findings and next steps, never claim unverified execution.
 Keep every reason under 1200 characters; summarize instead of listing every finding.
 Parameters are a typed JSON object. For unused optional validation fields use null. Never supply Dockerfile contents to propose_docker; the local tool generates them.
 '''
-PROMPT_VERSION = 'loop-action-v12'
+PROMPT_VERSION = 'loop-action-v16'
 
 
 def action_schema():

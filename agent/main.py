@@ -515,5 +515,36 @@ def session_history(path: Annotated[str, typer.Argument(help="Application direct
         raise typer.Exit(1) from None
 
 
+@app.command('aws')
+def aws_prepare(
+    path: Annotated[str, typer.Argument(help='Selected application directory')],
+    apply: Annotated[bool, typer.Option('--apply', help='Write the reviewed local artifact proposal only')] = False,
+    expect: Annotated[str | None, typer.Option('--expect', help='Exact reviewed proposal ID')] = None,
+    check: Annotated[bool, typer.Option('--check', help='Validate exact generated artifacts locally')] = False,
+    json_output: Annotated[bool, typer.Option('--json')] = False,
+):
+    """Prepare a reviewed ECS Fargate foundation; never contact or deploy to AWS."""
+    from agent import aws_preparation
+    if check and apply:raise typer.BadParameter('Choose --check or --apply.')
+    if expect and not apply:raise typer.BadParameter('--expect requires --apply.')
+    try:
+        result=aws_preparation.validate(path) if check else aws_preparation.propose(path)
+        if apply:
+            if not expect or result.get('id')!=expect:raise ValueError('Review the current proposal and supply its exact --expect ID.')
+            result=aws_preparation.apply(result)
+    except (ValueError,OSError) as error:
+        result={'success':False,'error':str(error)}
+    result=Redactor(path).clean(result)
+    if json_output:console.print_json(data=result)
+    else:
+        console.print(result.get('notice','AWS preparation only; nothing is deployed.'),markup=False)
+        if result.get('id'):console.print('Proposal: '+result['id'],markup=False)
+        for change in result.get('changes',[]):console.print(change['diff'],markup=False)
+        for item in result.get('readiness',{}).get('unresolved',[]):console.print('Required: '+item,markup=False)
+        for item in result.get('blockers',[]):console.print('Blocked: '+item,markup=False)
+        if result.get('error'):console.print(result['error'],markup=False)
+    if result.get('success') is False or result.get('status')=='blocked':raise typer.Exit(1)
+
+
 if __name__ == "__main__":
     app()

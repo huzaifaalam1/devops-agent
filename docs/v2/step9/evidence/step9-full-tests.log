@@ -1,0 +1,195 @@
+======================================================================
+ERROR: setUpClass (test_baseline.HttpBaseline)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_baseline.py", line 154, in setUpClass
+    cls.server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<home>/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py", line 457, in __init__
+    self.server_bind()
+  File "<home>/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/server.py", line 140, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "<home>/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/socketserver.py", line 478, in server_bind
+    self.socket.bind(self.server_address)
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_busy_previous_endpoint_does_not_consume_health_attempt (test_repair.RepairTests.test_busy_previous_endpoint_does_not_consume_health_attempt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_cancelled_validation_rolls_back (test_repair.RepairTests.test_cancelled_validation_rolls_back)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_cli_preview_and_approval_gate (test_repair.RepairTests.test_cli_preview_and_approval_gate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_concurrent_user_edit_is_preserved_and_escalated (test_repair.RepairTests.test_concurrent_user_edit_is_preserved_and_escalated)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_custom_compose_cannot_receive_template_repair (test_repair.RepairTests.test_custom_compose_cannot_receive_template_repair)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_dirty_target_refusal_does_not_run_validation_or_consume_attempt (test_repair.RepairTests.test_dirty_target_refusal_does_not_run_validation_or_consume_attempt)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_failed_atomic_replacement_preserves_original (test_repair.RepairTests.test_failed_atomic_replacement_preserves_original)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_failed_repair_rolls_back_and_repeated_attempt_is_blocked (test_repair.RepairTests.test_failed_repair_rolls_back_and_repeated_attempt_is_blocked)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_health_path_rejects_external_or_query_values (test_repair.RepairTests.test_health_path_rejects_external_or_query_values)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_health_path_retry_changes_no_files_and_uses_supplied_path (test_repair.RepairTests.test_health_path_retry_changes_no_files_and_uses_supplied_path)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_missing_wrong_or_tampered_approval_cannot_write (test_repair.RepairTests.test_missing_wrong_or_tampered_approval_cannot_write)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_no_repair_if_original_conflict_has_disappeared (test_repair.RepairTests.test_no_repair_if_original_conflict_has_disappeared)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_port_repair_preserves_inferred_non22_runtime (test_repair.RepairTests.test_port_repair_preserves_inferred_non22_runtime)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_port_that_becomes_occupied_is_refused_at_apply (test_repair.RepairTests.test_port_that_becomes_occupied_is_refused_at_apply)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_preview_is_read_only_with_concrete_diff (test_repair.RepairTests.test_preview_is_read_only_with_concrete_diff)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_redacted_preview_is_never_written_into_repair_file (test_repair.RepairTests.test_redacted_preview_is_never_written_into_repair_file)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_stale_source_and_changed_proposal_are_refused (test_repair.RepairTests.test_stale_source_and_changed_proposal_are_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_success_keeps_repair_and_can_be_recovered (test_repair.RepairTests.test_success_keeps_repair_and_can_be_recovered)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_unknown_missing_credentials_and_cleanup_failures_stay_manual (test_repair.RepairTests.test_unknown_missing_credentials_and_cleanup_failures_stay_manual)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_validation_failure_evidence_is_redacted (test_repair.RepairTests.test_validation_failure_evidence_is_redacted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_wrong_root_unsafe_session_and_old_report_are_refused (test_repair.RepairTests.test_wrong_root_unsafe_session_and_old_report_are_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_repair.py", line 31, in setUp
+    self.owner.bind(('127.0.0.1', 0))
+PermissionError: [Errno 1] Operation not permitted
+
+======================================================================
+ERROR: test_occupied_host_port_fails_before_start_without_stopping_owner (test_validation.ValidationTests.test_occupied_host_port_fails_before_start_without_stopping_owner)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<home>/Desktop/repos/devops-agent/tests/test_validation.py", line 222, in test_occupied_host_port_fails_before_start_without_stopping_owner
+    owner.bind(("127.0.0.1", 0))
+PermissionError: [Errno 1] Operation not permitted
+
+----------------------------------------------------------------------
+Ran 323 tests in 45.288s
+
+FAILED (errors=23)

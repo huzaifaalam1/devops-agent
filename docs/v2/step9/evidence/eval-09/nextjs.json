@@ -1,0 +1,216 @@
+{
+  "success": true,
+  "case": "nextjs",
+  "request": "Prepare this app for AWS with reviewable local infrastructure files. Show the proposal, ask before writing, validate the files locally, and explain everything still unresolved. Do not deploy.",
+  "approvals": [
+    {
+      "tool": "prepare_aws",
+      "parameters": {}
+    }
+  ],
+  "conversation": {
+    "id": "14823e70cb7e4f8bb63b0ce21bf04b62",
+    "state": {
+      "read_only_request": false,
+      "history": [],
+      "request": "Prepare this app for AWS with reviewable local infrastructure files. Show the proposal, ask before writing, validate the files locally, and explain everything still unresolved. Do not deploy.",
+      "observations": [
+        {
+          "tool": "inspect_repository",
+          "result": {
+            "eligibility": "eligible",
+            "discovery_status": null,
+            "setup": "none",
+            "findings": [
+              {
+                "name": "framework",
+                "value": "Next.js",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "dependencies.next"
+                  }
+                ]
+              },
+              {
+                "name": "package_manager",
+                "value": "npm",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package-lock.json"
+                  }
+                ]
+              },
+              {
+                "name": "lockfile",
+                "value": "Root declarations match package.json",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package-lock.json",
+                    "field": "packages['']"
+                  }
+                ]
+              },
+              {
+                "name": "runtime_requirement",
+                "value": "22.x",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "engines.node"
+                  }
+                ]
+              },
+              {
+                "name": "runtime_requirement",
+                "value": ">=20.9.0",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package-lock.json",
+                    "field": "packages['node_modules/next'].engines.node"
+                  }
+                ]
+              },
+              {
+                "name": "runtime",
+                "value": "Selected node:22",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "engines.node"
+                  }
+                ]
+              },
+              {
+                "name": "startup_command",
+                "value": "npm run dev",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "scripts.dev"
+                  }
+                ]
+              },
+              {
+                "name": "application_port",
+                "value": "3000",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "scripts.dev"
+                  }
+                ]
+              }
+            ],
+            "blockers": [],
+            "unknowns": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated."
+            ]
+          }
+        },
+        {
+          "tool": "prepare_aws",
+          "result": {
+            "success": true,
+            "created": [
+              "aws-template.json",
+              "aws-readiness.json",
+              "AWS-PREPARATION.md"
+            ],
+            "session_id": "a2503469846d4f19b5e9e520ea6da022",
+            "notice": "AWS review artifacts written locally. No AWS resources created."
+          }
+        },
+        {
+          "tool": "validate_aws",
+          "result": {
+            "success": true,
+            "readiness": {
+              "schema_version": 1,
+              "framework": "Next.js",
+              "path": "ECS Fargate / CloudFormation",
+              "artifact_scope": "local preparation only",
+              "deployment_ready": false,
+              "cloud_verified": false,
+              "required_parameters": [
+                "VpcId",
+                "PrivateSubnetIds",
+                "AlbSecurityGroupId",
+                "HttpsListenerArn",
+                "Hostname",
+                "RulePriority",
+                "ImageUri",
+                "ExecutionRoleArn",
+                "TaskRoleArn",
+                "HealthPath"
+              ],
+              "runtime_secret_names": "[REDACTED]",
+              "unresolved": [
+                "Supply every template parameter without a default; select and confirm the deployment account and region separately.",
+                "Build and independently verify a production Linux X86_64 image in ECR. Development npm/runserver images are not production evidence.",
+                "Verify VPC/subnet membership, HTTPS listener protocol, certificate/DNS, ALB security group, unique hostname rule and unused rule priority.",
+                "Verify private-subnet egress (NAT or ECR/S3/logs/secret[REDACTED] endpoints), execution-role access and separate least-privilege task-role trust.",
+                "Review all runtime variables and Secret[REDACTED] Manager mappings. No dotenv values are copied; aws-runtime.json lists names only.",
+                "Verify the readiness route returns 200 with ALB health-check Host headers; authentication must remain intact.",
+                "Review availability, scaling, CPU/memory, outbound rules, log retention and budget before a separate deployment review.",
+                "Verify npm production build/start behavior, build-time NEXT_PUBLIC values, image contents and any writable cache or upload storage."
+              ],
+              "cost_drivers": [
+                "Fargate CPU/memory runtime",
+                "Existing ALB capacity",
+                "NAT/endpoints and data transfer",
+                "ECR storage",
+                "CloudWatch ingestion/retention",
+                "Secret[REDACTED] Manager",
+                "External database/storage"
+              ],
+              "excluded": [
+                "Cloud API calls",
+                "Image build/push",
+                "IAM changes",
+                "VPC/ALB/DNS provisioning",
+                "Database creation or migrations",
+                "Deployment"
+              ]
+            },
+            "findings": [],
+            "notice": "Local artifact schema checks only. Account, permissions, production image and runtime remain unverified.",
+            "deployment_ready": false,
+            "cloud_verified": false
+          }
+        }
+      ],
+      "action": {
+        "tool": "prepare_aws",
+        "parameters": {},
+        "reason": "User requested AWS preparation files with reviewable diffs, validation, and explanation of any remaining issues without deploying. Using prepare_aws generates the required infrastructure files, opens a review UI, and handles local validation after approval."
+      },
+      "operation": "1d8a4f3f9b3f44aea51b0168b1e160bf",
+      "seen": [
+        "dfc4fa5107b0eac0183c75ff138068766fe5649b5a7db7b9d0deaf77581ed10c",
+        "852ce153c57db25996e47889e6d1f244da64bed34cdd7ae4bc5a798bc26e3609"
+      ],
+      "count": 3,
+      "failures": 0,
+      "model_calls": 1,
+      "status": "prepared",
+      "message": "AWS preparation files passed local schema checks. No cloud resources were created. Resolve the recorded prerequisites before a separate deployment review."
+    },
+    "pending": null
+  },
+  "artifacts": {
+    "aws-template.json": "{\n  \"AWSTemplateFormatVersion\": \"2010-09-09\",\n  \"Description\": \"Review-only single HTTP service foundation. Requires production image and existing AWS prerequisites.\",\n  \"Outputs\": {\n    \"LogGroup\": {\n      \"Value\": {\n        \"Ref\": \"Logs\"\n      }\n    },\n    \"ServiceArn\": {\n      \"Value\": {\n        \"Ref\": \"Service\"\n      }\n    }\n  },\n  \"Parameters\": {\n    \"AlbSecurityGroupId\": {\n      \"Type\": \"AWS::EC2::SecurityGroup::Id\"\n    },\n    \"ContainerPort\": {\n      \"Default\": 3000,\n      \"MaxValue\": 65535,\n      \"MinValue\": 1,\n      \"Type\": \"Number\"\n    },\n    \"ExecutionRoleArn\": {\n      \"AllowedPattern\": \"arn:aws:iam::[0-9]{12}:role/.+\",\n      \"Description\": \"Existing ecs-tasks trust role with ECR pull, log write and selected secret[REDACTED] permissions.\",\n      \"Type\": \"String\"\n    },\n    \"HealthPath\": {\n      \"AllowedPattern\": \"/[A-Za-z0-9/_.-]*\",\n      \"Description\": \"An existing unauthenticated readiness route; verify ALB Host-header behavior.\",\n      \"Type\": \"String\"\n    },\n    \"Hostname\": {\n      \"AllowedPattern\": \"[a-z0-9][a-z0-9.-]*\\\\.[a-z]{2,}\",\n      \"Description\": \"Existing DNS name and TLS certificate on the selected HTTPS listener; never a wildcard.\",\n      \"Type\": \"String\"\n    },\n    \"HttpsListenerArn\": {\n      \"AllowedPattern\": \"arn:aws:elasticloadbalancing:[a-z0-9-]+:[0-9]{12}:listener/app/.+\",\n      \"Type\": \"String\"\n    },\n    \"ImageUri\": {\n      \"AllowedPattern\": \"[0-9]{12}\\\\.dkr\\\\.ecr\\\\.[a-z0-9-]+\\\\.amazonaws\\\\.com/[a-z0-9._/-]+@sha256:[a-f0-9]{64}\",\n      \"Description\": \"Prebuilt production Linux X86_64 image in private ECR, pinned by digest.\",\n      \"Type\": \"String\"\n    },\n    \"PrivateSubnetIds\": {\n      \"Description\": \"At least two private subnets in this VPC; provide NAT or required service endpoints.\",\n      \"Type\": \"List<AWS::EC2::Subnet::Id>\"\n    },\n    \"RulePriority\": {\n      \"Description\": \"Unused listener rule priority; must be checked by the operator.\",\n      \"MaxValue\": 50000,\n      \"MinValue\": 1,\n      \"Type\": \"Number\"\n    },\n    \"TaskRoleArn\": {\n      \"AllowedPattern\": \"arn:aws:iam::[0-9]{12}:role/.+\",\n      \"Description\": \"Existing least-privilege application role, separate from execution role.\",\n      \"Type\": \"String\"\n    },\n    \"VpcId\": {\n      \"Type\": \"AWS::EC2::VPC::Id\"\n    }\n  },\n  \"Resources\": {\n    \"AppSecurityGroup\": {\n      \"Properties\": {\n        \"GroupDescription\": \"App ingress only from selected ALB security group\",\n        \"SecurityGroupEgress\": [\n          {\n            \"CidrIp\": \"0.0.0.0/0\",\n            \"Description\": \"Review outbound needs for ECR, logs, secret[REDACTED] and application dependencies.\",\n            \"IpProtocol\": \"-1\"\n          }\n        ],\n        \"SecurityGroupIngress\": [\n          {\n            \"FromPort\": {\n              \"Ref\": \"ContainerPort\"\n            },\n            \"IpProtocol\": \"tcp\",\n            \"SourceSecurityGroupId\": {\n              \"Ref\": \"AlbSecurityGroupId\"\n            },\n            \"ToPort\": {\n              \"Ref\": \"ContainerPort\"\n            }\n          }\n        ],\n        \"VpcId\": {\n          \"Ref\": \"VpcId\"\n        }\n      },\n      \"Type\": \"AWS::EC2::SecurityGroup\"\n    },\n    \"Cluster\": {\n      \"Type\": \"AWS::ECS::Cluster\"\n    },\n    \"ListenerRule\": {\n      \"Properties\": {\n        \"Actions\": [\n          {\n            \"TargetGroupArn\": {\n              \"Ref\": \"TargetGroup\"\n            },\n            \"Type\": \"forward\"\n          }\n        ],\n        \"Conditions\": [\n          {\n            \"Field\": \"host-header\",\n            \"Values\": [\n              {\n                \"Ref\": \"Hostname\"\n              }\n            ]\n          }\n        ],\n        \"ListenerArn\": {\n          \"Ref\": \"HttpsListenerArn\"\n        },\n        \"Priority\": {\n          \"Ref\": \"RulePriority\"\n        }\n      },\n      \"Type\": \"AWS::ElasticLoadBalancingV2::ListenerRule\"\n    },\n    \"Logs\": {\n      \"DeletionPolicy\": \"Retain\",\n      \"Properties\": {\n        \"RetentionInDays\": 14\n      },\n      \"Type\": \"AWS::Logs::LogGroup\",\n      \"UpdateReplacePolicy\": \"Retain\"\n    },\n    \"Service\": {\n      \"DependsOn\": [\n        \"ListenerRule\"\n      ],\n      \"Properties\": {\n        \"Cluster\": {\n          \"Ref\": \"Cluster\"\n        },\n        \"DeploymentConfiguration\": {\n          \"DeploymentCircuitBreaker\": {\n            \"Enable\": true,\n            \"Rollback\": true\n          }\n        },\n        \"DesiredCount\": 1,\n        \"HealthCheckGracePeriodSeconds\": 60,\n        \"LaunchType\": \"FARGATE\",\n        \"LoadBalancers\": [\n          {\n            \"ContainerName\": \"app\",\n            \"ContainerPort\": {\n              \"Ref\": \"ContainerPort\"\n            },\n            \"TargetGroupArn\": {\n              \"Ref\": \"TargetGroup\"\n            }\n          }\n        ],\n        \"NetworkConfiguration\": {\n          \"AwsvpcConfiguration\": {\n            \"AssignPublicIp\": \"DISABLED\",\n            \"SecurityGroups\": [\n              {\n                \"Ref\": \"AppSecurityGroup\"\n              }\n            ],\n            \"Subnets\": {\n              \"Ref\": \"PrivateSubnetIds\"\n            }\n          }\n        },\n        \"PlatformVersion\": \"1.4.0\",\n        \"TaskDefinition\": {\n          \"Ref\": \"Task\"\n        }\n      },\n      \"Type\": \"AWS::ECS::Service\"\n    },\n    \"TargetGroup\": {\n      \"Properties\": {\n        \"HealthCheckPath\": {\n          \"Ref\": \"HealthPath\"\n        },\n        \"Matcher\": {\n          \"HttpCode\": \"200\"\n        },\n        \"Port\": {\n          \"Ref\": \"ContainerPort\"\n        },\n        \"Protocol\": \"HTTP\",\n        \"TargetType\": \"ip\",\n        \"VpcId\": {\n          \"Ref\": \"VpcId\"\n        }\n      },\n      \"Type\": \"AWS::ElasticLoadBalancingV2::TargetGroup\"\n    },\n    \"Task\": {\n      \"Properties\": {\n        \"ContainerDefinitions\": [\n          {\n            \"Essential\": true,\n            \"Image\": {\n              \"Ref\": \"ImageUri\"\n            },\n            \"LogConfiguration\": {\n              \"LogDriver\": \"awslogs\",\n              \"Options\": {\n                \"awslogs-group\": {\n                  \"Ref\": \"Logs\"\n                },\n                \"awslogs-region\": {\n                  \"Ref\": \"AWS::Region\"\n                },\n                \"awslogs-stream-prefix\": \"app\"\n              }\n            },\n            \"Name\": \"app\",\n            \"PortMappings\": [\n              {\n                \"ContainerPort\": {\n                  \"Ref\": \"ContainerPort\"\n                },\n                \"Protocol\": \"tcp\"\n              }\n            ]\n          }\n        ],\n        \"Cpu\": \"256\",\n        \"ExecutionRoleArn\": {\n          \"Ref\": \"ExecutionRoleArn\"\n        },\n        \"Memory\": \"512\",\n        \"NetworkMode\": \"awsvpc\",\n        \"RequiresCompatibilities\": [\n          \"FARGATE\"\n        ],\n        \"RuntimePlatform\": {\n          \"CpuArchitecture\": \"X86_64\",\n          \"OperatingSystemFamily\": \"LINUX\"\n        },\n        \"TaskRoleArn\": {\n          \"Ref\": \"TaskRoleArn\"\n        }\n      },\n      \"Type\": \"AWS::ECS::TaskDefinition\"\n    }\n  }\n}\n",
+    "aws-readiness.json": "{\n  \"artifact_scope\": \"local preparation only\",\n  \"cloud_verified\": false,\n  \"cost_drivers\": [\n    \"Fargate CPU/memory runtime\",\n    \"Existing ALB capacity\",\n    \"NAT/endpoints and data transfer\",\n    \"ECR storage\",\n    \"CloudWatch ingestion/retention\",\n    \"Secret[REDACTED] Manager\",\n    \"External database/storage\"\n  ],\n  \"deployment_ready\": false,\n  \"excluded\": [\n    \"Cloud API calls\",\n    \"Image build/push\",\n    \"IAM changes\",\n    \"VPC/ALB/DNS provisioning\",\n    \"Database creation or migrations\",\n    \"Deployment\"\n  ],\n  \"framework\": \"Next.js\",\n  \"path\": \"ECS Fargate / CloudFormation\",\n  \"required_parameters\": [\n    \"VpcId\",\n    \"PrivateSubnetIds\",\n    \"AlbSecurityGroupId\",\n    \"HttpsListenerArn\",\n    \"Hostname\",\n    \"RulePriority\",\n    \"ImageUri\",\n    \"ExecutionRoleArn\",\n    \"TaskRoleArn\",\n    \"HealthPath\"\n  ],\n  \"runtime_secret_names\": [],\n  \"schema_version\": 1,\n  \"unresolved\": [\n    \"Supply every template parameter without a default; select and confirm the deployment account and region separately.\",\n    \"Build and independently verify a production Linux X86_64 image in ECR. Development npm/runserver images are not production evidence.\",\n    \"Verify VPC/subnet membership, HTTPS listener protocol, certificate/DNS, ALB security group, unique hostname rule and unused rule priority.\",\n    \"Verify private-subnet egress (NAT or ECR/S3/logs/secret[REDACTED] endpoints), execution-role access and separate least-privilege task-role trust.\",\n    \"Review all runtime variables and Secret[REDACTED] Manager mappings. No dotenv values are copied; aws-runtime.json lists names only.\",\n    \"Verify the readiness route returns 200 with ALB health-check Host headers; authentication must remain intact.\",\n    \"Review availability, scaling, CPU/memory, outbound rules, log retention and budget before a separate deployment review.\",\n    \"Verify npm production build/start behavior, build-time NEXT_PUBLIC values, image contents and any writable cache or upload storage.\"\n  ]\n}\n",
+    "AWS-PREPARATION.md": "# AWS preparation \u2014 review required\n\nThis is a local CloudFormation foundation, not a verified deployment.\n\n- Supply every template parameter without a default; select and confirm the deployment account and region separately.\n- Build and independently verify a production Linux X86_64 image in ECR. Development npm/runserver images are not production evidence.\n- Verify VPC/subnet membership, HTTPS listener protocol, certificate/DNS, ALB security group, unique hostname rule and unused rule priority.\n- Verify private-subnet egress (NAT or ECR/S3/logs/secret[REDACTED] endpoints), execution-role access and separate least-privilege task-role trust.\n- Review all runtime variables and Secret[REDACTED] Manager mappings. No dotenv values are copied; aws-runtime.json lists names only.\n- Verify the readiness route returns 200 with ALB health-check Host headers; authentication must remain intact.\n- Review availability, scaling, CPU/memory, outbound rules, log retention and budget before a separate deployment review.\n- Verify npm production build/start behavior, build-time NEXT_PUBLIC values, image contents and any writable cache or upload storage.\n\nThe template creates an ECS cluster/service/task, task security group, target group,\nhost-specific rule on an existing HTTPS listener, and a retained log group.\nExisting VPC, private subnets, ALB, DNS/certificate, roles, ECR image and secret[REDACTED]\nare required. No resources have been created. No deployment command is supplied.\n\nSecret [REDACTED] input example (names only):\n```json\n{\"secret[REDACTED] [\"DJANGO_SECRET_KEY\", \"DATABASE_URL\"]}\n```\nSave relevant names in aws-runtime.json before generating. Each name becomes a\nrequired ARN parameter. Existing output files are preserved; do not overwrite\nmanual edits. Review any edited template with your own infrastructure workflow.\n\nLocal schema validation cannot verify image behavior, IAM permissions, resource\nexistence, network reachability, costs or production readiness.\n"
+  },
+  "elapsed_seconds": 3.91
+}

@@ -46,6 +46,8 @@ def compact(tool, result):
         return {k:project.get(k) for k in ['eligibility','discovery_status','setup','findings','blockers','unknowns']}
     if tool=='propose_runtime_repair':
         return {k:result.get(k) for k in ['status','id','source_session','summary','blockers','verification','attempt_limit']}
+    if tool in {'propose_aws','validate_aws'}:
+        return {k:result[k] for k in ['status','id','success','error','blockers','artifact_paths','readiness','findings','notice','deployment_ready','cloud_verified'] if k in result}
     if tool=='propose_docker':
         return {k:result.get(k) for k in ['status','id','blockers','preserved']}
     result=dict(result)
@@ -150,6 +152,13 @@ class AgentLoop:
                 raise ValueError()
             if action['tool']=='finish':
                 if action['parameters'] != {}: raise ValueError()
+                ready_aws=any(o['tool']=='propose_aws' and o['result'].get('status')=='ready' for o in state['observations'])
+                handled_aws=any(o['tool']=='apply_aws' or o['result'].get('code')=='aws_review_handoff' for o in state['observations'])
+                asks_permission=re.search(r'please confirm|would you like|may i|approval|approve|confirmation',action['reason'],re.I)
+                if ready_aws and not handled_aws and asks_permission and not state.get('read_only_request'):
+                    return {'status':'retry','model_calls':calls+1,'failures':state['failures']+1,
+                        'observations':state['observations']+[{'tool':'agent_feedback','result':{
+                            'code':'aws_review_handoff','message':'If you are asking permission to write the ready AWS proposal, select apply_aws with its ID. This opens the human review UI and writes nothing until approved. If you instead need clarification or only owe an explanation, finish with that answer. This reminder occurs only once.'}}]}
                 return {**self._stop(action['reason'],'finished'),
                         'model_calls':calls+1}
             inputs(action['tool'],action['parameters'])
@@ -157,7 +166,7 @@ class AgentLoop:
                 return self._stop('Model action contains sensitive values; no execution performed.')
             if state.get('read_only_request') and action['tool'] in MUTATIONS:
                 return self._stop('This request asked for advice, so I have not changed or run anything. Ask me to make the changes or start the app if that is what you want.')
-            if action['tool'] in {'patch_file','apply_docker'} and state['count']+3>12:
+            if (action['tool'] in {'patch_file','apply_docker'} and state['count']+3>12) or (action['tool'] in {'apply_aws','prepare_aws'} and state['count']+2>12):
                 return self._stop('Not enough actions remain to edit and verify the updated evidence. Start a fresh request.')
             signature=self._signature(action['tool'],action['parameters'])
             if signature in state['seen']:
@@ -211,6 +220,16 @@ class AgentLoop:
             failed=result.get('success') is False or result.get('status')=='blocked'
             update={'observations':state['observations']+[{'tool':action['tool'],'result':summary}],
                     'count':state['count']+1,'failures':state['failures']+int(failed),'status':'active'}
+            if action['tool'] in {'apply_aws','prepare_aws'} and not failed:
+                self.emit('Checking the generated AWS artifacts locally...')
+                validation=self.registry.execute('validate_aws',{})['result']
+                update['observations'].append({'tool':'validate_aws','result':self._clean(compact('validate_aws',validation))})
+                update['count']+=1
+                if validation.get('success'):
+                    update.update(status='prepared',message='AWS preparation files passed local schema checks. No cloud resources were created. Resolve the recorded prerequisites before a separate deployment review.')
+                else:
+                    update['failures']+=1
+                    update.update(self._stop('AWS files were written, but local schema validation did not pass. Inspect the validation result; nothing was deployed.'))
             if action['tool'] in {'patch_file','apply_docker'} and not failed:
                 # Old blockers and file text must not remain in the next planning
                 # context after an edit. Verification is part of this ledger entry.
@@ -239,6 +258,8 @@ class AgentLoop:
                 update.update(self._stop('The requested port is occupied. Please make it available, then ask me to retry. I have not changed the port or stopped its owner.'))
             if failed and diagnosis.get('type')=='cleanup_failure':
                 update.update(self._stop('Cleanup could not be verified. Inspect the owned session before any further setup or repair.','reconcile'))
+            if action['tool']=='validate_aws' and result.get('success'):
+                update.update(status='prepared',message='AWS preparation files passed local schema checks. No cloud resources were created. Resolve the recorded prerequisites before a separate deployment review.')
             if action['tool']=='apply_runtime_repair' and result.get('success'):
                 update.update(status='verified',message='The reviewed repair passed runtime verification. Its test environment was cleaned up; no service was kept running.')
             if action['tool']=='migrate_database' and result.get('success'):

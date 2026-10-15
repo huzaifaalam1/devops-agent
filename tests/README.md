@@ -243,3 +243,17 @@ an explicit reviewed adjustment after generation; the default remains 3000.
 It never stops an existing port owner. Independent response-body verification and
 scoped cleanup follow the CLI result. Do not interpret its success as production
 build coverage or general repository compatibility.
+
+## V2 AWS preparation checks
+
+The full suite now includes real, offline CloudFormation schema validation. Install
+its pinned optional dependency before running the suite:
+
+```sh
+.venv/bin/python -m pip install -e '.[aws-validation]'
+PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m unittest discover -s tests -q
+```
+
+No AWS credentials or API calls are required. `tests.aws_step9_smoke` is opt-in:
+it uses the configured live model, harness-reviewed local file writes and the real
+local validator. Its manifests/reports distinguish preparation from deployment.

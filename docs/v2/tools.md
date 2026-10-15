@@ -90,3 +90,14 @@ one-use review, rechecks the proposal and inputs, and performs one runtime
 verification with cleanup. The persistent attempt fence survives new chat sessions.
 A successful probe changes neither authentication nor repository files and does
 not leave the app running. Future runs must explicitly select the health path.
+
+## Step 9: AWS preparation
+
+`prepare_aws {}` is the normal chat path: construct the concrete proposal and
+open human review before any write. The conversation executor automatically runs
+local validation afterward and reserves budget for that check.
+`propose_aws {}` returns read-only diffs and unresolved production prerequisites. `apply_aws {proposal_id}` requires a separate current one-use review
+and creates only the three named files. `validate_aws {}` performs exact-artifact
+and pinned CloudFormation schema checks with isolated linter configuration. It is
+read-only and contacts no AWS API. No deployment/IAM/cloud shell tool is exposed.
+See [the contract](step9/README.md) and [decision](step9/decision.md).

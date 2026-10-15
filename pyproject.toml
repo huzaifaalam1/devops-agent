@@ -13,6 +13,9 @@ dependencies = [
     "requests (>=2.34.2,<3.0.0)"
 ]
 
+[project.optional-dependencies]
+aws-validation = ["cfn-lint==1.57.2"]
+
 [project.scripts]
 devops-agent = "agent.main:app"
 
