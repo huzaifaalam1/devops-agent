@@ -1,6 +1,6 @@
 # V2 plan and scope contract
 
-Status: steps 1–9 complete. [Step-8 diagnosis, recovery and evaluation evidence](step8/README.md) is retained. [PostgreSQL evidence](step7/README.md), [Django runtime evidence](step6/README.md) and [Django discovery evidence](step5/README.md) are retained. [AWS preparation evidence](step9/README.md) is retained. Combined acceptance and external pilots remain step 10.
+Status: steps 1–10 engineering work complete. [Final combined acceptance](step10/README.md) passed 343 offline tests, 11 live cases and real cancellation. User review and commit remain; no release tag, publication or deployment has occurred.
 Baseline: v1 commit `4a5afdb` (`Finalize v1 support contract and verify end-to-end startup`).
 This document records the agreed v2 direction and concrete implementation defaults;
 it does not expand the current [v1 support contract](../product-scope.md).
@@ -161,3 +161,5 @@ remain step 7. See [step-6 scope and retained evidence](step6/README.md).
 Step 7 implementation and verification: [disposable PostgreSQL contract](step7/README.md).
 
 Step 9 selects ECS Fargate with JSON CloudFormation and existing network/identity prerequisites. See [the decision](step9/decision.md) and [local-only contract/evidence](step9/README.md). No cloud deployment is claimed.
+
+Step 10: [final evidence and limitations](step10/README.md), [usage guide](step10/usage.md), and [acceptance coverage](step10/coverage.md).

@@ -1,0 +1,549 @@
+{
+  "success": true,
+  "approvals": [
+    {
+      "tool": "apply_docker",
+      "parameters": {
+        "proposal_id": "394a850acb7b9e76dcc8ca2adce5ceec663f5f76ffef1b56b6d0cb5a7db2591e"
+      }
+    },
+    {
+      "tool": "validate_runtime",
+      "parameters": {
+        "compose_file": "docker-compose.yml",
+        "run": true,
+        "readiness_timeout": 5,
+        "timeout": 300
+      }
+    },
+    {
+      "tool": "apply_runtime_repair",
+      "parameters": {
+        "session_id": "4406ac7ab5104d1f9b0a770ea62e3e3c",
+        "health_path": "/health",
+        "proposal_id": "78f1fc595802d22f7eb0bb1ececbb291f4a0dd0705ee27e2208a68c40ef81ce9"
+      }
+    }
+  ],
+  "live_model": true,
+  "failure": {
+    "success": false,
+    "phase": "services",
+    "results": [
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app/docker-compose.yml config --format json",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+        "success": true,
+        "stdout": "\"unix://<home>/.docker/run/docker.sock\"\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-jgyc90gv/compose.json build",
+        "success": true,
+        "stdout": "#1 [internal] load local bake definitions\n#1 reading from stdin 665B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 391B done\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/python:3.12-slim\n#3 DONE 0.9s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 330B done\n#4 DONE 0.0s\n\n#5 [1/4] FROM docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1\n#5 resolve docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 done\n#5 DONE 0.0s\n\n#6 [internal] load build context\n#6 transferring context: 1.96kB 0.0s done\n#6 DONE 0.0s\n\n#7 [2/4] WORKDIR /app\n#7 CACHED\n\n#8 [3/4] COPY . .\n#8 CACHED\n\n#9 [4/4] RUN python -m pip install --no-cache-dir -r requirements.txt\n#9 CACHED\n\n#10 exporting to image\n#10 exporting layers done\n#10 exporting manifest sha256:42b5122f49023966f9bc3045f075d0f8d52a0ddddbb39517ff0ead27f26d4c6c done\n#10 exporting config sha256:732ae4f9f76477dc4c1b93706561243ce988ce9482a9312a6745e30019615ffd done\n#10 exporting attestation manifest sha256:e2f72fcb341275924e2837837d77e7c38d949515aa9f8d0906cb05c76019fd7d done\n#10 exporting manifest list sha256:26dfa0826f0156be6714aefe8d1eb3e0aeac7f779ff8b46c17664eefdeb07786 done\n#10 naming to docker.io/library/devops-validation-726217b6bfc4-app:validation done\n#10 unpacking to docker.io/library/devops-validation-726217b6bfc4-app:validation\n#10 unpacking to docker.io/library/devops-validation-726217b6bfc4-app:validation 1.2s done\n#10 DONE 1.2s\n\n#11 resolving provenance for metadata file\n#11 DONE 0.0s\n",
+        "stderr": " Image devops-validation-726217b6bfc4-app:validation Building \n Image devops-validation-726217b6bfc4-app:validation Built \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-jgyc90gv/compose.json up -d --no-build",
+        "success": true,
+        "stdout": "",
+        "stderr": " Network devops-validation-726217b6bfc4_default Creating \n Network devops-validation-726217b6bfc4_default Creating \n Network devops-validation-726217b6bfc4_default Created \n Network devops-validation-726217b6bfc4_default Created \n Container devops-validation-726217b6bfc4-app-1 Creating \n Container devops-validation-726217b6bfc4-app-1 Created \n Container devops-validation-726217b6bfc4-app-1 Starting \n Container devops-validation-726217b6bfc4-app-1 Started \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-jgyc90gv/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-jgyc90gv/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-jgyc90gv/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-jgyc90gv/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-jgyc90gv/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-jgyc90gv/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-jgyc90gv/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-jgyc90gv/compose.json ps --all --quiet",
+        "success": false,
+        "stdout": "",
+        "stderr": "\nCommand timed out after 0.1 seconds.",
+        "returncode": null,
+        "timed_out": true
+      }
+    ],
+    "logs": "app-1  | Performing system checks...\napp-1  | \napp-1  | System check identified no issues (0 silenced).\napp-1  | October 15, 2026 - 12:28:12\napp-1  | Django version 5.2.8, using settings '[REDACTED]'\napp-1  | Starting development server at http://0.0.0.0:8000/\napp-1  | Quit the server with CONTROL-C.\napp-1  | \napp-1  | WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.\napp-1  | For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/\napp-1  | [15/Oct/2026 12:28:12] \"HEAD / HTTP/1.1\" 401 0\napp-1  | [15/Oct/2026 12:28:13] \"HEAD / HTTP/1.1\" 401 0\napp-1  | [15/Oct/2026 12:28:13] \"HEAD / HTTP/1.1\" 401 0\napp-1  | [15/Oct/2026 12:28:14] \"HEAD / HTTP/1.1\" 401 0\napp-1  | [15/Oct/2026 12:28:15] \"HEAD / HTTP/1.1\" 401 0\napp-1  | [15/Oct/2026 12:28:15] \"HEAD / HTTP/1.1\" 401 0\n",
+    "expected_services": [
+      "app"
+    ],
+    "running_services": [
+      "app"
+    ],
+    "stopped_services": [],
+    "application_check": {
+      "url": "http://127.0.0.1:8000/",
+      "reachable": true,
+      "healthy": false,
+      "status_code": 401,
+      "redirect_url": null,
+      "error": "Authentication is required; choose an unauthenticated readiness path.",
+      "redirects": [],
+      "final_url": "http://127.0.0.1:8000/",
+      "success": false,
+      "container_id": "d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa"
+    },
+    "stages": [
+      {
+        "phase": "config",
+        "success": true
+      },
+      {
+        "phase": "build",
+        "success": true
+      },
+      {
+        "phase": "startup",
+        "success": true
+      },
+      {
+        "phase": "services",
+        "success": false
+      }
+    ],
+    "cleanup": {
+      "status": "complete",
+      "results": [
+        {
+          "command": "docker compose --project-directory /private/var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/step8-recovery-m32j1t0_/app -p devops-validation-726217b6bfc4 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-jgyc90gv/compose.json down --volumes --timeout 5",
+          "success": true,
+          "stdout": "",
+          "stderr": " Container devops-validation-726217b6bfc4-app-1 Stopping \n Container devops-validation-726217b6bfc4-app-1 Stopped \n Container devops-validation-726217b6bfc4-app-1 Removing \n Container devops-validation-726217b6bfc4-app-1 Removed \n Network devops-validation-726217b6bfc4_default Removing \n Network devops-validation-726217b6bfc4_default Removed \n",
+          "returncode": 0
+        },
+        {
+          "command": "docker ps --all --quiet --filter label=com.docker.compose.project=devops-validation-726217b6bfc4",
+          "success": true,
+          "stdout": "",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker image rm devops-validation-726217b6bfc4-app:validation",
+          "success": true,
+          "stdout": "Untagged: devops-validation-726217b6bfc4-app:validation\nDeleted: sha256:26dfa0826f0156be6714aefe8d1eb3e0aeac7f779ff8b46c17664eefdeb07786\n",
+          "stderr": "",
+          "returncode": 0
+        }
+      ]
+    },
+    "verified": [
+      "config",
+      "build",
+      "startup"
+    ],
+    "unverified": [
+      "Business correctness and production readiness",
+      "Shared image/build cache is retained"
+    ],
+    "environment_state": "stopped",
+    "project": "devops-validation-726217b6bfc4",
+    "application_service": "app",
+    "container_port": 8000,
+    "service_states": {
+      "app": {
+        "id": "d9126556eb98bf6598176e9fb5cd8f81af53bac1f513500c70273256ec3698aa",
+        "state": "running",
+        "health": null,
+        "ports": {
+          "8000/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "8000"
+            }
+          ]
+        }
+      }
+    },
+    "error": "\nCommand timed out after 0.1 seconds.",
+    "next_action": "Inspect the command failure and retry after correcting it.",
+    "repair_context": {
+      "inputs_sha256": "1d088f20a2b93e6a8d3ea3a0c1f8fedd10490bfe56b657c442cb694d60a056d8",
+      "compose_file": "docker-compose.yml",
+      "health_path": "/",
+      "service": null,
+      "container_port": null,
+      "timeout": 300,
+      "readiness_timeout": 5
+    },
+    "session_id": "4406ac7ab5104d1f9b0a770ea62e3e3c",
+    "diagnosis": {
+      "type": "http_authentication",
+      "phase": "services",
+      "summary": "The readiness endpoint requires authentication.",
+      "symptoms": [
+        "401"
+      ],
+      "evidence": [
+        {
+          "source": "application_check.status_code",
+          "excerpt": "401"
+        }
+      ],
+      "confidence": "high",
+      "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+      "likely_causes": [
+        "HTTP 401/403 means the endpoint is reachable but does not prove unauthenticated readiness."
+      ],
+      "suggested_actions": [
+        "Select an existing unauthenticated readiness route with --health-path; do not disable application authentication."
+      ],
+      "expected_impact": "Changes the probe path only.",
+      "verification": "Rerun validate --run --health-path /your-readiness-route and require a final 2xx response from the owned endpoint.",
+      "automatic_repair": false,
+      "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+    }
+  },
+  "conversation": {
+    "id": "254a58a59139453d95d364b2ef588bed",
+    "state": {
+      "read_only_request": false,
+      "history": [],
+      "request": "Validation 4406ac7ab5104d1f9b0a770ea62e3e3c failed because / requires authentication (401). Its resources were cleaned up. Please recover using the existing public /health route: show the proposal, get approval, and verify once with cleanup afterward. Preserve app authentication, repository files and port 8000.",
+      "observations": [
+        {
+          "tool": "inspect_repository",
+          "result": {
+            "eligibility": "eligible",
+            "discovery_status": "understood",
+            "setup": "existing",
+            "services": [
+              "SQLite"
+            ],
+            "findings": [
+              {
+                "name": "framework",
+                "value": "Django",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "manage.py"
+                  }
+                ]
+              },
+              {
+                "name": "django_version",
+                "value": "5.2.8",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "requirements.txt",
+                    "line": 1
+                  }
+                ]
+              },
+              {
+                "name": "dependency_manifest",
+                "value": "pip requirements.txt",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "requirements.txt"
+                  }
+                ]
+              },
+              {
+                "name": "dependency_count",
+                "value": 1,
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "requirements.txt"
+                  }
+                ]
+              },
+              {
+                "name": "python_requirement",
+                "value": "3.12",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": ".python-version"
+                  }
+                ]
+              },
+              {
+                "name": "python_django_compatibility",
+                "value": "Version combination is documented; dependency installability is unverified.",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": ".python-version"
+                  }
+                ]
+              },
+              {
+                "name": "settings_module_candidate",
+                "value": "config.settings",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "manage.py",
+                    "line": 5
+                  }
+                ]
+              },
+              {
+                "name": "settings_file",
+                "value": "config/settings.py",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "config/settings.py"
+                  }
+                ]
+              },
+              {
+                "name": "database_backend",
+                "value": "SQLite",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "config/settings.py",
+                    "line": 7
+                  }
+                ]
+              }
+            ],
+            "blockers": [],
+            "unknowns": [
+              "Static settings evidence does not prove effective runtime configuration; environment overrides and arbitrary Python effects are not executed.",
+              "Dependency installability, migrations, service connectivity and application health are unverified.",
+              "Compatibility is version compatibility only, not a security or lifecycle certification."
+            ],
+            "runtime_options": [
+              {
+                "compose_file": "docker-compose.yml",
+                "status": "reviewable",
+                "parameters": {
+                  "compose_file": "docker-compose.yml",
+                  "existing_setup": true,
+                  "run": true
+                },
+                "blockers": [],
+                "deferred_template_checks": [],
+                "notice": "Static eligibility for requesting reviewed validation only. Docker configuration safety, build and runtime readiness are unverified."
+              }
+            ]
+          }
+        },
+        {
+          "tool": "propose_runtime_repair",
+          "result": {
+            "status": "ready",
+            "id": "78f1fc595802d22f7eb0bb1ececbb291f4a0dd0705ee27e2208a68c40ef81ce9",
+            "source_session": "4406ac7ab5104d1f9b0a770ea62e3e3c",
+            "summary": "Retry readiness at /health; leave authentication and files unchanged.",
+            "blockers": [],
+            "verification": "Require owned endpoint HTTP 2xx, stable service health and successful cleanup.",
+            "attempt_limit": 1
+          }
+        },
+        {
+          "tool": "apply_runtime_repair",
+          "result": {
+            "success": true,
+            "session_id": "70e6ce84bd8a470389a2beda10d75729",
+            "validation": {
+              "success": true,
+              "phase": "application",
+              "session_id": "4b1c916610fe4e49b5fd7b3850daf6b4",
+              "application_check": {
+                "url": "http://127.0.0.1:8000/health",
+                "reachable": true,
+                "healthy": true,
+                "status_code": 200,
+                "redirect_url": null,
+                "error": null,
+                "redirects": [],
+                "final_url": "http://127.0.0.1:8000/health",
+                "success": true,
+                "container_id": "3c6b2d8a77bf6b72f9d3198cf982d4a9fa56d731861567e662402cbaaad9a694"
+              },
+              "environment_state": "stopped",
+              "cleanup": {
+                "status": "complete"
+              },
+              "unverified": [
+                "Business correctness and production readiness",
+                "Shared image/build cache is retained"
+              ]
+            },
+            "diagnosis": null,
+            "status": "repaired",
+            "summary": "Retry readiness at /health; leave authentication and files unchanged.",
+            "rollback": {
+              "status": "not_needed"
+            },
+            "attempts": 1,
+            "attempt_limit": 1
+          }
+        }
+      ],
+      "action": {
+        "tool": "apply_runtime_repair",
+        "parameters": {
+          "session_id": "4406ac7ab5104d1f9b0a770ea62e3e3c",
+          "health_path": "/health",
+          "proposal_id": "78f1fc595802d22f7eb0bb1ececbb291f4a0dd0705ee27e2208a68c40ef81ce9"
+        },
+        "reason": "Apply the runtime repair proposal to retry readiness using the public /health endpoint while preserving authentication, repository files, and port 8000."
+      },
+      "operation": "ec84f1ce2565487897363dc1ab327465",
+      "seen": [
+        "18b19acf25e0de2ba82f11802edf4923ebb35d8f7cc6235ec9f2fe1f25100137",
+        "9232675251870c951429c606f25e5b6e9376f0b61920e245a214a299595991af",
+        "74cf0e9e345f686686d39c2c70a94801eb58b8199170c92b94b5152f0b950710"
+      ],
+      "count": 3,
+      "failures": 0,
+      "model_calls": 2,
+      "status": "verified",
+      "message": "The reviewed repair passed runtime verification. Its test environment was cleaned up; no service was kept running."
+    },
+    "pending": null
+  },
+  "repair": {
+    "success": true,
+    "session_id": "70e6ce84bd8a470389a2beda10d75729",
+    "validation": {
+      "success": true,
+      "phase": "application",
+      "session_id": "4b1c916610fe4e49b5fd7b3850daf6b4",
+      "application_check": {
+        "url": "http://127.0.0.1:8000/health",
+        "reachable": true,
+        "healthy": true,
+        "status_code": 200,
+        "redirect_url": null,
+        "error": null,
+        "redirects": [],
+        "final_url": "http://127.0.0.1:8000/health",
+        "success": true,
+        "container_id": "3c6b2d8a77bf6b72f9d3198cf982d4a9fa56d731861567e662402cbaaad9a694"
+      },
+      "environment_state": "stopped",
+      "cleanup": {
+        "status": "complete"
+      },
+      "unverified": [
+        "Business correctness and production readiness",
+        "Shared image/build cache is retained"
+      ]
+    },
+    "diagnosis": null,
+    "status": "repaired",
+    "summary": "Retry readiness at /health; leave authentication and files unchanged.",
+    "rollback": {
+      "status": "not_needed"
+    },
+    "attempts": 1,
+    "attempt_limit": 1
+  },
+  "replay_refused": true,
+  "compose_unchanged": true,
+  "cleanup_verified": true,
+  "unrelated_containers_preserved": true
+}

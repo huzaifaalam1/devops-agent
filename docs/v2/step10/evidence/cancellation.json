@@ -1,0 +1,194 @@
+{
+  "success": true,
+  "scope": "Real SIGINT during owned Django readiness; no model calls.",
+  "owned_ids": [
+    "88dcd4f5798be9c1103788d61a48d30b906852125c4d6e9654cab231c7a2a3a3"
+  ],
+  "validation": {
+    "success": false,
+    "phase": "cancelled",
+    "results": [
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-1c8c3ac36302 -f <temporary-fixture>/app/docker-compose.yml config --format json",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+        "success": true,
+        "stdout": "\"unix://<home>/.docker/run/docker.sock\"\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-1c8c3ac36302 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-d4vhoh0o/compose.json build",
+        "success": true,
+        "stdout": "#1 [internal] load local bake definitions\n#1 reading from stdin 663B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 391B done\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/python:3.12-slim\n#3 DONE 1.3s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 330B done\n#4 DONE 0.0s\n\n#5 [1/4] FROM docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1\n#5 resolve docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 done\n#5 DONE 0.0s\n\n#6 [internal] load build context\n#6 transferring context: 1.90kB done\n#6 DONE 0.0s\n\n#7 [2/4] WORKDIR /app\n#7 CACHED\n\n#8 [3/4] COPY . .\n#8 CACHED\n\n#9 [4/4] RUN python -m pip install --no-cache-dir -r requirements.txt\n#9 CACHED\n\n#10 exporting to image\n#10 exporting layers done\n#10 exporting manifest sha256:4c05220870b97cb033eca0b0eecce2d2b1941357ccc213bcfd7c05688899c669 done\n#10 exporting config sha256:2e1850260e70dd7ac88ec00edb20de2ee49faf2e286bd3224cea901aee8b5a4f done\n#10 exporting attestation manifest sha256:25706e768185201ec69ff94190b337c8972fb19e0b0ce8fd94cb03865df1f2a7 done\n#10 exporting manifest list sha256:1db78db44fe3d7191c433bbcbcdd722526cb06c28ee2195d9cc49ae3238bf60c done\n#10 naming to docker.io/library/devops-validation-1c8c3ac36302-app:validation done\n#10 unpacking to docker.io/library/devops-validation-1c8c3ac36302-app:validation\n#10 unpacking to docker.io/library/devops-validation-1c8c3ac36302-app:validation 1.2s done\n#10 DONE 1.2s\n\n#11 resolving provenance for metadata file\n#11 DONE 0.0s\n",
+        "stderr": " Image devops-validation-1c8c3ac36302-app:validation Building \n Image devops-validation-1c8c3ac36302-app:validation Built \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-1c8c3ac36302 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-d4vhoh0o/compose.json up -d --no-build",
+        "success": true,
+        "stdout": "",
+        "stderr": " Network devops-validation-1c8c3ac36302_default Creating \n Network devops-validation-1c8c3ac36302_default Creating \n Network devops-validation-1c8c3ac36302_default Created \n Network devops-validation-1c8c3ac36302_default Created \n Container devops-validation-1c8c3ac36302-app-1 Creating \n Container devops-validation-1c8c3ac36302-app-1 Created \n Container devops-validation-1c8c3ac36302-app-1 Starting \n Container devops-validation-1c8c3ac36302-app-1 Started \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-1c8c3ac36302 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-d4vhoh0o/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "88dcd4f5798be9c1103788d61a48d30b906852125c4d6e9654cab231c7a2a3a3\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 88dcd4f5798be9c1103788d61a48d30b906852125c4d6e9654cab231c7a2a3a3",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      }
+    ],
+    "logs": "app-1  | Performing system checks...\napp-1  | \napp-1  | System check identified no issues (0 silenced).\napp-1  | October 15, 2026 - 11:24:50\napp-1  | Django version 5.2.8, using settings '[REDACTED]'\napp-1  | Starting development server at http://0.0.0.0:8000/\napp-1  | Quit the server with CONTROL-C.\napp-1  | \napp-1  | WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.\napp-1  | For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/\n",
+    "expected_services": [
+      "app"
+    ],
+    "running_services": [
+      "app"
+    ],
+    "stopped_services": [],
+    "application_check": {
+      "url": "http://127.0.0.1:8000/",
+      "reachable": false,
+      "healthy": false,
+      "status_code": null,
+      "redirect_url": null,
+      "error": "Remote end closed connection without response",
+      "redirects": [],
+      "success": false,
+      "container_id": "88dcd4f5798be9c1103788d61a48d30b906852125c4d6e9654cab231c7a2a3a3"
+    },
+    "stages": [
+      {
+        "phase": "config",
+        "success": true
+      },
+      {
+        "phase": "build",
+        "success": true
+      },
+      {
+        "phase": "startup",
+        "success": true
+      },
+      {
+        "phase": "cancelled",
+        "success": false
+      }
+    ],
+    "cleanup": {
+      "status": "complete",
+      "results": [
+        {
+          "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-1c8c3ac36302 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-d4vhoh0o/compose.json down --volumes --timeout 5",
+          "success": true,
+          "stdout": "",
+          "stderr": " Container devops-validation-1c8c3ac36302-app-1 Stopping \n Container devops-validation-1c8c3ac36302-app-1 Stopped \n Container devops-validation-1c8c3ac36302-app-1 Removing \n Container devops-validation-1c8c3ac36302-app-1 Removed \n Network devops-validation-1c8c3ac36302_default Removing \n Network devops-validation-1c8c3ac36302_default Removed \n",
+          "returncode": 0
+        },
+        {
+          "command": "docker ps --all --quiet --filter label=com.docker.compose.project=devops-validation-1c8c3ac36302",
+          "success": true,
+          "stdout": "",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker image rm devops-validation-1c8c3ac36302-app:validation",
+          "success": true,
+          "stdout": "Untagged: devops-validation-1c8c3ac36302-app:validation\nDeleted: sha256:1db78db44fe3d7191c433bbcbcdd722526cb06c28ee2195d9cc49ae3238bf60c\n",
+          "stderr": "",
+          "returncode": 0
+        }
+      ]
+    },
+    "verified": [
+      "config",
+      "build",
+      "startup"
+    ],
+    "unverified": [
+      "Business correctness and production readiness",
+      "Shared image/build cache is retained"
+    ],
+    "environment_state": "stopped",
+    "project": "devops-validation-1c8c3ac36302",
+    "application_service": "app",
+    "container_port": 8000,
+    "service_states": {
+      "app": {
+        "id": "88dcd4f5798be9c1103788d61a48d30b906852125c4d6e9654cab231c7a2a3a3",
+        "state": "running",
+        "health": null,
+        "ports": {
+          "8000/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "8000"
+            }
+          ]
+        }
+      }
+    },
+    "error": "Validation cancelled; cleanup was attempted.",
+    "repair_context": {
+      "inputs_sha256": "deea62f122fc1b758061473e778c8acb9df8459bba12bd208642cde2bd5e6fdc",
+      "compose_file": "docker-compose.yml",
+      "health_path": "/",
+      "service": null,
+      "container_port": null,
+      "timeout": 600.0,
+      "readiness_timeout": 180.0
+    },
+    "session_id": "e6aad2c6b1b04ce89d1cb1e9bfd5ab85",
+    "diagnosis": {
+      "type": "unknown",
+      "phase": "cancelled",
+      "summary": "Validation failed without a supported diagnosis.",
+      "symptoms": [
+        "Validation cancelled; cleanup was attempted.",
+        "app-1  | Performing system checks...",
+        "app-1  | "
+      ],
+      "evidence": [
+        {
+          "source": "error",
+          "excerpt": "Validation cancelled; cleanup was attempted."
+        },
+        {
+          "source": "logs",
+          "excerpt": "app-1  | Performing system checks..."
+        },
+        {
+          "source": "logs",
+          "excerpt": "app-1  | "
+        }
+      ],
+      "confidence": "low",
+      "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+      "likely_causes": [
+        "The available evidence is insufficient to identify a cause."
+      ],
+      "suggested_actions": [
+        "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+      ],
+      "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+      "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+      "automatic_repair": false,
+      "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+    }
+  },
+  "unrelated_containers_preserved": true
+}

@@ -49,6 +49,9 @@ docker-compose.yaml, compose.yml, compose.yaml, .dockerignore, .nvmrc, .node-ver
 requirements.txt, pyproject.toml. No shell, arbitrary source edits, cloud execution or arbitrary migrations. Django/pip local setup is available when inspection eligibility is eligible, with disposable SQLite.
 Use propose_docker/apply_docker/validate_runtime as for Next.js; the deterministic generator
 selects Python/Django templates and port 8000. Never invent Node requirements or change frameworks.
+When local_setup_prerequisites is present and local setup is requested, start with its
+next_tool and follow the required order. prepare_database cannot generate Docker files;
+calling it while setup=none cannot succeed.
 For eligible PostgreSQL apps: propose_docker, apply_docker, then prepare_database {} creates a
 fresh disposable database and returns a session_id and pending migration plan. Separately
 review migrate_database {session_id} to apply that plan and verify diagnostic ORM operations.
@@ -76,7 +79,20 @@ Prefer finish with a concise useful answer over unnecessary tool calls.
 Use propose_docker when eligible and setup is missing, then apply_docker with its exact ID;
 then validate_runtime with run=true, timeout=600, readiness_timeout=120. Set keep_running
 only if the user asks to leave the app running. Existing setups require explicit Compose
-selection when ambiguous. Do not request another inspection when current evidence suffices.
+selection when ambiguous. A Compose filename explicitly selected in the user's request
+already resolves that selection: do not ask them to repeat it. Inspection runtime_options
+lists existing-setup paths separately from generation eligibility. If the selected option
+is reviewable, use its validation parameters even when the overall generation eligibility
+is blocked. Deferred template checks are NOT prerequisites for that selected path.
+Reviewable is not runtime success: choose the mutation tool to request human review. When the user explicitly
+requests existing-setup validation, select validate_runtime with that compose_file and
+existing_setup=true. Package-manager ambiguity, missing/conflicting Node declarations,
+and Docker runtime/template conflicts may be deferred by this existing-setup path;
+the validator checks the selected configuration, isolation, build and readiness.
+Do not demand package.json or lockfile edits for those template-only blockers.
+This does not bypass unsupported frameworks, database/migration boundaries, unsafe
+Compose configuration or any other blocker; the validator remains authoritative.
+Do not request another inspection when current evidence suffices.
 Never invent IDs, paths, requirements or successful results. Stop on unsupported blockers.
 finish with parameters={} when the request is answered or cannot be completed;
 For finish, reason is the actual user-facing answer, not an announcement that you will answer.
@@ -84,7 +100,7 @@ State the concrete findings and next steps, never claim unverified execution.
 Keep every reason under 1200 characters; summarize instead of listing every finding.
 Parameters are a typed JSON object. For unused optional validation fields use null. Never supply Dockerfile contents to propose_docker; the local tool generates them.
 '''
-PROMPT_VERSION = 'loop-action-v16'
+PROMPT_VERSION = 'loop-action-v20'
 
 
 def action_schema():

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "<home>/Desktop/repos/devops-agent/tests/aws_step9_smoke.py", line 81, in <module>
+    if __name__=='__main__':raise SystemExit(main())
+                                             ^^^^^^
+  File "<home>/Desktop/repos/devops-agent/tests/aws_step9_smoke.py", line 36, in main
+    assert args.case and json.loads(manifest.read_text())['hashes']==hashes()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

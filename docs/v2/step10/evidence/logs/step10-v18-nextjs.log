@@ -1,0 +1,25 @@
+Inspecting repository evidence...
+Selecting the next action...
+Next: propose_docker — Generate Dockerfile and docker-compose for the eligible Next.js app to enable building and running in a container.
+Executing propose_docker...
+Selecting the next action...
+Next: apply_docker — Apply the generated Docker proposal for the Next.js app before validating and running it.
+Executing apply_docker...
+Change applied. Refreshed repository findings.
+Selecting the next action...
+Next: validate_runtime — Validate the newly generated Docker configuration by building and running the service, checking the root HTTP endpoint, and keeping the container running for user access.
+Executing validate_runtime...
+{
+  "success": true,
+  "error": null,
+  "independent_http": {
+    "status": 200,
+    "marker": true,
+    "url": "http://127.0.0.1:3000/",
+    "sha256": "d4501a2b1557e2d56ca063fd60bfb24a5f898409b8056bb093c786ad8d5c0d5f"
+  },
+  "cleanup": {
+    "success": true,
+    "project": "devops-validation-1edb3f0ca1af"
+  }
+}

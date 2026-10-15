@@ -203,6 +203,8 @@ class ToolRegistry:
             from agent.main import choose_compose_file
             from agent.understanding import read_text
             info = scan_repo(str(self.root))
+            if name == 'prepare_database' and 'docker-compose.yml' not in info['compose_files']:
+                raise ToolRefused('Generated Docker setup is missing. First propose_docker and separately review apply_docker; only then prepare_database. No database operation was approved or executed.')
             selected = choose_compose_file(info, params.get('compose_file'))
             for filename in [selected, *info['dockerfiles']]:
                 if filename:
@@ -245,7 +247,10 @@ class ToolRegistry:
                 raise ToolRefused('Approval expired or repository inputs changed.')
         redactor = Redactor(self.root)
         if name == 'inspect_repository':
-            result = detect_stack(scan_repo(str(self.root)))
+            from agent.runtime_policy import runtime_options
+            info = scan_repo(str(self.root))
+            result = detect_stack(info)
+            result['runtime_options'] = runtime_options(info)
         elif name == 'propose_aws':
             from agent.aws_preparation import propose
             result=propose(self.root)

@@ -1,6 +1,6 @@
 # V2 acceptance matrix
 
-Status: planned, not executed. All rows are release gates within the
+Status: engineering checks passed; user acceptance review pending. See the [evidence map](step10/coverage.md) and [final outcomes](step10/README.md). All rows are release gates within the
 [scope contract](plan.md); passing a blocked/refusal case means making the correct
 refusal, not supporting that repository. Historical v1 evidence is a baseline,
 not proof that the new conversational loop works.
@@ -92,3 +92,13 @@ scope: concrete ECS Fargate/CloudFormation files, unresolved required inputs and
 production gaps, real local schema validation, and refusal of cloud deployment/IAM
 changes. 338 offline tests and four final live fixture cases passed. Existing AWS
 resource validity, production images and cloud execution remain unverified.
+
+
+## Step-10 engineering checkpoint
+
+[Final evidence](step10/README.md) contains 343 passing offline tests, 11 passing
+live cases on the final frozen candidate, two assisted external pilots, and real
+SIGINT cleanup. One repeated model proposal was corrected within the budget; all
+earlier failed/invalidated attempts are retained. No unrelated runtime was stopped.
+AWS results are local artifact validation only. User review of final summaries is
+the remaining acceptance gate; committing, tagging and publishing are separate.

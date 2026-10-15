@@ -43,7 +43,21 @@ def compact(tool, result):
         return result
     if tool=='inspect_repository':
         project=result.get('project',{})
-        return {k:project.get(k) for k in ['eligibility','discovery_status','setup','findings','blockers','unknowns']}
+        summary = {**{k:project.get(k) for k in ['eligibility','discovery_status','setup','services','findings','blockers','unknowns']},
+                   'runtime_options':result.get('runtime_options',[])}
+        if project.get('eligibility') == 'blocked' and any(
+                option.get('status') == 'reviewable' for option in summary['runtime_options']):
+            summary['generation'] = {'eligibility':project['eligibility'], 'blockers':summary['blockers']}
+            summary['eligibility'] = 'existing_setup_review_available'
+            summary['blockers'] = []
+            summary['eligibility_notice'] = 'Existing-setup validation can be requested for the reviewable runtime_options. Generation remains blocked as recorded under generation. No Docker configuration, build or runtime has been verified.'
+        if project.get('eligibility') == 'eligible' and project.get('setup') == 'none':
+            summary['local_setup_prerequisites'] = {
+                'next_tool':'propose_docker',
+                'required_order':['propose_docker','apply_docker'] + (
+                    ['prepare_database','migrate_database'] if project.get('services') == ['PostgreSQL'] else ['validate_runtime']),
+                'notice':'Docker setup is absent. Propose files first and request separate approval to apply them before runtime/database preparation. This sequence applies only when local setup is requested, not to read-only or AWS requests.'}
+        return summary
     if tool=='propose_runtime_repair':
         return {k:result.get(k) for k in ['status','id','source_session','summary','blockers','verification','attempt_limit']}
     if tool in {'propose_aws','validate_aws'}:

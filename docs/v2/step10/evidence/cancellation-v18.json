@@ -1,0 +1,194 @@
+{
+  "success": true,
+  "scope": "Real SIGINT during owned Django readiness; no model calls.",
+  "owned_ids": [
+    "37ca81e2bff433a4d674441bc576ef71213d385263d7a14ba6b915f2387297f2"
+  ],
+  "validation": {
+    "success": false,
+    "phase": "cancelled",
+    "results": [
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-c53a7129ffe1 -f <temporary-fixture>/app/docker-compose.yml config --format json",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+        "success": true,
+        "stdout": "\"unix://<home>/.docker/run/docker.sock\"\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-c53a7129ffe1 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-p9yizbio/compose.json build",
+        "success": true,
+        "stdout": "#1 [internal] load local bake definitions\n#1 reading from stdin 663B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 391B done\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/python:3.12-slim\n#3 DONE 0.7s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 330B done\n#4 DONE 0.0s\n\n#5 [1/4] FROM docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1\n#5 resolve docker.io/library/python:3.12-slim@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 done\n#5 DONE 0.0s\n\n#6 [internal] load build context\n#6 transferring context: 1.90kB done\n#6 DONE 0.0s\n\n#7 [2/4] WORKDIR /app\n#7 CACHED\n\n#8 [3/4] COPY . .\n#8 DONE 0.0s\n\n#9 [4/4] RUN python -m pip install --no-cache-dir -r requirements.txt\n#9 1.193 Collecting Django==5.2.8 (from -r requirements.txt (line 1))\n#9 1.296   Downloading django-5.2.8-py3-none-any.whl.metadata (4.1 kB)\n#9 1.325 Collecting asgiref>=3.8.1 (from Django==5.2.8->-r requirements.txt (line 1))\n#9 1.346   Downloading asgiref-3.12.1-py3-none-any.whl.metadata (9.4 kB)\n#9 1.374 Collecting sqlparse>=0.3.1 (from Django==5.2.8->-r requirements.txt (line 1))\n#9 1.393   Downloading sqlparse-0.6.0-py3-none-any.whl.metadata (6.0 kB)\n#9 1.415 Downloading django-5.2.8-py3-none-any.whl (8.3 MB)\n#9 1.669    \u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501 8.3/8.3 MB 37.7 MB/s eta 0:00:00\n#9 1.690 Downloading asgiref-3.12.1-py3-none-any.whl (25 kB)\n#9 1.709 Downloading sqlparse-0.6.0-py3-none-any.whl (50 kB)\n#9 1.750 Installing collected packages: sqlparse, asgiref, Django\n#9 3.592 Successfully installed Django-5.2.8 asgiref-3.12.1 sqlparse-0.6.0\n#9 3.592 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.\n#9 3.694 \n#9 3.694 [notice] A new release of pip is available: 25.0.1 -> 26.2.1\n#9 3.694 [notice] To update, run: pip install --upgrade pip\n#9 DONE 3.8s\n\n#10 exporting to image\n#10 exporting layers\n#10 exporting layers 0.9s done\n#10 exporting manifest sha256:749e0eb18049a5a82eca4c14210c041a4a930246a1a895049cc534d3d7e8ea29 done\n#10 exporting config sha256:47e2a06507bf869a84b9c2c48a9e1951f31ed7f42f948b34f944bfe2e498c67f done\n#10 exporting attestation manifest sha256:671c15721e17105c95871da3c92e81bf08db3f17c39b985d7b1e82ffb3839520 done\n#10 exporting manifest list sha256:c636a1f2ae94bff26f260b8db18998a6ffa040f6937cf5a87651646858b8ca4a done\n#10 naming to docker.io/library/devops-validation-c53a7129ffe1-app:validation done\n#10 unpacking to docker.io/library/devops-validation-c53a7129ffe1-app:validation\n#10 unpacking to docker.io/library/devops-validation-c53a7129ffe1-app:validation 1.1s done\n#10 DONE 2.1s\n\n#11 resolving provenance for metadata file\n#11 DONE 0.0s\n",
+        "stderr": " Image devops-validation-c53a7129ffe1-app:validation Building \n Image devops-validation-c53a7129ffe1-app:validation Built \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-c53a7129ffe1 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-p9yizbio/compose.json up -d --no-build",
+        "success": true,
+        "stdout": "",
+        "stderr": " Network devops-validation-c53a7129ffe1_default Creating \n Network devops-validation-c53a7129ffe1_default Creating \n Network devops-validation-c53a7129ffe1_default Created \n Network devops-validation-c53a7129ffe1_default Created \n Container devops-validation-c53a7129ffe1-app-1 Creating \n Container devops-validation-c53a7129ffe1-app-1 Created \n Container devops-validation-c53a7129ffe1-app-1 Starting \n Container devops-validation-c53a7129ffe1-app-1 Started \n",
+        "returncode": 0
+      },
+      {
+        "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-c53a7129ffe1 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-p9yizbio/compose.json ps --all --quiet",
+        "success": true,
+        "stdout": "37ca81e2bff433a4d674441bc576ef71213d385263d7a14ba6b915f2387297f2\n",
+        "stderr": "",
+        "returncode": 0
+      },
+      {
+        "command": "docker inspect 37ca81e2bff433a4d674441bc576ef71213d385263d7a14ba6b915f2387297f2",
+        "success": true,
+        "stdout": "[structured configuration omitted]",
+        "stderr": "",
+        "returncode": 0
+      }
+    ],
+    "logs": "app-1  | Performing system checks...\napp-1  | \napp-1  | System check identified no issues (0 silenced).\napp-1  | October 15, 2026 - 00:25:39\napp-1  | Django version 5.2.8, using settings '[REDACTED]'\napp-1  | Starting development server at http://0.0.0.0:8000/\napp-1  | Quit the server with CONTROL-C.\napp-1  | \napp-1  | WARNING: This is a development server. Do not use it in a production setting. Use a production WSGI or ASGI server instead.\napp-1  | For more information on production servers see: https://docs.djangoproject.com/en/5.2/howto/deployment/\n",
+    "expected_services": [
+      "app"
+    ],
+    "running_services": [
+      "app"
+    ],
+    "stopped_services": [],
+    "application_check": {
+      "url": "http://127.0.0.1:8000/",
+      "reachable": false,
+      "healthy": false,
+      "status_code": null,
+      "redirect_url": null,
+      "error": "Remote end closed connection without response",
+      "redirects": [],
+      "success": false,
+      "container_id": "37ca81e2bff433a4d674441bc576ef71213d385263d7a14ba6b915f2387297f2"
+    },
+    "stages": [
+      {
+        "phase": "config",
+        "success": true
+      },
+      {
+        "phase": "build",
+        "success": true
+      },
+      {
+        "phase": "startup",
+        "success": true
+      },
+      {
+        "phase": "cancelled",
+        "success": false
+      }
+    ],
+    "cleanup": {
+      "status": "complete",
+      "results": [
+        {
+          "command": "docker compose --project-directory <temporary-fixture>/app -p devops-validation-c53a7129ffe1 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-p9yizbio/compose.json down --volumes --timeout 5",
+          "success": true,
+          "stdout": "",
+          "stderr": " Container devops-validation-c53a7129ffe1-app-1 Stopping \n Container devops-validation-c53a7129ffe1-app-1 Stopped \n Container devops-validation-c53a7129ffe1-app-1 Removing \n Container devops-validation-c53a7129ffe1-app-1 Removed \n Network devops-validation-c53a7129ffe1_default Removing \n Network devops-validation-c53a7129ffe1_default Removed \n",
+          "returncode": 0
+        },
+        {
+          "command": "docker ps --all --quiet --filter label=com.docker.compose.project=devops-validation-c53a7129ffe1",
+          "success": true,
+          "stdout": "",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker image rm devops-validation-c53a7129ffe1-app:validation",
+          "success": true,
+          "stdout": "Untagged: devops-validation-c53a7129ffe1-app:validation\nDeleted: sha256:c636a1f2ae94bff26f260b8db18998a6ffa040f6937cf5a87651646858b8ca4a\n",
+          "stderr": "",
+          "returncode": 0
+        }
+      ]
+    },
+    "verified": [
+      "config",
+      "build",
+      "startup"
+    ],
+    "unverified": [
+      "Business correctness and production readiness",
+      "Shared image/build cache is retained"
+    ],
+    "environment_state": "stopped",
+    "project": "devops-validation-c53a7129ffe1",
+    "application_service": "app",
+    "container_port": 8000,
+    "service_states": {
+      "app": {
+        "id": "37ca81e2bff433a4d674441bc576ef71213d385263d7a14ba6b915f2387297f2",
+        "state": "running",
+        "health": null,
+        "ports": {
+          "8000/tcp": [
+            {
+              "HostIp": "127.0.0.1",
+              "HostPort": "8000"
+            }
+          ]
+        }
+      }
+    },
+    "error": "Validation cancelled; cleanup was attempted.",
+    "repair_context": {
+      "inputs_sha256": "deea62f122fc1b758061473e778c8acb9df8459bba12bd208642cde2bd5e6fdc",
+      "compose_file": "docker-compose.yml",
+      "health_path": "/",
+      "service": null,
+      "container_port": null,
+      "timeout": 600.0,
+      "readiness_timeout": 180.0
+    },
+    "session_id": "02b2390d1d084225890fe6d3f6ec2dc2",
+    "diagnosis": {
+      "type": "unknown",
+      "phase": "cancelled",
+      "summary": "Validation failed without a supported diagnosis.",
+      "symptoms": [
+        "Validation cancelled; cleanup was attempted.",
+        "app-1  | Performing system checks...",
+        "app-1  | "
+      ],
+      "evidence": [
+        {
+          "source": "error",
+          "excerpt": "Validation cancelled; cleanup was attempted."
+        },
+        {
+          "source": "logs",
+          "excerpt": "app-1  | Performing system checks..."
+        },
+        {
+          "source": "logs",
+          "excerpt": "app-1  | "
+        }
+      ],
+      "confidence": "low",
+      "uncertainty": "Confidence describes the observed failure category, not a proven root cause. Multiple failures may coexist; this is the first supported diagnosis.",
+      "likely_causes": [
+        "The available evidence is insufficient to identify a cause."
+      ],
+      "suggested_actions": [
+        "Inspect the failed stage, command stderr, application check, and service logs with --verbose or --json. Find the earliest failing operation and reproduce it in the project's normal workflow before editing configuration."
+      ],
+      "expected_impact": "Inspection only; no repair is justified by this diagnosis.",
+      "verification": "After identifying and correcting the cause, rerun the original validation command and require all requested stages and cleanup to pass.",
+      "automatic_repair": false,
+      "details_hint": "Use --verbose for captured command output/logs or --json for the full report."
+    }
+  },
+  "unrelated_containers_preserved": true
+}

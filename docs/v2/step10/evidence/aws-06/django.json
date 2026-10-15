@@ -1,0 +1,239 @@
+{
+  "success": true,
+  "case": "django",
+  "request": "Create the AWS preparation foundation for this Django project. Review before creating files, check their CloudFormation schema, and report production/database prerequisites. No account changes or deployment.",
+  "approvals": [
+    {
+      "tool": "prepare_aws",
+      "parameters": {}
+    }
+  ],
+  "conversation": {
+    "id": "6c07765638fe4c5fa95b5ece4c6e404d",
+    "state": {
+      "read_only_request": false,
+      "history": [],
+      "request": "Create the AWS preparation foundation for this Django project. Review before creating files, check their CloudFormation schema, and report production/database prerequisites. No account changes or deployment.",
+      "observations": [
+        {
+          "tool": "inspect_repository",
+          "result": {
+            "eligibility": "eligible",
+            "discovery_status": "understood",
+            "setup": "none",
+            "services": [
+              "SQLite"
+            ],
+            "findings": [
+              {
+                "name": "framework",
+                "value": "Django",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "manage.py"
+                  }
+                ]
+              },
+              {
+                "name": "django_version",
+                "value": "5.2.8",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "requirements.txt",
+                    "line": 1
+                  }
+                ]
+              },
+              {
+                "name": "dependency_manifest",
+                "value": "pip requirements.txt",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "requirements.txt"
+                  }
+                ]
+              },
+              {
+                "name": "dependency_count",
+                "value": 1,
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "requirements.txt"
+                  }
+                ]
+              },
+              {
+                "name": "python_requirement",
+                "value": "3.12",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": ".python-version"
+                  }
+                ]
+              },
+              {
+                "name": "python_django_compatibility",
+                "value": "Version combination is documented; dependency installability is unverified.",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": ".python-version"
+                  }
+                ]
+              },
+              {
+                "name": "settings_module_candidate",
+                "value": "config.settings",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "manage.py",
+                    "line": 5
+                  }
+                ]
+              },
+              {
+                "name": "settings_file",
+                "value": "config/settings.py",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "config/settings.py"
+                  }
+                ]
+              },
+              {
+                "name": "database_backend",
+                "value": "SQLite",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "config/settings.py",
+                    "line": 7
+                  }
+                ]
+              }
+            ],
+            "blockers": [],
+            "unknowns": [
+              "Static settings evidence does not prove effective runtime configuration; environment overrides and arbitrary Python effects are not executed.",
+              "Dependency installability, migrations, service connectivity and application health are unverified.",
+              "Compatibility is version compatibility only, not a security or lifecycle certification."
+            ],
+            "runtime_options": [],
+            "local_setup_prerequisites": {
+              "next_tool": "propose_docker",
+              "required_order": [
+                "propose_docker",
+                "apply_docker",
+                "validate_runtime"
+              ],
+              "notice": "Docker setup is absent. Propose files first and request separate approval to apply them before runtime/database preparation. This sequence applies only when local setup is requested, not to read-only or AWS requests."
+            }
+          }
+        },
+        {
+          "tool": "prepare_aws",
+          "result": {
+            "success": true,
+            "created": [
+              "aws-template.json",
+              "aws-readiness.json",
+              "AWS-PREPARATION.md"
+            ],
+            "session_id": "695c22074abe4775838c568d8bfe24e5",
+            "notice": "AWS review artifacts written locally. No AWS resources created."
+          }
+        },
+        {
+          "tool": "validate_aws",
+          "result": {
+            "success": true,
+            "readiness": {
+              "schema_version": 1,
+              "framework": "Django",
+              "path": "ECS Fargate / CloudFormation",
+              "artifact_scope": "local preparation only",
+              "deployment_ready": false,
+              "cloud_verified": false,
+              "required_parameters": [
+                "VpcId",
+                "PrivateSubnetIds",
+                "AlbSecurityGroupId",
+                "HttpsListenerArn",
+                "Hostname",
+                "RulePriority",
+                "ImageUri",
+                "ExecutionRoleArn",
+                "TaskRoleArn",
+                "HealthPath",
+                "RuntimeSecret0Arn",
+                "RuntimeSecret1Arn"
+              ],
+              "runtime_secret_names": "[REDACTED]",
+              "unresolved": [
+                "Supply every template parameter without a default; select and confirm the deployment account and region separately.",
+                "Build and independently verify a production Linux X86_64 image in ECR. Development npm/runserver images are not production evidence.",
+                "Verify VPC/subnet membership, HTTPS listener protocol, certificate/DNS, ALB security group, unique hostname rule and unused rule priority.",
+                "Verify private-subnet egress (NAT or ECR/S3/logs/secret[REDACTED] endpoints), execution-role access and separate least-privilege task-role trust.",
+                "Review all runtime variables and Secret[REDACTED] Manager mappings. No dotenv values are copied; aws-runtime.json lists names only.",
+                "Verify the readiness route returns 200 with ALB health-check Host headers; authentication must remain intact.",
+                "Review availability, scaling, CPU/memory, outbound rules, log retention and budget before a separate deployment review.",
+                "Use a production WSGI/ASGI server, DEBUG=False, appropriate ALLOWED_HOSTS/CSRF/proxy configuration and a static/media strategy.",
+                "Replace disposable SQLite/PostgreSQL with an explicitly reviewed durable database and backups. Plan migrations separately; no migration command is generated."
+              ],
+              "cost_drivers": [
+                "Fargate CPU/memory runtime",
+                "Existing ALB capacity",
+                "NAT/endpoints and data transfer",
+                "ECR storage",
+                "CloudWatch ingestion/retention",
+                "Secret[REDACTED] Manager",
+                "External database/storage"
+              ],
+              "excluded": [
+                "Cloud API calls",
+                "Image build/push",
+                "IAM changes",
+                "VPC/ALB/DNS provisioning",
+                "Database creation or migrations",
+                "Deployment"
+              ]
+            },
+            "findings": [],
+            "notice": "Local artifact schema checks only. Account, permissions, production image and runtime remain unverified.",
+            "deployment_ready": false,
+            "cloud_verified": false
+          }
+        }
+      ],
+      "action": {
+        "tool": "prepare_aws",
+        "parameters": {},
+        "reason": "User requested AWS preparation foundation for the Django project, including file generation, schema review, and reporting of production/database prerequisites. prepare_aws will create the necessary AWS preparation artifacts, open a human review UI, and ensure no account changes or deployment occur."
+      },
+      "operation": "983f775f740a42619b2b48230ed2dd04",
+      "seen": [
+        "f2aed72d7ac468a261cc3707b0f4d4bbd157ee22708f580967498cb9284175ab",
+        "c91c2ea75524afa9733e09b73e790635d6c658b0f9694170d5b9bfbe2a6f1cb1"
+      ],
+      "count": 3,
+      "failures": 0,
+      "model_calls": 1,
+      "status": "prepared",
+      "message": "AWS preparation files passed local schema checks. No cloud resources were created. Resolve the recorded prerequisites before a separate deployment review."
+    },
+    "pending": null
+  },
+  "artifacts": {
+    "aws-template.json": "{\n  \"AWSTemplateFormatVersion\": \"2010-09-09\",\n  \"Description\": \"Review-only single HTTP service foundation. Requires production image and existing AWS prerequisites.\",\n  \"Outputs\": {\n    \"LogGroup\": {\n      \"Value\": {\n        \"Ref\": \"Logs\"\n      }\n    },\n    \"ServiceArn\": {\n      \"Value\": {\n        \"Ref\": \"Service\"\n      }\n    }\n  },\n  \"Parameters\": {\n    \"AlbSecurityGroupId\": {\n      \"Type\": \"AWS::EC2::SecurityGroup::Id\"\n    },\n    \"ContainerPort\": {\n      \"Default\": 8000,\n      \"MaxValue\": 65535,\n      \"MinValue\": 1,\n      \"Type\": \"Number\"\n    },\n    \"ExecutionRoleArn\": {\n      \"AllowedPattern\": \"arn:aws:iam::[0-9]{12}:role/.+\",\n      \"Description\": \"Existing ecs-tasks trust role with ECR pull, log write and selected secret[REDACTED] permissions.\",\n      \"Type\": \"String\"\n    },\n    \"HealthPath\": {\n      \"AllowedPattern\": \"/[A-Za-z0-9/_.-]*\",\n      \"Description\": \"An existing unauthenticated readiness route; verify ALB Host-header behavior.\",\n      \"Type\": \"String\"\n    },\n    \"Hostname\": {\n      \"AllowedPattern\": \"[a-z0-9][a-z0-9.-]*\\\\.[a-z]{2,}\",\n      \"Description\": \"Existing DNS name and TLS certificate on the selected HTTPS listener; never a wildcard.\",\n      \"Type\": \"String\"\n    },\n    \"HttpsListenerArn\": {\n      \"AllowedPattern\": \"arn:aws:elasticloadbalancing:[a-z0-9-]+:[0-9]{12}:listener/app/.+\",\n      \"Type\": \"String\"\n    },\n    \"ImageUri\": {\n      \"AllowedPattern\": \"[0-9]{12}\\\\.dkr\\\\.ecr\\\\.[a-z0-9-]+\\\\.amazonaws\\\\.com/[a-z0-9._/-]+@sha256:[a-f0-9]{64}\",\n      \"Description\": \"Prebuilt production Linux X86_64 image in private ECR, pinned by digest.\",\n      \"Type\": \"String\"\n    },\n    \"PrivateSubnetIds\": {\n      \"Description\": \"At least two private subnets in this VPC; provide NAT or required service endpoints.\",\n      \"Type\": \"List<AWS::EC2::Subnet::Id>\"\n    },\n    \"RulePriority\": {\n      \"Description\": \"Unused listener rule priority; must be checked by the operator.\",\n      \"MaxValue\": 50000,\n      \"MinValue\": 1,\n      \"Type\": \"Number\"\n    },\n    \"RuntimeSecret0Arn\": {\n      \"AllowedPattern\": \"arn:aws:secret[REDACTED],\n      \"Description\": \"Existing Secret[REDACTED] Manager secret [REDACTED] DATABASE_URL; value never appears here.\",\n      \"Type\": \"String\"\n    },\n    \"RuntimeSecret1Arn\": {\n      \"AllowedPattern\": \"arn:aws:secret[REDACTED],\n      \"Description\": \"Existing Secret[REDACTED] Manager secret [REDACTED] DJANGO_SECRET_KEY; value never appears here.\",\n      \"Type\": \"String\"\n    },\n    \"TaskRoleArn\": {\n      \"AllowedPattern\": \"arn:aws:iam::[0-9]{12}:role/.+\",\n      \"Description\": \"Existing least-privilege application role, separate from execution role.\",\n      \"Type\": \"String\"\n    },\n    \"VpcId\": {\n      \"Type\": \"AWS::EC2::VPC::Id\"\n    }\n  },\n  \"Resources\": {\n    \"AppSecurityGroup\": {\n      \"Properties\": {\n        \"GroupDescription\": \"App ingress only from selected ALB security group\",\n        \"SecurityGroupEgress\": [\n          {\n            \"CidrIp\": \"0.0.0.0/0\",\n            \"Description\": \"Review outbound needs for ECR, logs, secret[REDACTED] and application dependencies.\",\n            \"IpProtocol\": \"-1\"\n          }\n        ],\n        \"SecurityGroupIngress\": [\n          {\n            \"FromPort\": {\n              \"Ref\": \"ContainerPort\"\n            },\n            \"IpProtocol\": \"tcp\",\n            \"SourceSecurityGroupId\": {\n              \"Ref\": \"AlbSecurityGroupId\"\n            },\n            \"ToPort\": {\n              \"Ref\": \"ContainerPort\"\n            }\n          }\n        ],\n        \"VpcId\": {\n          \"Ref\": \"VpcId\"\n        }\n      },\n      \"Type\": \"AWS::EC2::SecurityGroup\"\n    },\n    \"Cluster\": {\n      \"Type\": \"AWS::ECS::Cluster\"\n    },\n    \"ListenerRule\": {\n      \"Properties\": {\n        \"Actions\": [\n          {\n            \"TargetGroupArn\": {\n              \"Ref\": \"TargetGroup\"\n            },\n            \"Type\": \"forward\"\n          }\n        ],\n        \"Conditions\": [\n          {\n            \"Field\": \"host-header\",\n            \"Values\": [\n              {\n                \"Ref\": \"Hostname\"\n              }\n            ]\n          }\n        ],\n        \"ListenerArn\": {\n          \"Ref\": \"HttpsListenerArn\"\n        },\n        \"Priority\": {\n          \"Ref\": \"RulePriority\"\n        }\n      },\n      \"Type\": \"AWS::ElasticLoadBalancingV2::ListenerRule\"\n    },\n    \"Logs\": {\n      \"DeletionPolicy\": \"Retain\",\n      \"Properties\": {\n        \"RetentionInDays\": 14\n      },\n      \"Type\": \"AWS::Logs::LogGroup\",\n      \"UpdateReplacePolicy\": \"Retain\"\n    },\n    \"Service\": {\n      \"DependsOn\": [\n        \"ListenerRule\"\n      ],\n      \"Properties\": {\n        \"Cluster\": {\n          \"Ref\": \"Cluster\"\n        },\n        \"DeploymentConfiguration\": {\n          \"DeploymentCircuitBreaker\": {\n            \"Enable\": true,\n            \"Rollback\": true\n          }\n        },\n        \"DesiredCount\": 1,\n        \"HealthCheckGracePeriodSeconds\": 60,\n        \"LaunchType\": \"FARGATE\",\n        \"LoadBalancers\": [\n          {\n            \"ContainerName\": \"app\",\n            \"ContainerPort\": {\n              \"Ref\": \"ContainerPort\"\n            },\n            \"TargetGroupArn\": {\n              \"Ref\": \"TargetGroup\"\n            }\n          }\n        ],\n        \"NetworkConfiguration\": {\n          \"AwsvpcConfiguration\": {\n            \"AssignPublicIp\": \"DISABLED\",\n            \"SecurityGroups\": [\n              {\n                \"Ref\": \"AppSecurityGroup\"\n              }\n            ],\n            \"Subnets\": {\n              \"Ref\": \"PrivateSubnetIds\"\n            }\n          }\n        },\n        \"PlatformVersion\": \"1.4.0\",\n        \"TaskDefinition\": {\n          \"Ref\": \"Task\"\n        }\n      },\n      \"Type\": \"AWS::ECS::Service\"\n    },\n    \"TargetGroup\": {\n      \"Properties\": {\n        \"HealthCheckPath\": {\n          \"Ref\": \"HealthPath\"\n        },\n        \"Matcher\": {\n          \"HttpCode\": \"200\"\n        },\n        \"Port\": {\n          \"Ref\": \"ContainerPort\"\n        },\n        \"Protocol\": \"HTTP\",\n        \"TargetType\": \"ip\",\n        \"VpcId\": {\n          \"Ref\": \"VpcId\"\n        }\n      },\n      \"Type\": \"AWS::ElasticLoadBalancingV2::TargetGroup\"\n    },\n    \"Task\": {\n      \"Properties\": {\n        \"ContainerDefinitions\": [\n          {\n            \"Essential\": true,\n            \"Image\": {\n              \"Ref\": \"ImageUri\"\n            },\n            \"LogConfiguration\": {\n              \"LogDriver\": \"awslogs\",\n              \"Options\": {\n                \"awslogs-group\": {\n                  \"Ref\": \"Logs\"\n                },\n                \"awslogs-region\": {\n                  \"Ref\": \"AWS::Region\"\n                },\n                \"awslogs-stream-prefix\": \"app\"\n              }\n            },\n            \"Name\": \"app\",\n            \"PortMappings\": [\n              {\n                \"ContainerPort\": {\n                  \"Ref\": \"ContainerPort\"\n                },\n                \"Protocol\": \"tcp\"\n              }\n            ],\n            \"Secret[REDACTED] [\n              {\n                \"Name\": \"DATABASE_URL\",\n                \"ValueFrom\": {\n                  \"Ref\": \"RuntimeSecret0Arn\"\n                }\n              },\n              {\n                \"Name\": \"DJANGO_SECRET_KEY\",\n                \"ValueFrom\": {\n                  \"Ref\": \"RuntimeSecret1Arn\"\n                }\n              }\n            ]\n          }\n        ],\n        \"Cpu\": \"256\",\n        \"ExecutionRoleArn\": {\n          \"Ref\": \"ExecutionRoleArn\"\n        },\n        \"Memory\": \"512\",\n        \"NetworkMode\": \"awsvpc\",\n        \"RequiresCompatibilities\": [\n          \"FARGATE\"\n        ],\n        \"RuntimePlatform\": {\n          \"CpuArchitecture\": \"X86_64\",\n          \"OperatingSystemFamily\": \"LINUX\"\n        },\n        \"TaskRoleArn\": {\n          \"Ref\": \"TaskRoleArn\"\n        }\n      },\n      \"Type\": \"AWS::ECS::TaskDefinition\"\n    }\n  }\n}\n",
+    "aws-readiness.json": "{\n  \"artifact_scope\": \"local preparation only\",\n  \"cloud_verified\": false,\n  \"cost_drivers\": [\n    \"Fargate CPU/memory runtime\",\n    \"Existing ALB capacity\",\n    \"NAT/endpoints and data transfer\",\n    \"ECR storage\",\n    \"CloudWatch ingestion/retention\",\n    \"Secret[REDACTED] Manager\",\n    \"External database/storage\"\n  ],\n  \"deployment_ready\": false,\n  \"excluded\": [\n    \"Cloud API calls\",\n    \"Image build/push\",\n    \"IAM changes\",\n    \"VPC/ALB/DNS provisioning\",\n    \"Database creation or migrations\",\n    \"Deployment\"\n  ],\n  \"framework\": \"Django\",\n  \"path\": \"ECS Fargate / CloudFormation\",\n  \"required_parameters\": [\n    \"VpcId\",\n    \"PrivateSubnetIds\",\n    \"AlbSecurityGroupId\",\n    \"HttpsListenerArn\",\n    \"Hostname\",\n    \"RulePriority\",\n    \"ImageUri\",\n    \"ExecutionRoleArn\",\n    \"TaskRoleArn\",\n    \"HealthPath\",\n    \"RuntimeSecret0Arn\",\n    \"RuntimeSecret1Arn\"\n  ],\n  \"runtime_secret_names\": [\n    \"DATABASE_URL\",\n    \"DJANGO_SECRET_KEY\"\n  ],\n  \"schema_version\": 1,\n  \"unresolved\": [\n    \"Supply every template parameter without a default; select and confirm the deployment account and region separately.\",\n    \"Build and independently verify a production Linux X86_64 image in ECR. Development npm/runserver images are not production evidence.\",\n    \"Verify VPC/subnet membership, HTTPS listener protocol, certificate/DNS, ALB security group, unique hostname rule and unused rule priority.\",\n    \"Verify private-subnet egress (NAT or ECR/S3/logs/secret[REDACTED] endpoints), execution-role access and separate least-privilege task-role trust.\",\n    \"Review all runtime variables and Secret[REDACTED] Manager mappings. No dotenv values are copied; aws-runtime.json lists names only.\",\n    \"Verify the readiness route returns 200 with ALB health-check Host headers; authentication must remain intact.\",\n    \"Review availability, scaling, CPU/memory, outbound rules, log retention and budget before a separate deployment review.\",\n    \"Use a production WSGI/ASGI server, DEBUG=False, appropriate ALLOWED_HOSTS/CSRF/proxy configuration and a static/media strategy.\",\n    \"Replace disposable SQLite/PostgreSQL with an explicitly reviewed durable database and backups. Plan migrations separately; no migration command is generated.\"\n  ]\n}\n",
+    "AWS-PREPARATION.md": "# AWS preparation \u2014 review required\n\nThis is a local CloudFormation foundation, not a verified deployment.\n\n- Supply every template parameter without a default; select and confirm the deployment account and region separately.\n- Build and independently verify a production Linux X86_64 image in ECR. Development npm/runserver images are not production evidence.\n- Verify VPC/subnet membership, HTTPS listener protocol, certificate/DNS, ALB security group, unique hostname rule and unused rule priority.\n- Verify private-subnet egress (NAT or ECR/S3/logs/secret[REDACTED] endpoints), execution-role access and separate least-privilege task-role trust.\n- Review all runtime variables and Secret[REDACTED] Manager mappings. No dotenv values are copied; aws-runtime.json lists names only.\n- Verify the readiness route returns 200 with ALB health-check Host headers; authentication must remain intact.\n- Review availability, scaling, CPU/memory, outbound rules, log retention and budget before a separate deployment review.\n- Use a production WSGI/ASGI server, DEBUG=False, appropriate ALLOWED_HOSTS/CSRF/proxy configuration and a static/media strategy.\n- Replace disposable SQLite/PostgreSQL with an explicitly reviewed durable database and backups. Plan migrations separately; no migration command is generated.\n\nThe template creates an ECS cluster/service/task, task security group, target group,\nhost-specific rule on an existing HTTPS listener, and a retained log group.\nExisting VPC, private subnets, ALB, DNS/certificate, roles, ECR image and secret[REDACTED]\nare required. No resources have been created. No deployment command is supplied.\n\nSecret [REDACTED] input example (names only):\n```json\n{\"secret[REDACTED] [\"DJANGO_SECRET_KEY\", \"DATABASE_URL\"]}\n```\nSave relevant names in aws-runtime.json before generating. Each name becomes a\nrequired ARN parameter. Existing output files are preserved; do not overwrite\nmanual edits. Review any edited template with your own infrastructure workflow.\n\nLocal schema validation cannot verify image behavior, IAM permissions, resource\nexistence, network reachability, costs or production readiness.\n"
+  },
+  "elapsed_seconds": 4.32
+}

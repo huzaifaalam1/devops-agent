@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "id": "f86c6eb4a7d54a9f80a01d64c3af8eb0",
+  "repository": "<home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app",
+  "started_at": "2026-10-15T17:20:05.800373+00:00",
+  "action": "run",
+  "approval": {
+    "action": "run",
+    "category": "project_service_management",
+    "authorization": "[REDACTED]"
+  },
+  "status": "succeeded",
+  "changes": [],
+  "events": [
+    {
+      "phase": "config",
+      "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app/docker-compose.yml config --format json",
+      "status": "requested"
+    },
+    {
+      "phase": "docker_engine",
+      "command": "docker context inspect --format '{{json .Endpoints.docker.Host}}'",
+      "status": "requested"
+    },
+    {
+      "phase": "build",
+      "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json build",
+      "status": "requested"
+    },
+    {
+      "phase": "startup",
+      "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json up -d --no-build",
+      "status": "requested"
+    },
+    {
+      "phase": "services",
+      "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json ps --all --quiet",
+      "status": "requested"
+    },
+    {
+      "phase": "services",
+      "command": "docker inspect 7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86",
+      "status": "requested"
+    },
+    {
+      "phase": "services",
+      "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json ps --all --quiet",
+      "status": "requested"
+    },
+    {
+      "phase": "services",
+      "command": "docker inspect 7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86",
+      "status": "requested"
+    },
+    {
+      "phase": "services",
+      "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json ps --all --quiet",
+      "status": "requested"
+    },
+    {
+      "phase": "services",
+      "command": "docker inspect 7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86",
+      "status": "requested"
+    },
+    {
+      "phase": "services",
+      "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json ps --all --quiet",
+      "status": "requested"
+    },
+    {
+      "phase": "services",
+      "command": "docker inspect 7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86",
+      "status": "requested"
+    },
+    {
+      "success": true,
+      "phase": "application",
+      "results": [
+        {
+          "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app/docker-compose.yml config --format json",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker context inspect --format {{json .Endpoints.docker.Host}}",
+          "success": true,
+          "stdout": "\"unix://<home>/.docker/run/docker.sock\"\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json build",
+          "success": true,
+          "stdout": "#1 [internal] load local bake definitions\n#1 reading from stdin 675B done\n#1 DONE 0.0s\n\n#2 [internal] load build definition from Dockerfile\n#2 transferring dockerfile: 313B done\n#2 DONE 0.0s\n\n#3 [internal] load metadata for docker.io/library/node:22\n#3 DONE 0.0s\n\n#4 [internal] load .dockerignore\n#4 transferring context: 206B done\n#4 DONE 0.0s\n\n#5 [1/5] FROM docker.io/library/node:22@sha256:8a34c4ab3ea2c5cd194f07e317b2a8f09461d3c8b05c4e34c8ccd56d56024c4d\n#5 resolve docker.io/library/node:22@sha256:8a34c4ab3ea2c5cd194f07e317b2a8f09461d3c8b05c4e34c8ccd56d56024c4d 0.0s done\n#5 DONE 0.0s\n\n#6 [internal] load build context\n#6 transferring context: 32.37kB done\n#6 DONE 0.0s\n\n#7 [2/5] WORKDIR /app\n#7 CACHED\n\n#8 [3/5] COPY package.json package-lock.json ./\n#8 CACHED\n\n#9 [4/5] RUN npm ci --include=dev --no-audit --no-fund\n#9 CACHED\n\n#10 [5/5] COPY . .\n#10 CACHED\n\n#11 exporting to image\n#11 exporting layers done\n#11 exporting manifest sha256:81a5db991f6a9c73c0b75e902d010ff6e1c0e899f569ba50870ffca020c1c920 done\n#11 exporting config sha256:26a7a5b8538878f4d3f34cc16f07e2724bbe417e0917a3ef91b8419005f9c281 done\n#11 exporting attestation manifest sha256:03a8851982f94cf47069b10bcb72f1d280fd369b52c11292c2bbf832bbe40ad2\n#11 exporting attestation manifest sha256:03a8851982f94cf47069b10bcb72f1d280fd369b52c11292c2bbf832bbe40ad2 done\n#11 exporting manifest list sha256:57bf7fe786cef70ffe4da1566bd62d4c16a711439cf39d9e8f5f4382a72a7f74 done\n#11 naming to docker.io/library/devops-validation-606b70f81f26-app:validation done\n#11 unpacking to docker.io/library/devops-validation-606b70f81f26-app:validation\n#11 unpacking to docker.io/library/devops-validation-606b70f81f26-app:validation 5.2s done\n#11 DONE 5.3s\n\n#12 resolving provenance for metadata file\n#12 DONE 0.0s\n",
+          "stderr": " Image devops-validation-606b70f81f26-app:validation Building \n Image devops-validation-606b70f81f26-app:validation Built \n",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json up -d --no-build",
+          "success": true,
+          "stdout": "",
+          "stderr": " Network devops-validation-606b70f81f26_default Creating \n Network devops-validation-606b70f81f26_default Creating \n Network devops-validation-606b70f81f26_default Created \n Network devops-validation-606b70f81f26_default Created \n Container devops-validation-606b70f81f26-app-1 Creating \n Container devops-validation-606b70f81f26-app-1 Created \n Container devops-validation-606b70f81f26-app-1 Starting \n Container devops-validation-606b70f81f26-app-1 Started \n",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json ps --all --quiet",
+          "success": true,
+          "stdout": "7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker inspect 7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json ps --all --quiet",
+          "success": true,
+          "stdout": "7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker inspect 7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json ps --all --quiet",
+          "success": true,
+          "stdout": "7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker inspect 7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f /var/folders/_s/45vjz_f96cxbhrs5_26fdhk1b4hqf7/T/devops-validation-6dof1j91/compose.json ps --all --quiet",
+          "success": true,
+          "stdout": "7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86\n",
+          "stderr": "",
+          "returncode": 0
+        },
+        {
+          "command": "docker inspect 7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86",
+          "success": true,
+          "stdout": "[structured configuration omitted]",
+          "stderr": "",
+          "returncode": 0
+        }
+      ],
+      "logs": "",
+      "expected_services": [
+        "app"
+      ],
+      "running_services": [
+        "app"
+      ],
+      "stopped_services": [],
+      "application_check": {
+        "url": "http://127.0.0.1:3000/",
+        "reachable": true,
+        "healthy": true,
+        "status_code": 200,
+        "redirect_url": null,
+        "error": null,
+        "redirects": [],
+        "final_url": "http://127.0.0.1:3000/",
+        "success": true,
+        "container_id": "7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86"
+      },
+      "stages": [
+        {
+          "phase": "config",
+          "success": true
+        },
+        {
+          "phase": "build",
+          "success": true
+        },
+        {
+          "phase": "startup",
+          "success": true
+        },
+        {
+          "phase": "dependencies",
+          "success": true,
+          "status": "not_required"
+        },
+        {
+          "phase": "services",
+          "success": true
+        },
+        {
+          "phase": "application",
+          "success": true
+        }
+      ],
+      "cleanup": {
+        "status": "kept_running",
+        "project": "devops-validation-606b70f81f26",
+        "stop_command": "docker compose --project-directory <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app -p devops-validation-606b70f81f26 -f <home>/Desktop/repos/devops-agent/work/v2-step10/combined-06/run-d5ab557d/app/docker-compose.yml down --volumes"
+      },
+      "verified": [
+        "config",
+        "build",
+        "startup",
+        "services",
+        "application"
+      ],
+      "unverified": [
+        "Business correctness and production readiness",
+        "Future health after validation returns"
+      ],
+      "environment_state": "running",
+      "project": "devops-validation-606b70f81f26",
+      "application_service": "app",
+      "container_port": 3000,
+      "service_states": {
+        "app": {
+          "id": "7ccf07ae4b4709ff9474759601de3b30a2df19adb9c407083f131a3c3973fa86",
+          "state": "running",
+          "health": null,
+          "ports": {
+            "3000/tcp": [
+              {
+                "HostIp": "127.0.0.1",
+                "HostPort": "3000"
+              }
+            ]
+          }
+        }
+      },
+      "dependency_checks": {},
+      "repair_context": {
+        "inputs_sha256": "70208027a9b0ec65a0ca5e09c820bdc52b81c1576c304495dc39b214733b1276",
+        "compose_file": "docker-compose.yml",
+        "health_path": "/",
+        "service": null,
+        "container_port": null,
+        "timeout": 600,
+        "readiness_timeout": 120
+      },
+      "session_id": "f86c6eb4a7d54a9f80a01d64c3af8eb0"
+    }
+  ],
+  "project": "devops-validation-606b70f81f26"
+}

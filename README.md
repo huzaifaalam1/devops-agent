@@ -102,12 +102,12 @@ Shared base images and build cache remain. Detailed workflows:
 [Docker proposals](docs/docker-proposals.md), [runtime validation](docs/runtime-validation.md),
 [test guide](tests/README.md), [model configuration](docs/model-planning.md).
 
-## V2 roadmap
+## V2 agent
 
 The [v2 scope and ten-step plan](docs/v2/plan.md) and
 [acceptance matrix](docs/v2/acceptance.md) define the next release: an interactive
 terminal agent, Django/Postgres support, and reviewable AWS preparation.
-Steps 1–4 now provide the plan, structured tools and a persistent LangGraph loop:
+Use the structured tools through a persistent LangGraph conversation:
 
 ```sh
 .venv/bin/python -m pip install -c requirements-baseline.txt -e .
@@ -119,8 +119,9 @@ devops-agent chat --offline /path/to/app
 Describe the task in plain English. The terminal previews model data and proposed
 mutations before approval. `/status`, `/cancel`, `/repo PATH`, `/resume ID` and
 `/exit` manage the session. Provider configuration uses the existing agent `.env`.
-Chat supports only the current Next.js/npm execution tools; Django and AWS are
-later checkpoints. See the [agent-loop guide](docs/v2/agent-loop.md).
+Chat supports bounded Next.js/npm and Django/pip local workflows, disposable
+PostgreSQL initialization, and local AWS artifact preparation. See the
+[current usage guide](docs/v2/step10/usage.md) and [agent-loop guide](docs/v2/agent-loop.md).
 
 
 ### V2 Django development
@@ -142,3 +143,6 @@ AWS preparation is available through chat or `devops-agent aws PATH`. It generat
 reviewable ECS Fargate/CloudFormation artifacts and lists unresolved production
 requirements; it does not deploy or access an AWS account. Install the optional
 validator with `pip install -e '.[aws-validation]'`. See [usage and boundaries](docs/v2/step9/README.md).
+
+V2 usage and release boundaries: [current guide](docs/v2/step10/usage.md).
+Step-10 verification status: [combined acceptance](docs/v2/step10/README.md).

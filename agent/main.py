@@ -275,16 +275,8 @@ def validation_result(path, compose_file=None, existing_setup=False, build=False
     deferred = []
     blocking = project["blockers"]
     if existing_setup:
-        # These checks constrain our generated runtime template, not a reviewed
-        # existing Dockerfile. Build/runtime outcomes remain independently checked.
-        template_codes = {"package_manager", "unknown_runtime", "runtime", "runtime_conflict", "docker_runtime_conflict"}
-        # Package dependency hints and example dotenv entries do not establish
-        # actual runtime requirements. Only a full runtime check may defer them:
-        # resolved Compose, service health and application readiness still apply.
-        if run:
-            template_codes |= {"service_dependency", "environment_missing"}
-        deferred = [item for item in blocking if item["code"] in template_codes]
-        blocking = [item for item in blocking if item["code"] not in template_codes]
+        from agent.runtime_policy import existing_setup_blockers
+        blocking, deferred = existing_setup_blockers(blocking, run=run)
     if (build or run) and blocking:
         result = {"success": False, "phase": "eligibility", "project": analysis["project"],
                   "error": "Repository is not eligible for build/runtime validation.", "blockers": blocking}
