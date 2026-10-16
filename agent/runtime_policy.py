@@ -1,7 +1,7 @@
 """Shared distinction between generated-template gates and existing runtime checks."""
 
 def existing_setup_blockers(blockers, *, run):
-    deferred_codes = {'package_manager', 'unknown_runtime', 'runtime', 'runtime_conflict', 'docker_runtime_conflict'}
+    deferred_codes = {'package_manager', 'unknown_runtime', 'runtime', 'runtime_conflict', 'docker_runtime_conflict', 'startup', 'startup_options', 'startup_binding', 'startup_hooks', 'missing_lockfile', 'lockfile_format', 'lockfile_mismatch'}
     if run:
         deferred_codes |= {'service_dependency', 'environment_missing'}
     return ([b for b in blockers if b['code'] not in deferred_codes],

@@ -206,6 +206,18 @@ class ToolRegistry:
             if name == 'prepare_database' and 'docker-compose.yml' not in info['compose_files']:
                 raise ToolRefused('Generated Docker setup is missing. First propose_docker and separately review apply_docker; only then prepare_database. No database operation was approved or executed.')
             selected = choose_compose_file(info, params.get('compose_file'))
+            if name == 'validate_runtime' and (params.get('run') or params.get('build')):
+                from agent.runtime_policy import existing_setup_blockers
+                project = detect_stack({**info,'selected_compose_file':selected})['project']
+                blocking = project['blockers']
+                if params.get('existing_setup'):
+                    if not params.get('compose_file'):
+                        raise ToolRefused('Select an explicit Compose file for existing-setup validation.')
+                    blocking, _ = existing_setup_blockers(blocking,run=bool(params.get('run')))
+                if project.get('services') == ['PostgreSQL'] and params.get('run'):
+                    raise ToolRefused('Use the separate disposable database preparation/migration workflow; existing databases are not adopted.')
+                if blocking:
+                    raise ToolRefused('Runtime is blocked before approval: '+ '; '.join(b['message']+' '+b.get('next_action','') for b in blocking)[:1800])
             for filename in [selected, *info['dockerfiles']]:
                 if filename:
                     configuration[filename] = read_text(self.root, filename)

@@ -304,7 +304,7 @@ def validation_result(path, compose_file=None, existing_setup=False, build=False
 def validate(
     path: Annotated[str, typer.Argument(help="Path to the repo")] = ".",
     compose_file: Annotated[str | None, typer.Option("--compose-file", help="Select one root Compose file; does not override isolation checks")] = None,
-    existing_setup: Annotated[bool, typer.Option("--existing-setup", help="Use the selected existing Next.js Docker setup to establish runtime, environment and service readiness instead of the generation template")] = False,
+    existing_setup: Annotated[bool, typer.Option("--existing-setup", help="Use the selected existing Node/Django Docker setup to establish runtime, environment and service readiness instead of the generation template")] = False,
     build: Annotated[bool, typer.Option(help="Verify image builds in an isolated validation project")] = False,
     run: Annotated[bool, typer.Option(help="Start isolated services and verify application readiness")] = False,
     keep_running: Annotated[bool, typer.Option("--keep-running", help="Keep only a successfully validated environment running")] = False,

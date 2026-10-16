@@ -1,0 +1,267 @@
+{
+  "success": true,
+  "approvals": [
+    {
+      "tool": "apply_docker",
+      "parameters": {
+        "proposal_id": "10b0af2637644ce5dccbd4d986d9b19c221cb76160afca4907788ab7ccd95699"
+      }
+    },
+    {
+      "tool": "validate_runtime",
+      "parameters": {
+        "compose_file": "docker-compose.yml",
+        "existing_setup": true,
+        "build": true,
+        "run": true,
+        "keep_running": true,
+        "timeout": 600,
+        "readiness_timeout": 120
+      }
+    }
+  ],
+  "case": "vue",
+  "preparation": "Working tracked frontend files copied; ignored installs/build output and dotenv omitted; no source/dependency edits.",
+  "http": {
+    "/": {
+      "status": 200,
+      "sha256": "14a18ea9fc4b587c443694878630b2f49aae2a72e29e7f56d58248a762104d6b"
+    },
+    "/src/main.js": {
+      "status": 200,
+      "sha256": "b6db7bdfe4f48334e1c3cedd7815f247ae5e05e29c310db69da01064b33c59e0"
+    },
+    "/src/App.vue": {
+      "status": 200,
+      "sha256": "5215b3e06c97d85e9186680fb1ffcfe1a0a49a7346bf19811fa7a046596f7c6f"
+    }
+  },
+  "source_preserved": true,
+  "stop": {
+    "success": true,
+    "phase": "stop",
+    "session_id": "759dfbffbf3342819a713575e6e24297",
+    "environment_state": "stopped",
+    "notice": "Containers, volumes, networks and images are preserved. Any tmpfs data (including disposable PostgreSQL) is destroyed by stopping."
+  },
+  "conversation": {
+    "id": "3f14e5fbe1a94992b83209f9cf9f6b76",
+    "state": {
+      "read_only_request": false,
+      "history": [],
+      "request": "Generate Docker setup for this Vue/Vite frontend using its existing port and dependency/runtime evidence. Build and verify the frontend HTTP server and leave it running. Do not change application source or claim backend/API verification.",
+      "observations": [
+        {
+          "tool": "propose_docker",
+          "result": {
+            "status": "ready",
+            "id": "10b0af2637644ce5dccbd4d986d9b19c221cb76160afca4907788ab7ccd95699",
+            "blockers": [],
+            "preserved": []
+          }
+        },
+        {
+          "tool": "apply_docker",
+          "result": {
+            "created": [
+              "Dockerfile",
+              "docker-compose.yml",
+              ".dockerignore"
+            ],
+            "updated": [],
+            "session_id": "6a72383f122149d6a27d3e8550a7e750"
+          }
+        },
+        {
+          "tool": "inspect_repository",
+          "result": {
+            "eligibility": "eligible",
+            "discovery_status": null,
+            "setup": "existing",
+            "services": [],
+            "application_candidates": [],
+            "framework": "Vue/Vite",
+            "startup_command": "npm run dev -- --host 0.0.0.0 --port 3000 --strictPort",
+            "application_port": 3000,
+            "findings": [
+              {
+                "name": "framework",
+                "value": "Vue/Vite",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package.json"
+                  }
+                ]
+              },
+              {
+                "name": "package_manager",
+                "value": "npm",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package-lock.json"
+                  }
+                ]
+              },
+              {
+                "name": "lockfile",
+                "value": "Root declarations match package.json",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package-lock.json",
+                    "field": "packages['']"
+                  }
+                ]
+              },
+              {
+                "name": "runtime_requirement",
+                "value": "^20.19.0 || >=22.12.0",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package-lock.json",
+                    "field": "packages['node_modules/vite'].engines.node"
+                  }
+                ]
+              },
+              {
+                "name": "runtime",
+                "value": "Selected node:20.19",
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "engines.node"
+                  }
+                ]
+              },
+              {
+                "name": "startup_command",
+                "value": "npm run dev -- --host 0.0.0.0 --port 3000 --strictPort",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "scripts.dev"
+                  }
+                ]
+              },
+              {
+                "name": "application_port",
+                "value": 3000,
+                "certainty": "inferred",
+                "evidence": [
+                  {
+                    "path": "package.json",
+                    "field": "scripts.dev"
+                  }
+                ]
+              },
+              {
+                "name": "existing_infrastructure",
+                "value": "Reuse candidate; compatibility unverified",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "Dockerfile"
+                  }
+                ]
+              },
+              {
+                "name": "existing_infrastructure",
+                "value": "Reuse candidate; compatibility unverified",
+                "certainty": "confirmed",
+                "evidence": [
+                  {
+                    "path": "docker-compose.yml"
+                  }
+                ]
+              }
+            ],
+            "blockers": [],
+            "unknowns": [
+              "Transitive lockfile integrity and installability require npm validation.",
+              "Environment inspection covers named development dotenv files, .env.example and simple Next config references only. Config matches are heuristic; arbitrary source, host variables and Docker environment wiring are not evaluated.",
+              "Existing Docker/Compose contents require configuration and runtime validation; file presence alone proves neither compatibility nor readiness."
+            ],
+            "runtime_options": [
+              {
+                "compose_file": "docker-compose.yml",
+                "status": "reviewable",
+                "parameters": {
+                  "compose_file": "docker-compose.yml",
+                  "existing_setup": true,
+                  "run": true
+                },
+                "blockers": [],
+                "deferred_template_checks": [],
+                "notice": "Static eligibility for requesting reviewed validation only. Docker configuration safety, build and runtime readiness are unverified."
+              }
+            ]
+          }
+        },
+        {
+          "tool": "validate_runtime",
+          "result": {
+            "success": true,
+            "phase": "application",
+            "session_id": "759dfbffbf3342819a713575e6e24297",
+            "application_check": {
+              "url": "http://127.0.0.1:3000/",
+              "reachable": true,
+              "healthy": true,
+              "status_code": 200,
+              "redirect_url": null,
+              "error": null,
+              "redirects": [],
+              "final_url": "http://127.0.0.1:3000/",
+              "success": true,
+              "container_id": "1c6a3f6f7ed65778dcf2b833713de10006add4964807b3021ce143c46bb18a6f"
+            },
+            "environment_state": "running",
+            "cleanup": {
+              "status": "kept_running",
+              "project": "devops-validation-e739da5a929e",
+              "stop_command": "docker compose --project-directory <temporary-pilot>/app -p devops-validation-e739da5a929e -f <temporary-pilot>/app/docker-compose.yml down --volumes"
+            },
+            "unverified": [
+              "Business correctness and production readiness",
+              "Future health after validation returns"
+            ]
+          }
+        }
+      ],
+      "action": {
+        "tool": "validate_runtime",
+        "parameters": {
+          "compose_file": "docker-compose.yml",
+          "existing_setup": true,
+          "build": true,
+          "run": true,
+          "keep_running": true,
+          "timeout": 600,
+          "readiness_timeout": 120
+        },
+        "reason": "Validate the existing Dockerfile and docker-compose.yml for the Vue/Vite frontend, build the image, start the container on the discovered port (3000), and keep it running as requested."
+      },
+      "operation": "72d957533bb349f19fce38c5ed211d71",
+      "seen": [
+        "49730efacbc87a74301773be12fa0c7a5900e59d5597e57654e7ce6fd9e7c7cf",
+        "401f3240c1ec58583b7f6f0a3fc29c0a01dc629c12703b7c8991ef4ff7d81963",
+        "08df68bb393fe247e8c6002d9c461f40d71f93544e34621f86e13e9fc5f4a60e",
+        "84c36d636fa735dfd7da21b87947e7f7ebb3136b605695dd18857de3a81eea38",
+        "a18d478bb1989c460825b35f077caf5ebdf688b76da2a2accb9e8b0917fad980"
+      ],
+      "count": 5,
+      "failures": 0,
+      "model_calls": 3,
+      "status": "verified",
+      "message": "Runtime readiness verified. Environment: running. See retained validation evidence and cleanup status."
+    },
+    "pending": null
+  },
+  "cleanup_verified": true,
+  "unrelated_preserved": true
+}

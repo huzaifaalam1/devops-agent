@@ -1,0 +1,1 @@
+regression-01: stopped before provider execution at socket.bind(127.0.0.1:3000): Address already in use. No listener or test container remained. Later bind succeeded; retained as infrastructure failure.

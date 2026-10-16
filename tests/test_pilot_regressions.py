@@ -28,16 +28,18 @@ class PilotRegressions(unittest.TestCase):
             else:
                 (repo / 'package.json').write_text(json.dumps({'dependencies': {'vue': '^3'}, 'scripts': {'dev': 'vite'}}))
             result = detect_stack(scan_repo(str(repo)))
-            self.assertEqual(result['project']['eligibility'], 'blocked')
+            self.assertNotEqual(result['project']['eligibility'], 'eligible')
             codes=[b['code'] for b in result['project']['blockers']]
             if name=='django':
                 self.assertIn('django_database_scope',codes)
                 self.assertIn('python_selection',codes)
-            else:self.assertEqual(codes,['unsupported_framework'])
+            else:
+                self.assertNotIn('unsupported_framework',codes)
+                self.assertIn('missing_lockfile',codes)
+                self.assertIn('startup',codes)
             guidance = ' '.join(result['recommendations'])
-            for unwanted in ('next dev', 'Node 22', 'package-lock', 'Declare engines'):
+            for unwanted in ('next dev', 'Node 22'):
                 self.assertNotIn(unwanted, guidance)
-            if name=='vue':self.assertIn('Preserve this stack', guidance)
             self.assertIn('Django app' if name == 'django' else 'Vue app', result['detected'])
             if name == 'django':
                 self.assertIn('PostgreSQL', result['services'])

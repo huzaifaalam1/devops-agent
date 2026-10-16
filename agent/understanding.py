@@ -97,21 +97,15 @@ def inspect_project(repo_info):
     except ValueError as error:
         block("invalid_dependencies", str(error), "package.json", "Repair dependency declarations.")
         deps = {}
-    if "next" not in deps:
-        block("unsupported_framework", "No declared Next.js dependency was found.", "package.json",
-              "Preserve this stack and inspect its documented workflow manually; automated setup and runtime validation are unavailable for this framework.")
-        for framework, dependency in (("Vue", "vue"), ("React", "react")):
-            if dependency in deps:
-                fact("framework", framework, "package.json", deps[dependency][1] + "." + dependency)
-        for filename in repo_info["dockerfiles"] + repo_info["compose_files"]:
-            fact("existing_infrastructure", "Present; compatibility unverified", filename)
-        return {"eligibility": "blocked", "findings": findings, "blockers": blockers,
-                "assumptions": [], "unknowns": ["Framework-specific prerequisites and runtime readiness have not been evaluated."],
-                "application_candidates": candidates, "setup": "unverified" if repo_info["dockerfiles"] or repo_info["compose_files"] else "none",
-                "startup_command": None, "services": [],
-                "scope": "Analysis only; preserve the existing framework. Automated setup and runtime validation are unsupported."}
-    else:
-        fact("framework", "Next.js", "package.json", deps["next"][1] + ".next")
+    from agent.node_project import framework, startup as node_startup
+    kind = framework(deps)
+    if not package:
+        block("unsupported_framework", "No root Node package or supported application was found.", "package.json",
+              "Select an application directory; preserve its framework.")
+        return {'eligibility':'blocked','findings':findings,'blockers':blockers,'assumptions':[],
+                'unknowns':['Select a supported application directory.'],'application_candidates':candidates,
+                'setup':'unverified','startup_command':None,'services':[],'scope':'Application selection required.'}
+    fact("framework", kind, "package.json")
     if package.get("workspaces"):
         block("workspaces", "npm workspaces require application selection.", "package.json",
               "Select an independently installable application directory.", True)
@@ -163,11 +157,12 @@ def inspect_project(repo_info):
         fact("runtime_requirement", engine, "package.json", "engines.node")
     # The lockfile's resolved Next.js version may impose a tighter Node minimum.
     packages = lock.get("packages", {})
-    locked_next = packages.get("node_modules/next", {}) if isinstance(packages, dict) else {}
+    runtime_package = "next" if kind == "Next.js" else "@vue/cli-service" if kind == "Vue CLI" else "vite"
+    locked_next = packages.get("node_modules/"+runtime_package, {}) if isinstance(packages, dict) else {}
     next_engines = locked_next.get("engines", {}) if isinstance(locked_next, dict) else {}
     if isinstance(next_engines, dict) and "node" in next_engines:
         requirements.append(next_engines["node"])
-        fact("runtime_requirement", next_engines["node"], "package-lock.json", "packages['node_modules/next'].engines.node")
+        fact("runtime_requirement", next_engines["node"], "package-lock.json", "packages['node_modules/"+runtime_package+"'].engines.node")
     for filename in (".nvmrc", ".node-version"):
         if (root / filename).exists():
             try:
@@ -178,7 +173,10 @@ def inspect_project(repo_info):
             except (OSError, ValueError):
                 block("runtime_file", "Runtime file is unreadable or uses unsupported version syntax.", filename,
                       "Use a numeric Node version or clarify the runtime requirement.", True)
-    if engine is not None:
+    if engine is not None or (kind != 'Next.js' and requirements):
+        if engine is None:
+            blockers[:] = [b for b in blockers if b['code'] != 'unknown_runtime']
+            assumptions.append('Node selected from runtime-file/dependency compatibility evidence, not a declared project support policy.')
         try:
             node_version = select_node(requirements)
             fact("runtime", "Selected node:" + node_version, "package.json", "engines.node", "inferred")
@@ -193,34 +191,44 @@ def inspect_project(repo_info):
         tokens = shlex.split(dev) if isinstance(dev, str) else []
     except ValueError:
         tokens = []
-    if tokens[:2] != ["next", "dev"]:
-        block("startup", "Cannot establish a direct next dev startup command.", "package.json", "Declare scripts.dev as a direct next dev command, or clarify custom startup requirements.", True)
+    command, application_port = ['npm','run','dev'], 3000
+    if kind != 'Next.js':
+        try:
+            command, application_port, script_name = node_startup(root, package, kind)
+            startup = shlex.join(command)
+            fact('startup_command', startup, 'package.json', 'scripts.'+script_name)
+            fact('application_port', application_port, 'package.json', 'scripts.'+script_name, 'inferred')
+        except (ValueError, OSError) as error:
+            block('startup', str(error), 'package.json', 'Review the declared Node startup command and listening port.', True)
     else:
-        startup = "npm run dev"
-        fact("startup_command", startup, "package.json", "scripts.dev")
-        port, host = "3000", "0.0.0.0"
-        arguments = tokens[2:]
-        while arguments:
-            token = arguments.pop(0)
-            if token in ("--turbo", "--turbopack", "--webpack"):
-                continue
-            if "=" in token:
-                flag, value = token.split("=", 1)
-            else:
-                flag, value = token, arguments.pop(0) if arguments else ""
-            if flag in ("--port", "-p") and value.isdigit():
-                port = value
-            elif flag in ("--hostname", "-H") and value in ("0.0.0.0", "::", "localhost", "127.0.0.1"):
-                host = value
-            else:
-                block("startup_options", "Startup uses options or commands that cannot be statically verified.", "package.json", "Clarify startup options; the first workflow supports direct next dev on port 3000.", True)
-                break
-        fact("application_port", port, "package.json", "scripts.dev", "inferred")
-        if port != "3000" or host not in ("0.0.0.0", "::"):
-            block("startup_binding", "Startup binding differs from the generated container's port-3000 interface.", "package.json", "Resolve the startup binding before using the current Docker template.")
-        if scripts.get("predev") or scripts.get("postdev"):
-            block("startup_hooks", "npm startup hooks introduce additional commands.", "package.json", "Review predev/postdev requirements before generation.", True)
-        assumptions.append("Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required.")
+        if tokens[:2] != ["next", "dev"]:
+            block("startup", "Cannot establish a direct next dev startup command.", "package.json", "Declare scripts.dev as a direct next dev command, or clarify custom startup requirements.", True)
+        else:
+            startup = "npm run dev"
+            fact("startup_command", startup, "package.json", "scripts.dev")
+            port, host = "3000", "0.0.0.0"
+            arguments = tokens[2:]
+            while arguments:
+                token = arguments.pop(0)
+                if token in ("--turbo", "--turbopack", "--webpack"):
+                    continue
+                if "=" in token:
+                    flag, value = token.split("=", 1)
+                else:
+                    flag, value = token, arguments.pop(0) if arguments else ""
+                if flag in ("--port", "-p") and value.isdigit():
+                    port = value
+                elif flag in ("--hostname", "-H") and value in ("0.0.0.0", "::", "localhost", "127.0.0.1"):
+                    host = value
+                else:
+                    block("startup_options", "Startup uses options or commands that cannot be statically verified.", "package.json", "Clarify startup options; the first workflow supports direct next dev on port 3000.", True)
+                    break
+            fact("application_port", port, "package.json", "scripts.dev", "inferred")
+            if port != "3000" or host not in ("0.0.0.0", "::"):
+                block("startup_binding", "Startup binding differs from the generated container's port-3000 interface.", "package.json", "Resolve the startup binding before using the current Docker template.")
+            if scripts.get("predev") or scripts.get("postdev"):
+                block("startup_hooks", "npm startup hooks introduce additional commands.", "package.json", "Review predev/postdev requirements before generation.", True)
+            assumptions.append("Absent explicit flags, next dev is assumed to listen on port 3000 on all interfaces; runtime validation is still required.")
 
     services = []
     for name, (_, section) in deps.items():
@@ -321,5 +329,5 @@ def inspect_project(repo_info):
     status = "eligible" if not blockers else ("needs_input" if any(b["needs_input"] for b in blockers) else "blocked")
     return {"eligibility": status, "findings": findings, "blockers": blockers,
             "assumptions": assumptions, "unknowns": unknowns, "application_candidates": candidates,
-            "setup": setup, "node_version": node_version, "startup_command": startup, "services": sorted(set(services)),
-            "scope": "Single Next.js application, npm, declared Node runtime, local development; eligibility is not readiness."}
+            "setup": setup, "framework": kind, "command": command, "application_port": application_port, "node_version": node_version, "startup_command": startup, "services": sorted(set(services)),
+            "scope": "Single Node application, npm, evidence-backed runtime, local development; eligibility is not readiness."}

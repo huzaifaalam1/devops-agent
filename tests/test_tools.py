@@ -102,13 +102,11 @@ class ToolTests(unittest.TestCase):
         (repo/'compose.yaml').write_text('services: {}\n')
         registry = ToolRegistry(repo)
         params = {'run':True,'compose_file':'compose.yaml'}
-        review = registry.review('validate_runtime', params)
-        self.assertIn('compose.yaml', review['configuration'])
-        token = registry.approve(review['review_id'])
         with patch('agent.main.validate_docker') as docker:
-            result = registry.execute('validate_runtime', params, approval=token)
+            with self.assertRaisesRegex(ToolRefused,'blocked before approval'):
+                registry.review('validate_runtime',params)
             docker.assert_not_called()
-        self.assertEqual(result['result']['phase'], 'eligibility')
+        self.assertEqual(registry._reviews,{})
 
     def test_isolation_failure_is_not_reported_as_success(self):
         (self.repo/'Dockerfile').write_text('FROM node:22\n')

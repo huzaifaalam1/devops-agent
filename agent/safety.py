@@ -102,6 +102,13 @@ class Redactor:
                         self.add(str(value))
 
     def text(self, value):
+        # Literal Compose mapping/list assignments, including prefixed secret names.
+        assignment = r"(?im)(^[ \t]*(?:-[ \t]*)?[\"']?([A-Za-z_][A-Za-z0-9_.-]*)[\"']?[ \t]*[:=][ \t]*)([^\n]*)"
+        value = re.sub(assignment, lambda m: m[1]+'[REDACTED]' if SENSITIVE.search(m[2]) else m[0], value)
+        inline = r"([{,][ \t]*[\"']?)([A-Za-z_][A-Za-z0-9_.-]*)([\"']?[ \t]*:[ \t]*)(\"[^\"\n]*\"|'[^'\n]*'|[^,}\n]+)"
+        value = re.sub(inline, lambda m: m[1]+m[2]+m[3]+'"[REDACTED]"' if SENSITIVE.search(m[2]) else m[0], value)
+        named = r"(?i)(\b[\w.-]*(?:password|passwd|secret|token|api[_-]?key|credential)[\w.-]*[\"']?[ \t]*[:=][ \t]*)(\"[^\"\n]*\"|'[^'\n]*'|[^\s,;&}]+)"
+        value = re.sub(named, lambda m: m[1]+('"[REDACTED]"' if m[2].startswith(('"', "'")) else '[REDACTED]'), value)
         for secret in sorted(self.values, key=len, reverse=True):
             # Even short known values are sensitive; boundary matching avoids
             # replacing every occurrence of a single letter in normal prose.

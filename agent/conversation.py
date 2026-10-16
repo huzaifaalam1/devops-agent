@@ -109,8 +109,17 @@ def run_chat(path, read, emit, resume=None):
                                     {'role':'assistant','content':(result['state'].get('message') or 'Request paused awaiting approval.')[:2000]}])
                     history[:]=history[-6:]
             except (OSError,ValueError) as error:
-                # Avoid raw provider/OS exceptions potentially containing secrets.
-                show('Request could not continue safely. Use /status, inspect local configuration, or start a fresh reviewed request. No automatic retry.')
+                from agent.tools import ToolRefused
+                from agent.safety import Redactor
+                if isinstance(error, ToolRefused):
+                    detail = Redactor(local.repo).text(str(error))
+                elif isinstance(error, PermissionError):
+                    detail = 'Permission denied while reading repository inputs or private session state.'
+                elif isinstance(error, FileNotFoundError):
+                    detail = 'A required repository input or state file no longer exists.'
+                else:
+                    detail = 'Invalid input or session state ('+type(error).__name__+').'
+                show('Request stopped: '+detail+' No automatic retry; inspect /status before starting a fresh request.')
     except (EOFError,KeyboardInterrupt):
         show('Session interrupted. Use the conversation ID to resume; uncertain mutations are never automatically replayed.')
     except (OSError,ValueError):

@@ -43,7 +43,7 @@ def compact(tool, result):
         return result
     if tool=='inspect_repository':
         project=result.get('project',{})
-        summary = {**{k:project.get(k) for k in ['eligibility','discovery_status','setup','services','findings','blockers','unknowns']},
+        summary = {**{k:project.get(k) for k in ['eligibility','discovery_status','setup','services','application_candidates','framework','startup_command','application_port','findings','blockers','unknowns']},
                    'runtime_options':result.get('runtime_options',[])}
         if project.get('eligibility') == 'blocked' and any(
                 option.get('status') == 'reviewable' for option in summary['runtime_options']):

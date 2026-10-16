@@ -1,0 +1,169 @@
+{
+  "scope": "Real model, read-only clarification at media-facility multi-app root; no mutation approvals.",
+  "source_sha256": {
+    "agent/validator.py": "cfa8b4f4001b7a0529c08ab4d58488f6450eade3f665cce3a5b699efac0cd900",
+    "agent/repair.py": "95ed5c0b7486f623e70af86711fbceb1f4305159daad04c1e11fc5e4be038cc3",
+    "agent/detector.py": "56a7a1fd243b50f9955fe5aba7dc1d13212b57ef0c13357a84d68f3e4f4def96",
+    "agent/scanner.py": "d7a92f3ac57a53863800c8cca66f143e00f9a349f814987e2adb74cc9aa3a274",
+    "agent/django_runtime.py": "aab2bea6f98fb31bdf6130145c53c75d04689cbe65d028da1b5edc875c50f85e",
+    "agent/config.py": "74dff04122b0ded0828b2ca70f2de698a22a82edb957ccc7fe303230b0f81d6b",
+    "agent/understanding.py": "ba89ffd18a6e719c62326d647dbfb39da999c556ce4b1abd0fc6fc6108c27b4a",
+    "agent/conversation.py": "4d8071618d154ab0c89331999d315453575bd83968220344cf8a8deb2cc739f7",
+    "agent/diagnostics.py": "0e1bbbfcc52510afe6cf3bf06c1af0d550388e6233b8009067973963d438ae41",
+    "agent/node_runtime.py": "84e9fa821bbd1c488895d2ccdc79270e74a829e43a7a4a63bd4fc9c016238893",
+    "agent/tools.py": "0efed8b2c4751bc3b69287d361a3ec8b2f86d1dce0bc5fd619e0ef4929ebd0f7",
+    "agent/runtime_policy.py": "a837c0e84e91be524ad876fc06a4c0a9677d142c5e8c4145ca07372a3f639c76",
+    "agent/aws_preparation.py": "6f92c56c900db6e29856b11e072ee570c79679f114656e51e40c6f007d5ae3e1",
+    "agent/session.py": "d661b52c218750d04b1e577c02325daeff28201d7d3969e1421ed4b2ab486ae3",
+    "agent/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "agent/django_inspection.py": "69f1aba8976762cafdbdf8c934e5e4c450ffafe8b18d7531f3bedcae5df3060b",
+    "agent/context.py": "83d0f5e44c5c75dfd844c68b61b997ebb4257a5655baa3620714389bb68bfd95",
+    "agent/runtime_control.py": "39d39199f97250b1d5a02eac135fd65019e86c81793b00de800b89c5be5ca1f0",
+    "agent/model_transport.py": "0b147b67b5c1ce38021422937da0f4b9dec8fdfd585c8ec554bd4827e8e7f215",
+    "agent/file_edits.py": "cc061e038463a96f424e08f1da45d3a9c829a949255fa6d58830458c74ac1ffd",
+    "agent/loop.py": "db32b31e6f753d3a18e28e298d17db028f06ef1a0ad7efa2e01799e348eacf3c",
+    "agent/planning.py": "d1209050d4226782b229e31c7c44f65255ccd073a69553d398b6bff33a58d879",
+    "agent/safety.py": "7dd9b72c51caf69a6c49a2300e9e0512d0147d3baaa558144f2c346288111b8f",
+    "agent/main.py": "5edb9a9ac4eab64f530c4dfe3947972ec3f81e4842b202cb58e5aca92a9daa02",
+    "agent/django_database.py": "32571eda503a666c2806e4724b2d37abc980cb869cb1514d23a33e1fb4ce4f2e",
+    "agent/node_project.py": "b1e866fb4fa6f66800481a81b14f1ed74a0a4985be8175bab3e677a14c65042b",
+    "agent/loop_model.py": "a8c3e97dde97d067427a5f1e3c305a0e3f49adc89847214a2522b3eaa90e28c6",
+    "agent/docker_generator.py": "bcf083819c9799a86c511a9541ac0c2d1e890a53ca74d2db7067e783d7f8e1f6"
+  },
+  "conversation": {
+    "id": "728aaf572d9c4589aef53179353d90d6",
+    "state": {
+      "read_only_request": false,
+      "history": [],
+      "request": "The backend media_facility_backend is Django and media_facility_frontend is Vue. I want both together. Can this agent currently run the entire existing stack without adopting or changing my database? Explain the actual scope and how to select a single component.",
+      "observations": [
+        {
+          "tool": "inspect_repository",
+          "result": {
+            "eligibility": "blocked",
+            "discovery_status": null,
+            "setup": "unverified",
+            "services": [],
+            "application_candidates": [
+              "media_facility_backend",
+              "media_facility_frontend/media_facility_frontend"
+            ],
+            "framework": null,
+            "startup_command": null,
+            "application_port": null,
+            "findings": [],
+            "blockers": [
+              {
+                "code": "application_selection",
+                "message": "Additional application directories were found.",
+                "evidence": [
+                  {
+                    "path": "."
+                  }
+                ],
+                "next_action": "Which application should be inspected? Run the command with one of: media_facility_backend, media_facility_frontend/media_facility_frontend",
+                "needs_input": true
+              },
+              {
+                "code": "unsupported_framework",
+                "message": "No root Node package or supported application was found.",
+                "evidence": [
+                  {
+                    "path": "package.json"
+                  }
+                ],
+                "next_action": "Select an application directory; preserve its framework.",
+                "needs_input": false
+              }
+            ],
+            "unknowns": [
+              "Select a supported application directory."
+            ],
+            "runtime_options": [
+              {
+                "compose_file": "docker-compose.local.yml",
+                "status": "blocked",
+                "parameters": {
+                  "compose_file": "docker-compose.local.yml",
+                  "existing_setup": true,
+                  "run": true
+                },
+                "blockers": [
+                  {
+                    "code": "application_selection",
+                    "message": "Additional application directories were found.",
+                    "evidence": [
+                      {
+                        "path": "."
+                      }
+                    ],
+                    "next_action": "Which application should be inspected? Run the command with one of: media_facility_backend, media_facility_frontend/media_facility_frontend",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "unsupported_framework",
+                    "message": "No root Node package or supported application was found.",
+                    "evidence": [
+                      {
+                        "path": "package.json"
+                      }
+                    ],
+                    "next_action": "Select an application directory; preserve its framework.",
+                    "needs_input": false
+                  }
+                ],
+                "deferred_template_checks": [],
+                "notice": "Static eligibility for requesting reviewed validation only. Docker configuration safety, build and runtime readiness are unverified."
+              },
+              {
+                "compose_file": "docker-compose.prod.yml",
+                "status": "blocked",
+                "parameters": {
+                  "compose_file": "docker-compose.prod.yml",
+                  "existing_setup": true,
+                  "run": true
+                },
+                "blockers": [
+                  {
+                    "code": "application_selection",
+                    "message": "Additional application directories were found.",
+                    "evidence": [
+                      {
+                        "path": "."
+                      }
+                    ],
+                    "next_action": "Which application should be inspected? Run the command with one of: media_facility_backend, media_facility_frontend/media_facility_frontend",
+                    "needs_input": true
+                  },
+                  {
+                    "code": "unsupported_framework",
+                    "message": "No root Node package or supported application was found.",
+                    "evidence": [
+                      {
+                        "path": "package.json"
+                      }
+                    ],
+                    "next_action": "Select an application directory; preserve its framework.",
+                    "needs_input": false
+                  }
+                ],
+                "deferred_template_checks": [],
+                "notice": "Static eligibility for requesting reviewed validation only. Docker configuration safety, build and runtime readiness are unverified."
+              }
+            ]
+          }
+        }
+      ],
+      "seen": [
+        "bca84fb531ffcdb08b389d09dde1ff3e505640efecb850b85555671b80dcac53"
+      ],
+      "count": 1,
+      "failures": 0,
+      "model_calls": 1,
+      "status": "blocked",
+      "message": "Provider request failed: transport_unavailable. No action selected."
+    },
+    "pending": null
+  },
+  "success": false
+}

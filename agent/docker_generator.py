@@ -47,9 +47,9 @@ def digest(content):
     return hashlib.sha256(content).hexdigest()
 
 
-def development_compose(mounts, host_port=3000):
+def development_compose(mounts, host_port=3000, container_port=3000):
     compose = ('# Local development only.\nservices:\n  app:\n    build: .\n'
-               f'    ports:\n      - "127.0.0.1:{host_port}:3000"\n')
+               f'    ports:\n      - "127.0.0.1:{host_port}:{container_port}"\n')
     if mounts:
         compose += "    volumes:\n"
         for filename in mounts:
@@ -92,10 +92,14 @@ def propose_docker_files(path):
                 # Inspection verifies readability and containment. Never embed values.
                 read_text(root, filename)
                 mounts.append(filename)
-        compose = development_compose(mounts)
+        port = project.get('application_port',3000)
+        compose = development_compose(mounts,host_port=port,container_port=port)
+        dockerfile = DOCKERFILE.format(node_version=project['node_version'])
+        if project.get('framework') != 'Next.js':
+            dockerfile = dockerfile.replace('ENV NEXT_TELEMETRY_DISABLED=1\n','').replace("FROM node:"+project["node_version"],"FROM node:"+project["node_version"]+"-slim").replace('EXPOSE 3000',f'EXPOSE {port}').replace('CMD ["npm", "run", "dev"]','CMD '+json.dumps(project['command']))
         expected = {
-            "Dockerfile": (DOCKERFILE.format(node_version=project["node_version"]), f"Use Node {project['node_version']} inferred from repository requirements, install the reviewed npm lockfile with npm ci, and run the declared dev script."),
-            "docker-compose.yml": (compose, "Expose the single app on loopback port 3000; mount existing development dotenv files read-only for Next.js to load." if mounts else "Expose the single app on loopback port 3000. No environment file is required."),
+            "Dockerfile": (dockerfile, f"Use Node {project['node_version']} inferred from repository requirements, install the reviewed npm lockfile with npm ci, and run the declared dev script."),
+            "docker-compose.yml": (compose, f"Publish the app on loopback port {port}; mount existing development dotenv files read-only when present. Generic Node code must load its own dotenv configuration."),
         }
     ignore = root / ".dockerignore"
     before_ignore = read_text(root, ".dockerignore") if ignore.exists() else ""
@@ -129,7 +133,7 @@ def propose_docker_files(path):
                     notes=["This creates development configuration only; application readiness has not been verified.",
                            "Environment values are never included in this proposal or baked into the image."])
     inputs = ("package.json", "package-lock.json", ".nvmrc", ".node-version",
-              "next.config.js", "next.config.mjs", "next.config.ts", ".env.example", *ENV_FILES)
+              "next.config.js", "next.config.mjs", "next.config.ts", "vite.config.js", "vite.config.ts", "vite.config.mjs", "vite.config.mts", "vue.config.js", "vue.config.cjs", ".env.example", *ENV_FILES)
     if django:
         if project['services']==['PostgreSQL']:
             proposal['run_command']=None  # Initialization must use the separately reviewed agent workflow.

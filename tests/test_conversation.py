@@ -57,3 +57,13 @@ class ConversationTests(unittest.TestCase):
         self.assertNotIn('"kind":',transcript)
         self.assertNotIn('"observations":',transcript)
         self.assertIn('May I use',transcript)
+
+    def test_expected_review_failure_reports_safe_reason_and_continues(self):
+        from agent.tools import ToolRefused
+        entries=iter(['run app','/exit']);output=[]
+        loop=AgentLoop(self.repo,Planner([]),output.append)
+        with patch('agent.conversation.AgentLoop',return_value=loop),patch.object(loop,'start',side_effect=ToolRefused('Repository exceeds bounded review size. POSTGRES_PASSWORD=private-value')):
+            run_chat(str(self.repo),lambda _:next(entries),output.append)
+        text='\n'.join(output)
+        self.assertIn('Repository exceeds bounded review size',text)
+        self.assertNotIn('private-value',text)
