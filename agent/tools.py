@@ -30,7 +30,7 @@ SCHEMAS = {
     'propose_docker': {},
     'apply_docker': {'proposal_id': 'string'},
     'validate_runtime': {'compose_file': 'string', 'existing_setup': 'boolean',
-                         'build': 'boolean', 'run': 'boolean', 'keep_running': 'boolean',
+                         'build': 'boolean', 'run': 'boolean', 'keep_running': 'boolean', 'isolated_stack':'boolean',
                          'service': 'string', 'container_port': 'integer',
                          'health_path': 'string', 'timeout': 'integer', 'readiness_timeout': 'integer'},
 }
@@ -77,6 +77,8 @@ def inputs(name, params):
     for key, low, high in [('container_port', 1, 65535), ('timeout', 1, 600), ('readiness_timeout', 1, 180)]:
         if key in params and not low <= params[key] <= high:
             raise ToolRefused('Numeric parameter outside supported bounds.')
+    if params.get('isolated_stack') and (not params.get('existing_setup') or not params.get('compose_file')):
+        raise ToolRefused('Isolated stack validation requires explicit existing Compose selection.')
     if params.get('keep_running') and not params.get('run'):
         raise ToolRefused('Keeping services requires a runtime check.')
     path = params.get('health_path', '/')
@@ -214,7 +216,12 @@ class ToolRegistry:
                     if not params.get('compose_file'):
                         raise ToolRefused('Select an explicit Compose file for existing-setup validation.')
                     blocking, _ = existing_setup_blockers(blocking,run=bool(params.get('run')))
-                if project.get('services') == ['PostgreSQL'] and params.get('run'):
+                if params.get('isolated_stack'):
+                    from agent.existing_compose import inspect_existing, stack_blockers
+                    preview=inspect_existing(self.root,selected)
+                    preview['host_build_defaults']={'LOCAL_UID':os.environ.get('LOCAL_UID',str(os.getuid())), 'LOCAL_GID':os.environ.get('LOCAL_GID',str(os.getgid()))}
+                    blocking=stack_blockers(project['blockers'])
+                if project.get('services') == ['PostgreSQL'] and params.get('run') and not params.get('isolated_stack'):
                     raise ToolRefused('Use the separate disposable database preparation/migration workflow; existing databases are not adopted.')
                 if blocking:
                     raise ToolRefused('Runtime is blocked before approval: '+ '; '.join(b['message']+' '+b.get('next_action','') for b in blocking)[:1800])
@@ -231,7 +238,7 @@ class ToolRegistry:
         self._reviews[review_id] = record
         return Redactor(self.root).clean({'review_id': review_id, 'tool': name, 'parameters': params,
             'repository': str(self.root), 'preview': preview, 'configuration': configuration,
-            'effect': 'Write only the displayed AWS preparation files locally. No AWS API calls, deployment or account changes.' if name in {'apply_aws','prepare_aws'} else 'Apply the displayed repair and perform one bounded runtime verification. The test environment is cleaned up; failed edits use guarded rollback. No repeated repair of unchanged inputs.' if name=='apply_runtime_repair' else 'Create fresh disposable Postgres/app containers on loopback port 8000, install dependencies and execute repository code to plan migrations. No migrations are applied. Database data is destroyed on stop.' if name=='prepare_database' else 'Apply the displayed forward migration plan and verify a diagnostic ORM operation in the prepared disposable database.' if name=='migrate_database' else 'Stop only the listed agent-owned containers. Volumes are preserved; tmpfs database data is destroyed.' if name=='stop_runtime' else 'Apply the displayed file diff.' if name in {'apply_docker','patch_file'} else
+            'effect': 'Run the existing stack in an isolated project. Source mounts use private copies; database volumes are new and empty. Approval includes existing startup migrations, dependency installation and seed/user creation. Original sources and existing database volumes are not mounted. Successful environments may be retained; stopping preserves their copied files and volumes.' if params.get('isolated_stack') else 'Write only the displayed AWS preparation files locally. No AWS API calls, deployment or account changes.' if name in {'apply_aws','prepare_aws'} else 'Apply the displayed repair and perform one bounded runtime verification. The test environment is cleaned up; failed edits use guarded rollback. No repeated repair of unchanged inputs.' if name=='apply_runtime_repair' else 'Create fresh disposable Postgres/app containers on loopback port 8000, install dependencies and execute repository code to plan migrations. No migrations are applied. Database data is destroyed on stop.' if name=='prepare_database' else 'Apply the displayed forward migration plan and verify a diagnostic ORM operation in the prepared disposable database.' if name=='migrate_database' else 'Stop only the listed agent-owned containers. Volumes are preserved; tmpfs database data is destroyed.' if name=='stop_runtime' else 'Apply the displayed file diff.' if name in {'apply_docker','patch_file'} else
                       'Resolve Compose; requested builds/run may execute repository code and use network. Cleanup is scoped; keep_running retains successful services.'})
 
     def approve(self, review_id):

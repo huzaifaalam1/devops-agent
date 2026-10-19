@@ -18,8 +18,17 @@ def runtime_options(info):
         blocking, deferred = existing_setup_blockers(project['blockers'], run=True)
         if project.get('services') == ['PostgreSQL']:
             blocking = [*blocking, {'code':'database_initialization', 'message':'Existing PostgreSQL setups cannot bypass the separately approved disposable database workflow.'}]
+        existing = None
+        if info.get('path'):
+            from agent.existing_compose import inspect_existing, stack_blockers
+            try:
+                existing = inspect_existing(info['path'], selected)
+                blocking = stack_blockers(project['blockers'])
+            except (ValueError, OSError, TypeError):
+                pass
         options.append({'compose_file':selected, 'status':'blocked' if blocking else 'reviewable',
-                        'parameters':{'compose_file':selected,'existing_setup':True,'run':True},
+                        'parameters':{'compose_file':selected,'existing_setup':True,'run':True, **({'isolated_stack':True,**existing['suggested_readiness']} if existing else {})},
+                        'existing_configuration':({k:v for k,v in existing.items() if k!='evidence'} | {'startup_evidence':{k:'\n'.join(line for line in v.splitlines() if any(word in line for word in ['migrate','npm run','runserver','create_superuser','exec ']))[:1400] for k,v in existing['evidence'].items() if k.endswith('.sh')}}) if existing else None,
                         'blockers':blocking, 'deferred_template_checks':[b['code'] for b in deferred],
                         'notice':'Static eligibility for requesting reviewed validation only. Docker configuration safety, build and runtime readiness are unverified.'})
     return options

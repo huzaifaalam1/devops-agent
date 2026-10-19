@@ -70,7 +70,7 @@ def compact(tool, result):
     if isinstance(result.get('cleanup'),dict):
         result['cleanup']={k:result['cleanup'][k] for k in ['status','project','stop_command'] if k in result['cleanup']}
     return {k:result.get(k) for k in ['success','phase','error','created','updated','session_id',
-                                     'validation','diagnosis','status','summary','rollback','attempts','attempt_limit','database_plan','orm_verified','application_check','environment_state','cleanup','unverified','blockers','notice'] if k in result}
+                                     'validation','diagnosis','status','summary','rollback','attempts','attempt_limit','database_plan','orm_verified','application_check','application_checks','source_snapshot','environment_state','cleanup','unverified','blockers','notice'] if k in result}
 
 
 class AgentLoop:

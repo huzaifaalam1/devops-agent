@@ -10,6 +10,7 @@ import subprocess
 import tempfile
 import time
 import uuid
+import shutil
 from pathlib import Path
 from agent.safety import Journal, Redactor, authorize, project_lock, repository_fingerprint
 from urllib.error import HTTPError, URLError
@@ -17,12 +18,12 @@ from urllib.parse import urljoin, urlparse
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 
-def run_command(command, repo_path, timeout=30):
+def run_command(command, repo_path, timeout=30, env=None):
     result = {"command": " ".join(command), "success": False, "stdout": "", "stderr": "", "returncode": None}
     process = None
     try:
         process = subprocess.Popen(command, cwd=repo_path, stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE, text=True, start_new_session=True)
+                                   stderr=subprocess.PIPE, text=True, start_new_session=True, env=env)
         stdout, stderr = process.communicate(timeout=timeout)
         result.update(success=process.returncode == 0, stdout=stdout, stderr=stderr, returncode=process.returncode)
     except (subprocess.TimeoutExpired, KeyboardInterrupt) as error:
@@ -110,7 +111,7 @@ def fail(phase, message, action="Inspect the reported stage and correct the conf
     raise ValidationFailure(phase, message, action)
 
 
-def isolated_config(config, project, repo):
+def isolated_config(config, project, repo, copied_sources=None):
     """Reject shared-resource configurations before creating any Docker resources."""
     services = config.get("services")
     if not isinstance(services, dict) or not services:
@@ -131,7 +132,7 @@ def isolated_config(config, project, repo):
                 fail("isolation", "Unsupported mount type for isolated validation.")
             if mount.get("type") == "bind":
                 source = Path(mount.get("source", "")).resolve()
-                if not mount.get("read_only") or not source.is_file() or not source.is_relative_to(repo):
+                if not (copied_sources and source.is_relative_to(copied_sources.resolve())) and (not mount.get("read_only") or not source.is_file() or not source.is_relative_to(repo)):
                     fail("isolation", f"Service {name} has a writable, external, or non-file bind mount.", "Use only read-only configuration files inside the application directory for validation.")
         for port in service.get("ports", []):
             host = port.get("host_ip") or "0.0.0.0"
@@ -173,7 +174,9 @@ def check_published_ports(config):
             kind = socket.SOCK_DGRAM if port.get("protocol") == "udp" else socket.SOCK_STREAM
             with socket.socket(family, kind) as probe:
                 try:
+                    if kind == socket.SOCK_STREAM:probe.setsockopt(socket.SOL_SOCKET,socket.SO_REUSEADDR,1)
                     probe.bind((host, int(published)))
+                    if kind == socket.SOCK_STREAM:probe.listen(1)
                 except OSError as error:
                     if error.errno == errno.EADDRINUSE:
                         fail("startup", f"Host port {published} is already in use.", "Choose an available host port or stop its owner yourself; validation will not stop another workload.")
@@ -226,7 +229,7 @@ def application_endpoint(records, service, container_port, health_path):
 
 def _validate_docker(path, compose_file=None, build=False, run=False, keep_running=False,
                     service=None, container_port=None, health_path="/", timeout=300.0,
-                    readiness_timeout=90.0, redactor=None, journal=None, database_project=None):
+                    readiness_timeout=90.0, redactor=None, journal=None, database_project=None, isolated_stack=False):
     repo = Path(path).resolve()
     report = {"success": False, "phase": "repository", "results": [], "logs": "",
               "expected_services": [], "running_services": [], "stopped_services": [],
@@ -265,7 +268,7 @@ def _validate_docker(path, compose_file=None, build=False, run=False, keep_runni
             journal.data["project"] = project
             journal.data["events"].append(redactor.clean({"phase": phase, "command": shlex.join(args), "status": "requested"}))
             journal.save()
-        result = run_command(args, repo, timeout=min(cap, remaining))
+        result = run_command(args, repo, timeout=min(cap, remaining), **({'env':{**os.environ,'LOCAL_UID':os.environ.get('LOCAL_UID',str(os.getuid())),'LOCAL_GID':os.environ.get('LOCAL_GID',str(os.getgid()))}} if isolated_stack else {}))
         report["results"].append({**result, "stdout": "[structured configuration omitted]" if sensitive else result["stdout"][-8000:], "stderr": result["stderr"][-8000:]})
         if not result["success"]:
             error = result["stderr"] or result["stdout"] or "Command failed."
@@ -287,6 +290,7 @@ def _validate_docker(path, compose_file=None, build=False, run=False, keep_runni
         report["stages"].append({"phase": name, "success": True})
         report["verified"].append(name)
 
+    copied_sources = None
     # Resolved config can contain secrets; keep it only in a mode-0600 temporary file.
     with tempfile.TemporaryDirectory(prefix="devops-validation-") as temporary:
         try:
@@ -308,7 +312,25 @@ def _validate_docker(path, compose_file=None, build=False, run=False, keep_runni
                 network = (config.get("networks") or {}).get(network_name)
                 if network and network.get("name") == project + "_" + network_name and not network.get("external"):
                     network.pop("name")
-            config = isolated_config(config, project, repo)
+            if isolated_stack:
+                from agent.existing_compose import copy_mounts
+                from agent.safety import state_directory
+                if shutil.disk_usage(repo).free < 8*1024**3:
+                    fail('host','At least 8 GiB free is required for isolated stack validation.')
+                # Remove only Compose's exact implicit names under our fresh random project.
+                for kind in ('volumes','networks'):
+                    for name,resource in config.get(kind,{}).items():
+                        if resource and resource.get('name')==project+'_'+name and not resource.get('external'):
+                            resource.pop('name')
+                # Validate all host/resource boundaries before copying or executing anything.
+                import copy
+                probe=copy.deepcopy(config)
+                for svc in probe['services'].values():svc['volumes']=[v for v in svc.get('volumes',[]) if v.get('type')!='bind']
+                isolated_config(probe,project,repo)
+                copied_sources=Path(tempfile.mkdtemp(prefix='stack-source-',dir=state_directory()))
+                report['source_snapshot']=copy_mounts(config,repo,copied_sources)
+                report['unverified'].append('Existing database contents are not adopted; startup uses fresh volumes. Source changes affect private copies only.')
+            config = isolated_config(config, project, repo, copied_sources=copied_sources)
             if database_project:
                 from agent.django_database import prepare_config
                 config = prepare_config(config, database_project, redactor)
@@ -319,7 +341,7 @@ def _validate_docker(path, compose_file=None, build=False, run=False, keep_runni
                 if service not in config["services"]:
                     fail("application", "Choose the application service with --service.")
                 ports = {int(p["target"]) for p in config["services"][service].get("ports", []) if p.get("protocol", "tcp") == "tcp"}
-                container_port = container_port or (next(iter(ports)) if len(ports) == 1 else None)
+                container_port = container_port or (min(ports) if isolated_stack and ports else next(iter(ports)) if len(ports) == 1 else None)
                 if container_port not in ports:
                     fail("application", "Choose a published TCP container port with --container-port.")
                 report.update(application_service=service, container_port=container_port)
@@ -369,6 +391,16 @@ def _validate_docker(path, compose_file=None, build=False, run=False, keep_runni
                         url = application_endpoint(records, service, container_port, health_path)
                         check = check_application_url(url, timeout=max(.01, min(5, readiness_deadline - time.monotonic())), follow_redirects=True)
                         report["application_check"] = {**check, "success": check["healthy"], "container_id": records[service]["id"]}
+                        if isolated_stack and check['healthy']:
+                            checks=[]
+                            for endpoint_service,svc in config['services'].items():
+                                for endpoint_port in sorted({int(p['target']) for p in svc.get('ports',[]) if p.get('protocol','tcp')=='tcp'}):
+                                    endpoint_path=health_path if (endpoint_service,endpoint_port)==(service,container_port) else '/'
+                                    endpoint=application_endpoint(records,endpoint_service,endpoint_port,endpoint_path)
+                                    checked=check_application_url(endpoint,timeout=max(.01,min(5,readiness_deadline-time.monotonic())),follow_redirects=True)
+                                    checks.append({**checked,'service':endpoint_service,'container_port':endpoint_port})
+                            report['application_checks']=checks
+                            check['healthy']=all(c['healthy'] for c in checks)
                         if check["healthy"]:
                             # A second snapshot prevents a successful HTTP response
                             # from hiding a crash or replacement during the probe.
@@ -434,12 +466,15 @@ def _validate_docker(path, compose_file=None, build=False, run=False, keep_runni
                 report["unverified"].append("Shared image/build cache is retained")
             if not report["success"]:
                 report["stages"].append({"phase": report["phase"], "success": False})
+    if copied_sources and report.get('cleanup',{}).get('status') not in {'kept_running','failed'}:
+        shutil.rmtree(copied_sources)
+        report.setdefault('source_snapshot',{})['removed']=True
     return report
 
 
 def _journaled_validation(path, compose_file=None, build=False, run=False, keep_running=False,
                     service=None, container_port=None, health_path="/", timeout=300.0,
-                    readiness_timeout=90.0, database_project=None):
+                    readiness_timeout=90.0, database_project=None, isolated_stack=False):
     """Sanitize reports and journal authorized execution before side effects."""
     redactor = Redactor(path)
     journal = None
@@ -451,7 +486,7 @@ def _journaled_validation(path, compose_file=None, build=False, run=False, keep_
         result = _validate_docker(path, compose_file=compose_file, build=build, run=run,
                                   keep_running=keep_running, service=service, container_port=container_port,
                                   health_path=health_path, timeout=timeout, readiness_timeout=readiness_timeout,
-                                  redactor=redactor, journal=journal, database_project=database_project)
+                                  redactor=redactor, journal=journal, database_project=database_project, isolated_stack=isolated_stack)
     except (OSError, ValueError):
         result = {"success": False, "phase": "safety", "error": "Private execution journal could not be created; execution was refused.",
                   "cleanup": {"status": "not_needed"}, "environment_state": "not_started"}
@@ -473,10 +508,10 @@ def _journaled_validation(path, compose_file=None, build=False, run=False, keep_
 
 def validate_docker(path, compose_file=None, build=False, run=False, keep_running=False,
                     service=None, container_port=None, health_path="/", timeout=300.0,
-                    readiness_timeout=90.0, database_project=None):
+                    readiness_timeout=90.0, database_project=None, isolated_stack=False):
     options = dict(compose_file=compose_file, build=build, run=run, keep_running=keep_running,
                    service=service, container_port=container_port, health_path=health_path,
-                   timeout=timeout, readiness_timeout=readiness_timeout, database_project=database_project)
+                   timeout=timeout, readiness_timeout=readiness_timeout, database_project=database_project, isolated_stack=isolated_stack)
     if options.get("build") or options.get("run"):
         try:
             with project_lock(path):

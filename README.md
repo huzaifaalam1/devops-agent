@@ -148,3 +148,5 @@ V2 usage and release boundaries: [current guide](docs/v2/step10/usage.md).
 Step-10 verification status: [combined acceptance](docs/v2/step10/README.md).
 
 Node/Vue foundation follow-up: [supported adapters, verification status and limits](docs/v2/node-expansion/README.md).
+
+Existing multi-process Compose setup and initialization: [workflow and verification](docs/v2/existing-stack/README.md).

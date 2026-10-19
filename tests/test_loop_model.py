@@ -7,7 +7,7 @@ from agent.loop_model import NextActionModel, ModelUnavailable
 
 class LoopModelTests(unittest.TestCase):
     def model(self):
-        with patch('agent.loop_model.settings',return_value={'DEVOPS_AGENT_PROVIDER':'groq','DEVOPS_AGENT_MODEL':'test','GROQ_API_KEY':'private'}):
+        with patch('agent.loop_model.settings',return_value={'DEVOPS_AGENT_PROVIDER':'groq','DEVOPS_AGENT_MODEL':'test','GROQ_API_KEY':'test-key-not-for-prompt-829314'}):
             return NextActionModel()
 
     def reply(self,action):
@@ -19,7 +19,7 @@ class LoopModelTests(unittest.TestCase):
             result=self.model().choose({'request':'run'})
         self.assertEqual(result['parameters'],{'run':True})
         self.assertEqual(request.call_args.kwargs['provider'],'groq')
-        self.assertNotIn('private',str(request.call_args.args[0]))
+        self.assertNotIn('test-key-not-for-prompt-829314',str(request.call_args.args[0]))
 
     def test_invalid_action_and_provider_errors_refused(self):
         for reply in [self.reply({'tool':'shell','parameters':{},'reason':'run'}),

@@ -238,7 +238,7 @@ def dockerize(
 
 def validation_result(path, compose_file=None, existing_setup=False, build=False, run=False,
                       keep_running=False, service=None, container_port=None, health_path="/",
-                      timeout=300, readiness_timeout=90, prepare_database=False):
+                      timeout=300, readiness_timeout=90, prepare_database=False, isolated_stack=False):
     """Shared CLI/tool policy path; never bypass eligibility or isolation."""
     repo_info, analysis = inspect_repo(path)
     try:
@@ -270,13 +270,21 @@ def validation_result(path, compose_file=None, existing_setup=False, build=False
             database_project = project
         except (ValueError, OSError) as error:
             return {'success': False, 'phase': 'eligibility', 'error': str(error)}
-    elif run and project.get('services') == ['PostgreSQL']:
+    elif run and project.get('services') == ['PostgreSQL'] and not isolated_stack:
         return {'success': False, 'phase': 'eligibility', 'error': 'Use prepare_database for a new disposable PostgreSQL database, then separately approve migrate_database.'}
     deferred = []
     blocking = project["blockers"]
     if existing_setup:
         from agent.runtime_policy import existing_setup_blockers
         blocking, deferred = existing_setup_blockers(blocking, run=run)
+    if isolated_stack:
+        if not existing_setup or not compose_file:
+            return {'success':False,'phase':'selection','error':'Isolated stack requires explicit existing Compose selection.'}
+        from agent.existing_compose import inspect_existing, stack_blockers
+        try: inspect_existing(path,selected)
+        except (ValueError,OSError,TypeError) as error:
+            return {'success':False,'phase':'config','error':Redactor(path).text(str(error))}
+        blocking=stack_blockers(project['blockers'])
     if (build or run) and blocking:
         result = {"success": False, "phase": "eligibility", "project": analysis["project"],
                   "error": "Repository is not eligible for build/runtime validation.", "blockers": blocking}
@@ -286,6 +294,7 @@ def validation_result(path, compose_file=None, existing_setup=False, build=False
         result = validate_docker(path, compose_file=selected,
                                  build=build, run=run, keep_running=keep_running, service=service,
                                  container_port=container_port, health_path=health_path, timeout=timeout,
+                                 **({"isolated_stack":True} if isolated_stack else {}),
                                  **({"database_project": database_project} if database_project else {}),
                                  readiness_timeout=readiness_timeout)
     if existing_setup:

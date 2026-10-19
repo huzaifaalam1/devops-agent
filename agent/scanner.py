@@ -79,7 +79,7 @@ def scan_single_repo(path: Path):
 
         filename = file.name.lower()
 
-        if re.fullmatch(r"dockerfile(?:[._-].+)?", filename) and file.suffix.lower() not in {".md", ".txt", ".bak", ".backup", ".old"}:
+        if re.fullmatch(r"(?:[a-z0-9_-]*dockerfile|dockerfile(?:[._-].+)?)", filename) and file.suffix.lower() not in {".md", ".txt", ".bak", ".backup", ".old"}:
             dockerfiles.append(file.name)
 
         if re.fullmatch(r"(?:docker-compose|compose)(?:[._-][^.]+)?\.ya?ml", filename) or re.fullmatch(r"local(?:_(?:mac|linux))?\.ya?ml", filename):

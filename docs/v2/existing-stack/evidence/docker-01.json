@@ -1,0 +1,4 @@
+{
+  "success": false,
+  "harness_error": "Original report had invalid JSON due to text-level redaction. Raw sanitized artifact retained locally under work/existing-stack; not counted as a pass."
+}
